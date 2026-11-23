@@ -1658,6 +1658,72 @@ html[data-theme="hud"] .track .mk{width:3px;z-index:2;box-shadow:0 0 0 1px #0209
 .card.client.boss{border-color:#d9a83a;background:linear-gradient(160deg,rgba(217,168,58,.16),rgba(217,168,58,.04) 60%),var(--card,#1a1a1d);box-shadow:0 0 0 1px rgba(217,168,58,.5),0 6px 24px rgba(217,168,58,.12)}
 .card.client.boss .btn{background:linear-gradient(135deg,#f3d27a,#c8912c)!important;color:#1a1000!important;border-color:transparent!important}
 .bosstag{display:inline-block;background:#b3121c;color:#fff;font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:6px;margin-bottom:6px;line-height:1.25}
+/* settimana e bolla */
+.card.mkt.week{display:grid;gap:6px;padding:14px 16px;border-color:color-mix(in srgb,var(--go,#3ccf7a) 45%,transparent)}
+.wk-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.wk-up{font-family:var(--f-display);font-size:26px;line-height:1.05;text-transform:uppercase;letter-spacing:.02em}
+.wk-up b{font-size:.8em}
+.wk-dn{font-size:14px;font-weight:700}
+.bub{margin-top:4px;padding:8px 10px;border-radius:10px;background:rgba(179,136,255,.12);border:1px solid rgba(179,136,255,.45);font-size:14px}
+.bub b{color:#c9a8ff}.bub.top{background:rgba(255,200,80,.12);border-color:rgba(255,200,80,.5)}.bub.top b{color:#ffcf6a}.bub.giu{opacity:.85}
+.tag.grow{background:linear-gradient(135deg,#c9a8ff,#8a5cff);color:#12002b;border-color:transparent;font-weight:800;padding:6px 12px;border-radius:999px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-family:var(--f-display)}
+.plate .tag.grow{position:absolute;bottom:12px;left:12px}
+.plate .tag.rare+.tag.grow{left:auto;right:12px}
+.plate .tag.grow{top:auto!important;bottom:12px!important;left:12px!important;right:auto!important;height:auto!important;width:auto!important}
+.plate .tag.rare+.tag.grow{left:146px!important}
+/* stelle di fama e frecce del magazzino */
+.fst{letter-spacing:1px}.fst.bronzo{color:#d08a4a}.fst.argento{color:#cfd6df}.fst.oro{color:#ffcc4d}
+.fst.plat{font-size:1.35em;line-height:1;background:linear-gradient(135deg,#e8fbff,#9fe3ff 45%,#d9c6ff);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 6px rgba(160,230,255,.6))}
+.mkm{display:inline-block;font-size:.8em;width:1.1em;text-align:center}.mkm.up{color:var(--go,#3ccf7a)}.mkm.dn{color:var(--risk,#ff5a4f)}.mkm.eq{color:#fff;opacity:.75;font-size:.7em}
+/* In trattativa */
+.trchat{display:flex;flex-direction:column;gap:6px;max-height:34vh;overflow-y:auto;margin:10px 0;padding:2px}
+.trchat p{margin:0;padding:8px 12px;border-radius:14px;max-width:85%;font-size:15px;line-height:1.35;animation:trIn .22s ease-out both}
+.trchat .her{align-self:flex-start;background:rgba(255,255,255,.08);border-bottom-left-radius:4px}
+.trchat .me{align-self:flex-end;background:color-mix(in srgb,var(--gold,#f2c14e) 22%,transparent);border-bottom-right-radius:4px;text-align:right}
+@keyframes trIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.trinfo{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.trinfo>div{background:rgba(255,255,255,.05);border-radius:10px;padding:7px 10px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.trinfo>div>span{font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.65;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trinfo b{font-size:15px}.trinfo .trprice{grid-column:1/-1;align-items:center}
+.trinfo .trprice .row{align-items:center;gap:14px}.trinfo .trprice b{font-size:24px;color:var(--mine,#5bc0ff)}
+.trpress{display:flex;align-items:center;gap:8px;margin:4px 0 8px}.trpress>span{font-size:12px;text-transform:uppercase;letter-spacing:.06em;opacity:.7}
+.trpress .pbar{flex:1;height:8px;border-radius:6px;background:rgba(255,255,255,.1);overflow:hidden}.trpress .pbar i{display:block;height:100%;transition:width .15s}
+.trpress small{width:66px;opacity:.8}
+.trmodes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px}.trmodes .btn{padding-left:6px;padding-right:6px;white-space:normal;line-height:1.15}
+.trpick li{display:block}.trpick .trp{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;color:inherit;padding:6px 0;cursor:pointer}
+.trok{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+/* consegna a Padrino / Pezzo grosso: plauso con bling */
+.bling{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:4px;padding:16px 18px;border-radius:16px;margin-bottom:6px;
+  background:linear-gradient(135deg,#2a1d05,#5a3d08 40%,#2a1d05);border:1px solid #e8b94a;box-shadow:0 0 0 1px rgba(0,0,0,.4),0 10px 40px rgba(232,185,74,.35);animation:blIn .6s cubic-bezier(.2,1.4,.4,1) both}
+.bling::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,240,190,.45) 50%,transparent 70%);transform:translateX(-120%);animation:blShine 2.4s ease-in-out .5s infinite}
+.bling .eyebrow{color:#ffd98a}
+.bling .bl-t{font-family:var(--f-display);font-size:clamp(28px,7vw,40px);line-height:1;text-transform:uppercase;background:linear-gradient(180deg,#fff3c4,#f2c14e 55%,#b8801c);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 rgba(0,0,0,.5))}
+.bling .bl-s{color:#f6e7c1;font-size:15px}.bling .bl-g{color:#fff;font-size:15px}.bling .bl-g b{color:#ffd24a}
+.bling .coins{position:absolute;inset:0;pointer-events:none}
+.bling .coins i{position:absolute;top:-14px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff6c8,#f2c14e 55%,#a8721a);animation:coin 1.8s ease-in infinite;opacity:.9}
+.bling .coins i:nth-child(1){left:6%;animation-delay:.1s}.bling .coins i:nth-child(2){left:14%;animation-delay:.9s}.bling .coins i:nth-child(3){left:22%;animation-delay:.4s}
+.bling .coins i:nth-child(4){left:30%;animation-delay:1.3s}.bling .coins i:nth-child(5){left:38%;animation-delay:.2s}.bling .coins i:nth-child(6){left:46%;animation-delay:1.1s}
+.bling .coins i:nth-child(7){left:54%;animation-delay:.6s}.bling .coins i:nth-child(8){left:62%;animation-delay:1.5s}.bling .coins i:nth-child(9){left:70%;animation-delay:.3s}
+.bling .coins i:nth-child(10){left:78%;animation-delay:1s}.bling .coins i:nth-child(11){left:86%;animation-delay:.5s}.bling .coins i:nth-child(12){left:93%;animation-delay:1.4s}
+.bling .coins i:nth-child(13){left:10%;animation-delay:1.7s}.bling .coins i:nth-child(14){left:66%;animation-delay:.8s}
+@keyframes coin{0%{transform:translateY(0) rotateY(0)}100%{transform:translateY(190px) rotateY(720deg);opacity:0}}
+@keyframes blIn{from{opacity:0;transform:scale(.85) translateY(10px)}to{opacity:1;transform:none}}
+@keyframes blShine{0%{transform:translateX(-120%)}60%,100%{transform:translateX(120%)}}
+/* scheda del Padrino / Pezzo grosso: riflesso dorato che passa */
+.card.client.boss{position:relative;overflow:hidden}
+.card.client.boss::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(255,225,140,.18) 50%,transparent 65%);transform:translateX(-130%);animation:blShine 3.2s ease-in-out infinite}
+.bosstag{animation:bossPulse 1.8s ease-in-out infinite}
+@keyframes bossPulse{0%,100%{box-shadow:0 0 0 0 rgba(179,18,28,.0)}50%{box-shadow:0 0 14px 2px rgba(220,30,40,.55)}}
+@media (prefers-reduced-motion:reduce){.bling,.bling::after,.bling .coins i,.card.client.boss::after,.bosstag{animation:none}}
+.trhead{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.trmood{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.clima{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:999px;transition:background .3s}
+.clima.gelo{background:#1d4f8a;color:#cfe6ff}.clima.freddo{background:#2a5d7a;color:#d6f0ff}.clima.tiepido{background:#5a5a5a;color:#fff}
+.clima.caldo{background:#a8641a;color:#fff3dc}.clima.rovente{background:#c0392b;color:#fff;box-shadow:0 0 12px rgba(230,80,50,.6)}
+.trpat{font-size:12px;letter-spacing:2px;color:var(--gold,#f2c14e)}
+.trinfo .trtake{margin-top:4px;padding:4px 10px;min-height:0}
+.trmodes{grid-template-columns:1fr 1fr!important}
+.fnick{display:block;margin:2px 0 6px;font-size:14px}.fnick b{color:var(--gold,#f2c14e)}
 
 /* ====== PROVE DI PALETTE E STILI (dalle tavole PNG) ====== */
 /* struttura comune delle prove di palette */
@@ -2285,7 +2351,7 @@ const CFG = {
   repDeliver: 3, repBonusMargin: 0.35, repAbandon: 3,
   /* livello da 1 a 99; ogni 20 una categoria (ranks). Tarato con la simulazione del 5/11/2026 */
   // Padrino e Pezzo grosso (23/11): probabilità per fascia, quanto pagano (× il budget normale), pazienza e punizioni
-  boss: { padrinoP:[0.02, 0.03, 0.05, 0.07, 0.10], grossoP:[0.04, 0.06, 0.08, 0.11, 0.14], pay:{ padrino:3, grosso:2 }, patience:6, grossoCut:0.3, grossoFame:2, grossoDrop:5 },
+  boss: { padrinoP:[0.02, 0.03, 0.05, 0.07, 0.10], grossoP:[0.04, 0.06, 0.08, 0.11, 0.14], pay:{ padrino:3, grosso:2 }, patience:6, grossoCut:0.3, grossoFame:2, grossoDrop:5, gift:{ padrino:0.1, grosso:0.05 }, bonusPts:{ padrino:3, grosso:2 } },
   lv: { S:[600, 2500, 3000, 8000, 20000],      // budget "normale" di un incarico in ciascuna categoria: vale 2 punti
         cost:[1, 1.5, 2, 2, 2.5],               // punti per salire di un numero, per categoria (più in alto, più lento)
         gateDel:[5, 7, 9, 11], gateVal:[3000, 12000, 35000, 120000], // per passare alla categoria dopo: consegne minime e valore minimo consegnato
@@ -2305,18 +2371,21 @@ const CFG = {
   floorByCat: { tech:[0.45,0.55], moda:[0.45,0.55], tcg:[0.5,0.6], curiosita:[0.45,0.58], leggende:[0.45,0.6], borse:[0.5,0.6], penne:[0.5,0.6],
     carte:[0.55,0.65], antichita:[0.52,0.62], arte:[0.5,0.62], memorabilia:[0.5,0.62], orologi:[0.56,0.68], gioielli:[0.6,0.7], vini:[0.6,0.72], monete:[0.7,0.8] },
   // fasce dei rivali (frazione della stima a cui comprano): chi scatta subito, chi aspetta un po', chi gratta, a volte nessuno
-  rivalBands: [ { p:0.15, f:[0.97, 1.06] }, { p:0.38, f:[0.86, 0.97] }, { p:0.27, f:[0, 0.86] }, { p:0.20, none:true } ],
+  // 23/11: la massa dei rivali compra un po' sotto la stima (così c'è sempre un guadagno); sopra solo per pezzi rari o in crescita
+  rivalBands: [ { p:0.14, f:[0.93, 0.99] }, { p:0.38, f:[0.84, 0.93] }, { p:0.28, f:[0, 0.84] }, { p:0.20, none:true } ],
+  mbox: { colpoP:0.10, truffaP:0.10, normale:[0.75, 1.35], colpo:[2.0, 3.5], truffa:[0.4, 0.65] },  // mystery box (23/11)
+  trend: { first:6, ramp:[21, 42], peak:[1.4, 2.1], hold:7, fall:14, after:1.05, gapDays:[5, 14], rivalAbove:0.4, rivalF:[1.0, 1.25] },
   durationS: { monete:15.5, antichita:16, carte:15.5, orologi:15, gioielli:14.5, borse:13.5, memorabilia:14, leggende:16.5, penne:13, curiosita:14 },
   maxClients:3, certBonus:1.1, myAuctionMin: 5, myAuctionPick: [3, 8],      // asta tua: servono almeno 5 pezzi; ne scegli da 3 a 8 (provv.)
   truck: { chance: 0.22, gap: 5, days: [2, 3], lo: 0.12, hi: 0.5, secs: 30 }, // caduto dal camion: circa una volta a settimana, valore legato al livello
   boxChance: 0.22, boxDays: 2, boxPrice: [600, 1200, 2200, 3800, 6000],  // mystery box (provv.)
-  fameDecay: 0.8,                              // ogni settimana la fama si raffredda (provv.)
+  fameDecay: 0.9, fameTiers: [2, 5, 9, 14, 20, 27, 35, 45, 57, 72], credBonus: 1, credMalus: 1,                              // ogni settimana la fama si raffredda (provv.)
   rivalWindowS: [5.6, 13.9],
   unsoldPauseS: 1.4,
   trade: { minF:[1.10,1.25], askF:[1.35,1.65], maxAttempts:2, concession:[0.30,0.50], greed:[0.7,1.8], baseAccept:0.10, spanAccept:0.80 },
   quickSale: 0.55,                    // vendi subito (provv.)
   offerChance: 0.45,                  // probabilità di un'offerta al giorno per pezzo in vendita
-  offerFactor: [0.72, 1.12], amatoreChance: 0.13, amatoreFactor: [1.28, 1.6], amatoreRare: [1.5, 3.0], amatWantP: 0.12, rareP: 0.07, rareHype: 0.04, rareHypeEarly: 0.25, offerDays: 2,
+  offerFactor: [0.72, 1.12], amatoreChance: 0.13, amatoreFactor: [1.28, 1.6], amatoreRare: [1.5, 3.0], amatWantP: 0.12, rareP: 0.07, rareCatW: { animali:1.4, orologi:1.3, arte:1.4, memorabilia:1.3, leggende:1.4, antichita:1.2, monete:1.1, gioielli:1, borse:.8, moda:.5, vini:1, carte:1, penne:.7, armi:.8, stranezze:.8, curiosita:.5, tcg:.6, tech:.25 }, rareHype: 0.04, rareHypeEarly: 0.25, offerDays: 2,
   myAuctionFee: 0.08, myAuctionDur: 13,
   wantChance: 0.5, wantMax: 6, wantFactor: [0.95, 1.3], wantLow: [0.6, 0.85], wantHigh: [1.45, 1.9], wantSpike: 0.15, wantDays: 6,   // richieste di compratori nel bunker (provv.)
   bribe: { soffiata:150, commesso:100, banditore:300 }  // × rango
@@ -3278,7 +3347,9 @@ const signed = n => (n > 0 ? '+' : n < 0 ? '−' : '') + fmtN(n) + ' €';
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
 const $ = s => document.querySelector(s);
 const cityOf = id => CITIES.find(c => c.id === id);
-const clientOf = id => CLIENTS.find(c => c.id === id);
+// Padrino e Pezzo grosso sono persone a sé: li vedi col loro nome (la richiesta prende spunto da un cliente qualunque)
+const BOSSES = { padrino:{ id:'padrino', name:'Il Padrino', city:'Palermo', rank:1, icon:'acquirente', tags:[] }, grosso:{ id:'grosso', name:'Il Pezzo grosso', city:'Marsiglia', rank:1, icon:'acquirente', tags:[] } };
+const clientOf = id => CLIENTS.find(c => c.id === id) || BOSSES[id];
 const BUYERS = ['Un antiquario di Bologna', 'Una gallerista di Monaco', 'Un collezionista di Lione', 'Un dentista appassionato', 'Un mercante di Anversa', 'Un’ereditiera di Madrid', 'Un banchiere di Lugano', 'Un architetto di Genova'];
 
 let G = null;
@@ -3360,6 +3431,7 @@ function collect() {
   fall();
 }
 /* Padrino e Pezzo grosso: pagano tanto ma non perdonano (falso, rinuncia, troppa attesa) */
+const soffValid = () => !!(G.inc && G.intel.soffiata && G.intel.soffiata.incId === G.inc.id && (G.intel.soffiata.gen || 0) === (G.sessGen || 0));
 function bossFail(why, itemId) {
   const inc = G.inc, c = clientOf(inc.clientId), kind = inc.boss, owed = inc.budget - inc.cash;
   const cause = why === 'falso' ? `gli hai consegnato un falso (${nm(itemId)})` : why === 'rinuncia' ? 'hai rinunciato al suo incarico' : 'l’hai fatto aspettare troppo';
@@ -3411,6 +3483,7 @@ function migrateVariants() {
   (G.incs || []).forEach(o => o.tag = fxTag(o.tag)); (G.board || []).forEach(o => o.tag = fxTag(o.tag));
   Object.values(G.sessions || {}).forEach(s => (s.lots || []).forEach(l => l.itemId = fx(l.itemId)));
   if (G.truck) G.truck.itemId = fx(G.truck.itemId);
+  for (const i of [...(G.incs || []), ...(G.board || [])]) if (i.boss && BOSSES[i.boss] && i.clientId !== i.boss) { i.from = i.clientId; i.clientId = i.boss; }
   if (G.box && !G.box.items) G.box = null; // riparazione: la box chiusa finiva per sbaglio al posto della mystery box
   if (G.box) (G.box.items || []).forEach(x => x.itemId = fx(x.itemId));
   if (G.my && G.my.lots) G.my.lots.forEach(x => { if (x.itemId) x.itemId = fx(x.itemId); });
@@ -3510,34 +3583,38 @@ function genSession(c) {
   return { lots, idx:0, open:true, reopen:0, seq };
 }
 function pickCat(w) { const r = rnd(); let acc = 0; for (const k of Object.keys(w)) { acc += w[k]; if (r < acc) return k; } return 'antichita'; }
+// pezzo raro solo dove ha senso: animali, orologi, arte, memorabilia… sul tech quasi mai (solo vecchi pezzi storici di valore)
+const rareW = it => { const w = CFG.rareCatW[it.cat] ?? 1; if (it.cat === 'tech') return it.tags.includes('vintage') && it.est >= 800 ? w : 0; if (it.cat === 'tcg') return it.est >= 300 ? w : 0; return w; };
 function makeLot(item, c, i, seq) {
+  const tN = trendNow(item.cat), grow = tN.ph === 'su', E = r10(item.est * tN.f);
   const fakeRoll = rnd(), vagueRoll = rnd(), fake = fakeRoll < (c.fakeP ?? CFG.fakeP);
   // indizi: un falso parte spesso più basso del normale e ha più spesso una provenienza vaga (ma non sempre)
   const fF = U(CFG.floorByCat[item.cat] || CFG.floorFactor);
-  const start = r10(item.est * U(fake && vagueRoll < 0.7 ? [1.1, 1.3] : CFG.startFactor)), floor = r10(item.est * fF);
+  const start = r10(item.est * tN.f * U(fake && vagueRoll < 0.7 ? [1.1, 1.3] : CFG.startFactor)), floor = r10(item.est * tN.f * fF);
   const vague = fake ? vagueRoll < 0.65 : vagueRoll < 0.18;
-  const dur = CFG.durationS[item.cat], aggr = c.aggr[item.cat] ?? 0.6;
+  const gapE = start - floor, dur = +((CFG.durationS[item.cat] || 15) * (gapE < 100 ? 0.72 : gapE < 300 ? 0.82 : gapE < 1000 ? 0.92 : 1)).toFixed(2), step = gapE < 150 ? 1 : gapE < 600 ? 5 : 10, aggr = c.aggr[item.cat] ?? 0.6;
   // fascia del rivale: le sale aggressive hanno più gente che scatta subito, i falsi attirano meno
   let br = rnd() * (fake ? 0.85 : 1); const eager = (aggr - 0.6) * 0.25; let band = CFG.rivalBands[CFG.rivalBands.length - 1];
   for (let k = 0, acc = 0; k < CFG.rivalBands.length; k++) { acc += CFG.rivalBands[k].p + (k === 0 ? eager : k === 2 ? -eager : 0); if (br < acc) { band = CFG.rivalBands[k]; break; } }
   if (fake && rnd() < 0.35) band = CFG.rivalBands[CFG.rivalBands.length - 1];
-  const buyRoll = band.none ? 1 : 0, lo = band.f ? Math.max(band.f[0], fF + 0.08) : 0, target = band.f ? item.est * U([lo, Math.max(lo + 0.02, band.f[1])]) : item.est;
+  const buyRoll = band.none ? 1 : 0, lo = band.f ? Math.max(band.f[0], fF + 0.08) : 0, target = band.f ? E * U([lo, Math.max(lo + 0.02, band.f[1])]) : E;
   const sc = dur / 15.5;
   let t = dur * (start - target) / (start - floor);
   t = Math.min(dur * 0.97, Math.max(CFG.rivalWindowS[0] * sc * 0.7, t));
   const T = CFG.trade;
   const tr = { minF:U(T.minF), askF:U(T.askF), greed:U(T.greed), conc:U(T.concession), rolls:[rnd(), rnd(), rnd()] };
   const paddle = 3 + Math.floor(rnd() * 94), bribeRoll = rnd();
-  let rivalT = buyRoll < 1 ? +t.toFixed(3) : null; const rare = !fake && rnd() < CFG.rareP;
+  let rivalT = buyRoll < 1 ? +t.toFixed(3) : null; const rare = !fake && rnd() < CFG.rareP * rareW(item);
   if (rare) {   // pezzo raro: a volte non interessa a nessuno, più spesso qualcuno lo prende un po' sopra la stima; ogni tanto c'è "hype" e sparisce subito
     const r2 = rnd(), hype = rnd() < (G.day <= 5 ? CFG.rareHypeEarly : CFG.rareHype);
     if (r2 < 0.3) rivalT = null;
-    else { const tgt = item.est * U([0.95, 1.3]); rivalT = +Math.min(dur * 0.97, Math.max(dur * 0.14, dur * (start - tgt) / (start - floor))).toFixed(3); }
+    else { const tgt = E * U([0.95, 1.3]); rivalT = +Math.min(dur * 0.97, Math.max(dur * 0.14, dur * (start - tgt) / (start - floor))).toFixed(3); }
     if (hype) rivalT = +(dur * 0.04).toFixed(3);
   }
-  return { uid:`${c.id}-${seq}-${i}`, itemId:item.id, n:i + 1, start, floor, dur, rivalT, rare, paddle, tr, bribeRoll, fake, vague, appraised:null };
+  if (grow && !rare && rnd() < CFG.trend.rivalAbove) { const tgt = E * U(CFG.trend.rivalF); rivalT = +Math.min(dur * 0.97, Math.max(dur * 0.14, dur * (start - tgt) / (start - floor))).toFixed(3); }
+  return { uid:`${c.id}-${seq}-${i}`, itemId:item.id, n:i + 1, start, floor, dur, rivalT, rare, grow, est:E, step, paddle, tr, bribeRoll, fake, vague, appraised:null };
 }
-const priceAt = (lot, t) => Math.max(lot.floor, r10(lot.start - (lot.start - lot.floor) * Math.min(1, Math.max(0, t) / lot.dur)));
+const priceAt = (lot, t) => { const s = lot.step || 10, v = lot.start - (lot.start - lot.floor) * Math.min(1, Math.max(0, t) / lot.dur); return Math.max(lot.floor, Math.round(v / s) * s); };
 
 /* ---------- incarichi ---------- */
 /* tag "telefono>450": il cliente vuole un telefono con stima di almeno 450 € (budget coerente col pezzo) */
@@ -3577,7 +3654,7 @@ function fakeGate(e, ref) {   // true = la vendita si ferma (si apre Persuadilo,
     return false;   // venduto: lo dice fakeOutcome
   }
   if (P && P.kind === 'sell' && P.ref.id === ref.id) { P.phase = 'ready'; openSheet('pitch', e.uid); return true; }
-  const k = fakeLvl(e), w = [.30, .20, .12][k], period = [1800, 1550, 1300][k];
+  const k = fakeLvl(e), w = [.27, .18, .11][k], period = [1700, 1460, 1220][k];
   G.ui.pitch = { kind:'sell', u:e.uid, ref, notice: rnd() < CFG.fakeSellCatch[k], w, period, zPer: period * 1.9, phase:'ready' }; G.ui.pitch.z = zonePos(G.ui.pitch, 0);
   openSheet('pitch', e.uid); return true;
 }
@@ -3598,7 +3675,7 @@ function fillBoard() {
     const wts = avail.map(c => 1 + c.rank); let r = rnd() * wts.reduce((a, b) => a + b, 0), k = 0;
     while (r > wts[k]) { r -= wts[k]; k++; }
     const c = avail.splice(k, 1)[0];
-    const o = makeOffer(c); if (o) G.board.push(o);
+    const o = makeOffer(c); if (o) { if (o.boss) o.clientId = o.boss; G.board.push(o); }
   }
 }
 function makeOffer(c) {
@@ -3607,7 +3684,7 @@ function makeOffer(c) {
   const exactRoll = rnd(), tagRoll = rnd(), naive = !boss && rnd() < CFG.naiveP, bf = (naive ? U(CFG.naiveBudget) : U(CFG.budgetFactor)) * (boss ? CFG.boss.pay[boss] : 1); // ogni tanto uno che non se ne intende: budget largo
   if (c.exact && exactRoll < c.exact) {
     const pool = CATALOG.filter(it => !it.set && it.est <= maxEst && it.est >= minEst && it.tags.some(t => c.tags.includes(t)));
-    if (pool.length) { const it = pool[Math.floor(tagRoll * pool.length)]; return { id:uid('o'), clientId:c.id, tag:'id:' + it.id, budget:Math.max(150, r10(it.est * (bf + 0.05))), naive, boss }; }
+    if (pool.length) { const it = pool[Math.floor(tagRoll * pool.length)]; return { id:uid('o'), clientId:c.id, tag:'id:' + it.id, budget:Math.max(150, r10(it.est * (bf + 0.05))), naive, boss, from:c.id }; }
   }
   const tags = c.tags.filter(t => CATALOG.some(it => !it.set && it.tags.includes(t) && it.est <= maxEst));
   const tag = tags[Math.floor(tagRoll * tags.length)];
@@ -3617,7 +3694,7 @@ function makeOffer(c) {
   // il cliente punta a un pezzo preciso di fascia: budget e minimo accettato vengono da lì (niente 640 € per un telefono da 90)
   const target = sorted[Math.min(sorted.length - 1, Math.floor((0.2 + 0.65 * rnd()) * sorted.length))];
   const min = target < 200 ? r10(target * CFG.reqMinF) : target < 2000 ? Math.round(target * CFG.reqMinF / 50) * 50 : r100(target * CFG.reqMinF);
-  return { id:uid('o'), clientId:c.id, tag: tag + '>' + min, budget:Math.max(80, target < 2000 ? r10(target * bf) : r100(target * bf)), naive, boss };
+  return { id:uid('o'), clientId:c.id, tag: tag + '>' + min, budget:Math.max(80, target < 2000 ? r10(target * bf) : r100(target * bf)), naive, boss, from:c.id };
 }
 
 /* ---------- soldi: oro (budget incarico) o verde (tuoi) ---------- */
@@ -3653,7 +3730,25 @@ function newMarket() {
   const cats = Object.keys(CATS), up = pick(cats); let down = pick(cats); if (down === up) down = cats[(cats.indexOf(up) + 2) % cats.length];
   G.market = { up, upF:+U(CFG.marketUp).toFixed(2), down, downF:+U(CFG.marketDown).toFixed(2), from:G.day };
 }
-const mkt = cat => !G.market ? 1 : cat === G.market.up ? G.market.upF : cat === G.market.down ? G.market.downF : 1;
+const mktWeek = cat => !G.market ? 1 : cat === G.market.up ? G.market.upF : cat === G.market.down ? G.market.downF : 1;
+// fase della bolla: 'su' (cresce), 'top' (al massimo), 'giu' (si sgonfia); fattore sul valore di oggi
+function trendNow(cat) {
+  const B = G.trend; if (!B || B.cat !== cat || G.day < B.start) return { f:1, ph:null };
+  const d = G.day, T = CFG.trend;
+  if (d < B.rampEnd) return { f:1 + (B.peak - 1) * (d - B.start) / (B.rampEnd - B.start), ph:'su' };
+  if (d < B.rampEnd + T.hold) return { f:B.peak, ph:'top' };
+  const k = Math.min(1, (d - B.rampEnd - T.hold) / T.fall); return { f:B.peak + (T.after - B.peak) * k, ph:'giu' };
+}
+const rising = cat => trendNow(cat).ph === 'su';
+const mkt = cat => mktWeek(cat) * trendNow(cat).f;
+function newTrend() {
+  const T = CFG.trend, band = CFG.ranks[Math.min(rankIdx(), 4)];
+  const cats = [...new Set(CATALOG.filter(i => !i.set && i.est >= band.minEst * 0.5 && i.est <= band.maxEst).map(i => i.cat))].filter(c => !G.trend || c !== G.trend.cat);
+  if (!cats.length) return;
+  const cat = pick(cats), start = G.day, ramp = Math.round(U(T.ramp));
+  G.trend = { cat, start, rampEnd:start + ramp, peak:+U(T.peak).toFixed(2) };
+  notify(`Si dice che ${CATS[cat].toLowerCase()} cresceranno`, `Nelle prossime settimane ${CATS[cat].toLowerCase()} varranno sempre di più. Quanto e per quanto non si sa: può essere un +40% o il doppio. Poi la bolla si sgonfia. I pezzi in crescita li riconosci in asta dall’etichetta “Crescerà”: comprarli anche un po’ sopra la stima può avere senso, se poi vendi al momento giusto.`);
+}
 const fakeVal = e => r10(BY_ID[e.itemId].est * CFG.fakeValue);
 const cert = e => e.appraised === 'vero' ? CFG.certBonus : 1; // il certificato del perito fa valere di più
 const marketVal = e => e.fake && e.appraised === 'falso' && BY_ID[e.itemId].box ? r10(BY_ID[e.itemId].est * 0.5) : e.fake && e.appraised === 'falso' ? fakeVal(e) : r10(BY_ID[e.itemId].est * mkt(BY_ID[e.itemId].cat) * cert(e));
@@ -3666,20 +3761,61 @@ const patWord = f => f < 0.3 ? 'tranquillo' : f < 0.6 ? 'aspetta' : f < 0.85 ? '
 
 /* ---------- fama: le tue aste insegnano agli altri il tuo stile ---------- */
 function addFame(itemId, pts) { G.fame = G.fame || {}; for (const t of styleTags(itemId)) G.fame[t] = +((G.fame[t] || 0) + pts).toFixed(2); }
-const fameStars = t => { const p = (G.fame || {})[t] || 0; return p >= 12 ? 3 : p >= 6 ? 2 : p >= 2 ? 1 : 0; };
-const fameBoost = itemId => Math.max(0, ...styleTags(itemId).map(fameStars));
+const fameTier = t => { const p = (G.fame || {})[t] || 0; let k = 0; CFG.fameTiers.forEach((v, i) => { if (p >= v) k = i + 1; }); return k; };
+const fameStars = fameTier;
+// effetto sui prezzi: mezzo "punto" per gradino (Platino = 5 → +35% nelle aste firmate)
+const fameBoost = itemId => Math.max(0, ...styleTags(itemId).map(fameTier)) / 2;
+/* soprannomi (23/11): la gente ti chiama in base a cosa e come vendi */
+const NICK_CAT = { orologi:['Tic Tac'], armi:['Canne Mozze'], animali:['Noè'], monete:['Spicciolo d’oro'], borse:['Coccodrillo', 'Zip', 'Tracolla'], tech:['Wi-Fi'], tcg:['Pikachu', 'Pokémon'],
+  gioielli:['Luccichino'], antichita:['il Tombarolo'], carte:['Pergamena'], memorabilia:['Autografo'], leggende:['il Mito'], penne:['Stilo'], curiosita:['Bazar'], moda:['Passerella'], arte:['Pennello'], vini:['Cantina'], stranezze:['l’Alieno'] };
+const NICK_TAG = { balestra:'il Balestra', gatto:'Gattaro', pappagallo:'Pappagallo', revolver:'Tamburo', sneaker:'Suola', console:'Joystick' };
+const NICK_HI = ['il Condor', 'il Barone', 'Sciacallo di lusso', 'Mani d’oro'], NICK_LO = ['Aspirapolvere', 'Saldi', 'Accattone', 'Tutto a un euro', 'Svuotacantine'];
+function nickSale(itemId, price, low) {
+  const K = G.nk = G.nk || { cats:{}, tags:{}, hi:0, lo:0, n:0, seed:Math.floor(rnd() * 1000) }, it = BY_ID[itemId]; if (!it) return;
+  const est = it.est * mkt(it.cat); K.n++; K.cats[it.cat] = (K.cats[it.cat] || 0) + 1; for (const t of it.tags) if (NICK_TAG[t]) K.tags[t] = (K.tags[t] || 0) + 1;
+  if (low || price <= est * .8) K.lo++; else if (price >= est * 1.25) K.hi++;
+  let nick = null, why = '';
+  const topC = Object.entries(K.cats).sort((a, b) => b[1] - a[1])[0], topT = Object.entries(K.tags).sort((a, b) => b[1] - a[1])[0], v = l => l[K.seed % l.length];
+  if (K.n >= 6) {
+    if (K.lo >= 5 && K.lo / K.n >= .5) { nick = v(NICK_LO); why = 'Svendi tutto: ti prendono un po’ in giro.'; }
+    else if (topT && topT[1] >= 4 && topT[1] / K.n >= .3) { nick = NICK_TAG[topT[0]]; why = 'Ne hai vendute talmente tante che ormai sei quello lì.'; }
+    else if (topC && topC[1] >= 5 && topC[1] / K.n >= .4 && NICK_CAT[topC[0]]) { nick = v(NICK_CAT[topC[0]]); why = `Per ${CATS[topC[0]].toLowerCase()} tutti pensano a te.`; }
+    else if (K.hi >= 4 && K.hi / K.n >= .35) { nick = v(NICK_HI); why = 'Vendi caro e ti pagano lo stesso: rispetto.'; }
+  }
+  if (nick && nick !== G.nick) { G.nick = nick; notify(`In giro ti chiamano «${nick}»`, why); }
+}
+function fameDecayWeek() {   // cala piano: chi ha una buona reputazione viene aspettato
+  G.fameBest = G.fameBest || {};
+  for (const t in (G.fame || {})) {
+    const best = G.fameBest[t] = Math.max(G.fameBest[t] || 0, fameTier(t)), floorT = best >= 10 ? 9 : Math.max(0, best - 2), floorP = floorT ? CFG.fameTiers[floorT - 1] : 0;
+    G.fame[t] = +Math.max(floorP, G.fame[t] * CFG.fameDecay).toFixed(2); if (G.fame[t] < 0.5) delete G.fame[t];
+  }
+}
 const topFame = () => Object.entries(G.fame || {}).filter(([, p]) => p >= 2).sort((a, b) => b[1] - a[1]);
 /* ---------- mystery box ---------- */
 const BOX_ORIGINS = ['un container da Hong Kong', 'l’eredità di un roadie', 'un magazzino sequestrato a Marsiglia', 'un baule da una villa sul lago', 'una spedizione senza mittente da Buenos Aires', 'il retro di un museo di provincia', 'un hangar vicino a Tangeri', 'una cassa da New Orleans'];
 function boxPool(lo, hi) { const p = CATALOG.filter(it => !it.set && it.est >= lo && it.est <= hi); return p.length ? p : CATALOG.filter(it => !it.set).sort((a, b) => a.est - b.est).slice(0, 10); }
+// riempie la box con pezzi veri fino a circa il valore voluto
+function boxFill(V, n, items) {
+  let left = V;
+  for (let k = n; k > 0 && left > 20; k--) {
+    const want = left / k * U([0.75, 1.25]), p = boxPool(want * 0.8, want * 1.2);
+    const it = p.reduce((a, b) => Math.abs(b.est - want) < Math.abs(a.est - want) ? b : a, p[0]);
+    items.push({ itemId:it.id, fake:false }); left -= it.est;
+  }
+}
 function genBox() {
-  // prezzo e contenuto variano molto e non vanno d'accordo: puoi pagarla poco e trovarci il colpo, o pagarla cara e trovarci fuffa
-  const base = CFG.boxPrice[rankIdx()], price = r10(base * U([0.6, 1.6])), roll = rnd(), origin = pick(BOX_ORIGINS), items = [];
-  if (roll < 0.15) { items.push({ itemId:pick(boxPool(base * 4, base * 14)).id, fake:rnd() < 0.15 }); if (rnd() < 0.5) items.push({ itemId:pick(boxPool(0, base * 0.9)).id, fake:rnd() < 0.4 }); }
-  else if (roll < 0.50) { const n = 3 + Math.floor(rnd() * 3), p = boxPool(base * 0.4, base * 1.3); for (let i = 0; i < n; i++) items.push({ itemId:pick(p).id, fake:rnd() < 0.25 }); }
-  else if (roll < 0.72) { const n = 2 + Math.floor(rnd() * 3), p = boxPool(base * 0.2, base * 0.7); for (let i = 0; i < n; i++) items.push({ itemId:pick(p).id, fake:rnd() < 0.3 }); }
-  else if (roll < 0.82) { const kp = CATALOG.filter(it => it.box && it.est <= base * 6); if (kp.length) items.push({ itemId:pick(kp).id, fake:rnd() < 0.35 }); else items.push({ itemId:pick(boxPool(0, base)).id, fake:false }); }
-  else { const n = 2 + Math.floor(rnd() * 3), p = boxPool(0, base * 0.35); for (let i = 0; i < n; i++) items.push({ itemId:pick(p).id, fake:rnd() < 0.5 }); }
+  // 23/11: quasi sempre vale un po' più o un po' meno di quanto la paghi; ogni tanto, a caso, colpo o truffa.
+  // la truffa ti fa perdere meno di quanto ti fa guadagnare il colpo, così rischiare conviene
+  const B = CFG.mbox, base = CFG.boxPrice[rankIdx()], price = r10(base * U([0.6, 1.6])), roll = rnd(), origin = pick(BOX_ORIGINS), items = [];
+  if (roll < B.colpoP) {   // colpo: un pezzo grosso, a volte con qualcosa intorno
+    const V = price * U(B.colpo), main = V * U([0.7, 0.95]), p = boxPool(main * 0.85, main * 1.15);
+    const it = p.reduce((a, b) => Math.abs(b.est - main) < Math.abs(a.est - main) ? b : a, p[0]);
+    items.push({ itemId:it.id, fake:false }); boxFill(V - it.est, 1 + Math.floor(rnd() * 2), items);
+  } else if (roll < B.colpoP + B.truffaP) {   // truffa: pezzi che sembrano buoni, ma uno o due sono falsi
+    const V = price * U(B.truffa), n = 2 + Math.floor(rnd() * 2); boxFill(V, n, items);
+    const fk = 1 + Math.floor(rnd() * 2), p = boxPool(price * 0.3, price * 0.8); for (let i = 0; i < fk; i++) items.push({ itemId:pick(p).id, fake:true });
+  } else { const V = price * U(B.normale), n = 2 + Math.floor(rnd() * 4); boxFill(V, n, items); }
   G.box = { id:uid('x'), origin, price, items, exp:G.day + CFG.boxDays };
 }
 
@@ -3720,8 +3856,10 @@ function nextDay() {
   if (G.truck && G.truck.exp < G.day) { const nmT = BY_ID[G.truck.itemId].name; G.truck = null; setTimeout(() => toast('', `<b class="tdown">Troppo tardi</b> · ${esc(nmT)} caduto dal camion se l’è preso qualcun altro`, 5000), 1800); }
   if (!G.truck && G.day >= 3 && G.day - (G.truckLast || 0) >= CFG.truck.gap && rnd() < CFG.truck.chance) { genTruck(); setTimeout(() => toast('', '<b class="tup">Caduto dal camion!</b> · guarda in alto', 4500), 2200); }
   if (!G.box && rnd() < CFG.boxChance) { genBox(); G.unseen++; const bo = G.box.origin; setTimeout(() => toast(`È arrivata una mystery box ${daA(bo)}`), 1200); }
-  if (G.market && G.day - G.market.from >= CFG.marketWeek) { for (const t in (G.fame || {})) { G.fame[t] = +(G.fame[t] * CFG.fameDecay).toFixed(2); if (G.fame[t] < 0.5) delete G.fame[t]; } }
-  if (!G.market || G.day - G.market.from >= CFG.marketWeek) { newMarket(); setTimeout(() => toast(`Nuova settimana: ${CATS[G.market.up].toLowerCase()} in rialzo, ${CATS[G.market.down].toLowerCase()} in calo`), 1600); }
+  if (G.market && G.day - G.market.from >= CFG.marketWeek) fameDecayWeek();
+  if (!G.market || G.day - G.market.from >= CFG.marketWeek) { newMarket(); const M = G.market, n = G.bunker.filter(e => BY_ID[e.itemId].cat === M.up).length;
+    notify(`La settimana di: ${CATS[M.up].toLowerCase()}`, `Questa settimana ${CATS[M.up].toLowerCase()} si vendono il ${Math.round((M.upF - 1) * 100)}% in più; ${CATS[M.down].toLowerCase()} il ${Math.round((1 - M.downF) * 100)}% in meno.${n ? ` Nel bunker ne hai ${n}: può valere la pena restare a vendere invece di andare in asta.` : ''}`); }
+  if (G.day >= CFG.trend.first && (!G.trend || G.day >= G.trend.rampEnd + CFG.trend.hold + CFG.trend.fall + G.trend.gap)) { if (G.trend) G.trend = null; newTrend(); if (G.trend) G.trend.gap = Math.round(U(CFG.trend.gapDays)); }
   for (const gone of G.incs.filter(i => G.day - i.startDay >= patDays(i))) {
     if (!G.incs.includes(gone)) continue;
     G.act = gone.id;
@@ -3733,7 +3871,7 @@ function nextDay() {
     if (G.intel.soffiata && G.intel.soffiata.incId === gone.id) G.intel.soffiata = null;
     G.inc = null; fillBoard();
   }
-  CITIES.forEach(c => { const s = G.sessions[c.id]; if (!s.open && s.reopen <= G.day) { G.sessions[c.id] = genSession(c); if (G.intel.soffiata) G.intel.soffiata.cities = G.intel.soffiata.cities.filter(x => x !== c.id); } });
+  CITIES.forEach(c => { const s = G.sessions[c.id]; if (!s.open && s.reopen <= G.day) { G.sessions[c.id] = genSession(c); G.sessGen = (G.sessGen || 0) + 1; if (G.intel.soffiata) G.intel.soffiata.cities = G.intel.soffiata.cities.filter(x => x !== c.id); } });
   G.offers = G.offers.filter(o => o.exp >= G.day);
   let fresh = 0;
   for (const e of G.bunker) {
@@ -3844,7 +3982,7 @@ const A = {
     if (risky && !(G.ui.pitch && !G.ui.pitch.kind && G.ui.pitch.u === u && G.ui.pitch.done)) {
       if (!G.ui.pitch || G.ui.pitch.kind || G.ui.pitch.u !== u) { const nv = !!G.inc.naive, gap = Math.min(.2, Math.max(0, 1 - BY_ID[e.itemId].est / tagMin(G.inc.tag)));
         // chi non se ne intende: verde più largo e si accorge meno; chi se ne intende: verde più stretto, ti scopre più spesso
-        const w = nv ? .32 - gap : .24 - gap * .8, period = (nv ? 1800 : 1550) - gap * 2250; // via di mezzo (21/11): verde largo se il prezzo è vicino, ma linea un filo più svelta
+        const w = nv ? .28 - gap * .9 : .21 - gap * .75, period = (nv ? 1700 : 1460) - gap * 2100; // 23/11: un filo più difficile anche da telefono // via di mezzo (21/11): verde largo se il prezzo è vicino, ma linea un filo più svelta
         G.ui.pitch = { u, naive:nv, notice: rnd() < (nv ? CFG.naiveCatchP : CFG.expertCatchP), w, period, zPer: period * 1.9 }; G.ui.pitch.z = zonePos(G.ui.pitch, 0); }
       G.ui.pitch.phase = 'ready'; openSheet('pitch', u); return;
     }
@@ -3855,9 +3993,12 @@ const A = {
     note(`Consegnato ${nm(e.itemId)} a ${clientOf(inc.clientId).name}: avanzo +${eur(avanzo)}`);
     G.personal += avanzo;
     const fast = pf <= 0.25, late = pf >= 0.75;
-    const pts = G.debt > 0 || caught ? 0 : Math.max(0, lvPoints(inc.budget) + (avanzo >= inc.budget * CFG.repBonusMargin ? 1 : 0) + (fast ? 1 : 0) - (late ? 2 : 0));
+    // Padrino e Pezzo grosso soddisfatti: un regalo e una spinta in più (le persone giuste ora sanno chi sei)
+    const gift = inc.boss ? r10(inc.budget * CFG.boss.gift[inc.boss]) : 0; G.personal += gift;
+    const pts = G.debt > 0 || caught ? 0 : Math.max(0, lvPoints(inc.budget) + (avanzo >= inc.budget * CFG.repBonusMargin ? 1 : 0) + (fast ? 1 : 0) - (late ? 2 : 0) + (inc.boss ? CFG.boss.bonusPts[inc.boss] : 0));
     const gain = pts ? lvGain(pts, inc.budget) : 0; G.stats.delivered++;
     G.summary = { inc, itemId:e.itemId, itemCost:e.cost, fromStock:e.mine || e.incId !== inc.id, others:G.bunker.filter(b => b.incId === inc.id).map(b => ({ itemId:b.itemId, mine:b.mine })), avanzo, gain, from, to:G.lvl, pts, boost, gate:atGate(), fast, late, rankUp: rankIdx() > before ? rankIdx() : null };
+    G.summary.boss = inc.boss || null; G.summary.gift = gift;
     G.summary.inSala = !!G.city; G.summary.pitch = P ? { hit:!!P.hit, notice:!!P.notice, naive:!!P.naive } : null; G.summary.caught = caught; G.summary.lost = lost;
     if (caught) { G.cold = G.cold || {}; G.cold[inc.clientId] = G.day + CFG.naiveColdDays; }
     if (P) note(caught ? `${clientOf(inc.clientId).name} si è accorto che valeva meno: −${eur(lost)} sull’avanzo` : P.hit ? `Hai persuaso ${clientOf(inc.clientId).name}` : `${clientOf(inc.clientId).name} non si è accorto di niente`);
@@ -3928,7 +4069,7 @@ const A = {
   sellNow(u, force) {
     const e = G.bunker.find(x => x.uid === u); if (!e || G.state !== 'HUB') return;
     if (!force && guardSale(e, 'sellNow')) return;
-    const amt = quickPrice(e); G.personal += amt; removeEntry(u); note(`Venduto subito ${nm(e.itemId)}: +${eur(amt)}`); G.stats.sold++; closeSheet(); hush(`Venduto subito: +${eur(amt)}`); render(); flashMoney();
+    const amt = quickPrice(e); G.personal += amt; removeEntry(u); note(`Venduto subito ${nm(e.itemId)}: +${eur(amt)}`); G.stats.sold++; nickSale(e.itemId, amt, true); closeSheet(); hush(`Venduto subito: +${eur(amt)}`); render(); flashMoney();
   },
   toggleList(u) { const e = G.bunker.find(x => x.uid === u); if (!e || G.state !== 'HUB') return; e.listed = !e.listed; hush(e.listed ? 'In vendita: le offerte arrivano con i giorni' : 'Ritirato dalla vendita'); openSheet('item', u); render(); },
   split(u) {
@@ -3946,7 +4087,7 @@ const A = {
     const oe = G.bunker.find(x => x.uid === o.uid); if (fakeGate(oe, { t:'offer', id, amt:o.amount, buyer:o.buyer })) return;
     if (oe) note(`Venduto ${nm(oe.itemId)} a ${o.buyer}: +${eur(o.amount)}${oe.fake ? ' · era un falso' : ''}`);
     const lost = G.offers.filter(x => x.uid === o.uid && x !== o).length;
-    G.personal += o.amount; removeEntry(o.uid); G.stats.sold++; hush(`Venduto a ${o.buyer}: +${eur(o.amount)}${lost ? ` · ${lost === 1 ? 'l’altra offerta' : `le altre ${lost} offerte`} sullo stesso pezzo è decaduta` : ''}`); render(); flashMoney(); fakeOutcome(o.buyer);
+    G.personal += o.amount; if (oe) nickSale(oe.itemId, o.amount); removeEntry(o.uid); G.stats.sold++; hush(`Venduto a ${o.buyer}: +${eur(o.amount)}${lost ? ` · ${lost === 1 ? 'l’altra offerta' : `le altre ${lost} offerte`} sullo stesso pezzo è decaduta` : ''}`); render(); flashMoney(); fakeOutcome(o.buyer);
   },
   rejectOffer(id) { if (G.state !== 'HUB') return; G.offers = G.offers.filter(o => o.id !== id); render(); },
   toggleAuto() { if (G.state !== 'HUB') return; G.auto = !G.auto; hush(G.auto ? 'Ricerca automatica attiva: tutti i pezzi cercano acquirenti' : 'Ricerca automatica spenta'); render(); },
@@ -3970,9 +4111,11 @@ const A = {
     if (!canPayInfo(cost)) return toast('Non hai abbastanza, nemmeno col budget del cliente');
     if (kind === 'soffiata') {
       if (!G.inc) return toast('Prima prendi un incarico');
+      // già pagata per questo cliente e le sale non sono cambiate: la rivedi gratis (prima si pagava ogni volta)
+      if (soffValid()) return openSheet('soffiata');
       payInfo(cost);
       const cities = CITIES.filter(c => c.rank <= rank() && G.sessions[c.id].open && G.sessions[c.id].lots.slice(G.sessions[c.id].idx).some(l => matches(l.itemId, G.inc))).map(c => c.id);
-      G.intel.soffiata = { cities, incId:G.inc.id };
+      G.intel.soffiata = { cities, incId:G.inc.id, gen:G.sessGen || 0 };
       openSheet('soffiata');
     } else if (kind === 'commesso') {
       const c = cityOf(cityId); if (!c || c.rank > rank() || !G.sessions[cityId].open) return;
@@ -4098,7 +4241,7 @@ const A = {
     const amt = wantPrice(w, e.itemId); if (fakeGate(e, { t:'want', id:wid, amt, buyer:w.buyer })) return; G.personal += amt;
     note(`Venduto ${nm(e.itemId)} a ${w.buyer} (richiesta): +${eur(amt)}${e.fake ? ' · era un falso' : ''}`);
     const lost = G.offers.filter(o => o.uid === u).length;
-    removeEntry(u); G.wants = G.wants.filter(x => x !== w); G.stats.sold++; closeSheet(); hush(`Venduto a ${w.buyer}: +${eur(amt)}${lost ? ` · ${lost === 1 ? 'l’altra offerta' : `le altre ${lost} offerte`} sullo stesso pezzo è decaduta` : ''}`); render(); flashMoney(); fakeOutcome(w.buyer);
+    nickSale(e.itemId, amt); removeEntry(u); G.wants = G.wants.filter(x => x !== w); G.stats.sold++; closeSheet(); hush(`Venduto a ${w.buyer}: +${eur(amt)}${lost ? ` · ${lost === 1 ? 'l’altra offerta' : `le altre ${lost} offerte`} sullo stesso pezzo è decaduta` : ''}`); render(); flashMoney(); fakeOutcome(w.buyer);
   },
   // Home: sempre disponibile. Dalla sala chiede conferma; durante il ribasso mette in pausa finché decidi.
   home() {
@@ -4172,7 +4315,7 @@ function parseAmount(v) { const d = String(v ?? '').replace(/[^\d]/g, ''); retur
 function myNext() {
   const M = G.my;
   while (M.pos < M.queue.length && !G.bunker.find(x => x.uid === M.queue[M.pos])) M.pos++;
-  if (M.pos >= M.queue.length) { stopLoop(); M.phase = 'done'; render(); return; }
+  if (M.pos >= M.queue.length) { stopLoop(); M.phase = 'done'; myCred(M); render(); return; }
   const e = G.bunker.find(x => x.uid === M.queue[M.pos]), it = BY_ID[e.itemId], mv = it.est * mkt(it.cat);
   const a1 = U([0.6, 1.1]), a2 = U([0.6, 1.1]), amP = myAmP(e, M.kind), am = rnd() < amP, af = U(e.rare || fameBoost(e.itemId) >= 2 ? CFG.amatoreRare : CFG.amatoreFactor);
   const fame = M.kind === 'svendita' ? 1 : 1 + 0.07 * fameBoost(e.itemId);
@@ -4181,6 +4324,12 @@ function myNext() {
   const floor = M.mins && M.mins[e.uid] != null ? M.mins[e.uid] : myDefMin(e), start = myStart(e, floor), dur = CFG.myAuctionDur;
   M.cur = { uid:e.uid, itemId:e.itemId, cost:e.cost || 0, am: am && !e.fake, caught, start, floor, dur, saleT: res < floor ? null : Math.max(0.6, dur * (start - res) / Math.max(1, start - floor)) };
   M.phase = 'run'; render(); startRun();
+}
+function myCred(M) {
+  if (M.kind !== 'firmata' || M.results.length < 3 || M.cred) return;
+  const sold = M.results.filter(r => r.outcome === 'venduto'), ratio = sold.length / M.results.length;
+  if (ratio >= 0.8) { sold.forEach(r => addFame(r.itemId, CFG.credBonus)); M.cred = 'su'; note('Asta firmata riuscita: la tua firma vale di più'); }
+  else if (ratio <= 0.4) { M.results.filter(r => r.outcome !== 'venduto').forEach(r => addFame(r.itemId, -CFG.credMalus)); for (const t in (G.fame || {})) if (G.fame[t] < 0.5) delete G.fame[t]; M.cred = 'giu'; note('Troppi invenduti: la tua firma perde credibilità'); }
 }
 function myAdvance() { const M = G.my; M.pos++; M.phase = 'between'; render(); setTimeout(() => { if (G.state === 'MYAUCTION' && G.my === M && M.phase === 'between') myNext(); }, 1300); }
 function mySold() {
@@ -4193,7 +4342,7 @@ function mySold() {
     note(`Il compratore l’ha fatto periziare: ${nm(C.itemId)} è falso. Vendita saltata, multa −${eur(fine)}${M.kind !== 'svendita' ? ' e un po’ di fama in meno' : ''}`);
     M.results.push({ itemId:C.itemId, outcome:'beccato', price:p, fine, cost:C.cost }); myAdvance(); return;
   }
-  G.personal += net; removeEntry(C.uid); G.stats.sold++; if (!(e && e.fake) && M.kind !== 'svendita') addFame(C.itemId, 1);
+  G.personal += net; removeEntry(C.uid); G.stats.sold++; nickSale(C.itemId, p, M.kind === 'svendita'); if (!(e && e.fake) && M.kind !== 'svendita') addFame(C.itemId, 1);
   note(`Venduto nella tua asta ${nm(C.itemId)}: +${eur(net)}${C.am ? ' · l’ha voluto un amatore' : ''}${e && e.fake ? ' · era un falso e non se n’è accorto nessuno' : ''}`);
   M.results.push({ itemId:C.itemId, outcome:'venduto', price:p, net, cost:C.cost, am:!!C.am, fake:!!(e && e.fake) }); flashMoney(); myAdvance();
 }
@@ -4235,6 +4384,341 @@ const boxPaid = () => boxItems().reduce((s, e) => s + (e.cost || 0), 0);
 const boxVal = () => boxItems().reduce((s, e) => s + myStima(e), 0);
 const fakeCheckP = est => est <= 500 ? .35 : est <= 5000 ? .5 : .65;
 const priceAtMy = t => { const C = G.my.cur; return Math.max(C.floor, r10(C.start - (C.start - C.floor) * Math.min(1, Math.max(0, t) / C.dur))); };
+
+/* ---------- In trattativa: proponi al cliente un pezzo diverso da quello che chiedeva (23/11) ----------
+   Un gioco nel gioco. Il cliente ha un carattere che non vedi, un prezzo massimo che non vedi, un umore (il "clima")
+   e un po' di pazienza al telefono. Ogni tua mossa conta: tenere duro, venire incontro, raccontare il pezzo, il garbo,
+   quanto spingi (0-10) e anche il tira e molla (abbassare e poi rialzare). Le risposte sono composte a pezzi, così cambiano sempre. */
+const TR_CHARS = {
+  //            interesse  paga  prima offerta  quanto si muove  pazienza  tenere duro  mollare tanto  tira e molla  racconto  garbo  spinta ok  spinta max  caffè  fretta
+  dolce:      { open:.9,  pay:1.05, anchor:.75, conc:.5,  pat:5, firm:-1,  weak:1,   tira:-1,   story:1,   garbo:1,    pOpt:6, pTol:8, coffee:.15, rush:.1,  tics:['tesoro', 'caro', 'caro mio', 'cocco'] },
+  nonnina:    { open:.85, pay:1,    anchor:.7,  conc:.45, pat:6, firm:-1,  weak:1,   tira:-1,   story:1,   garbo:1.5,  pOpt:6, pTol:8, coffee:.5,  rush:0,   tics:['bel ragazzo', 'giovanotto', 'tesoro mio', 'figliolo', 'caro'] },
+  altezzosa:  { open:.55, pay:1.15, anchor:.65, conc:.3,  pat:4, firm:1,   weak:-1,  tira:-2,   story:.5,  garbo:1,    pOpt:4, pTol:6, coffee:0,   rush:.1,  tics:['mio caro', 'prego', 'mi creda', 'gentilmente'] },
+  pignolo:    { open:.6,  pay:1.05, anchor:.7,  conc:.35, pat:5, firm:0,   weak:0,   tira:-2,   story:1.5, garbo:0,    pOpt:5, pTol:7, coffee:0,   rush:0,   tics:['per la precisione', 'dunque', 'vede', 'sia chiaro'] },
+  affarista:  { open:.7,  pay:1,    anchor:.55, conc:.4,  pat:5, firm:1,   weak:-1,  tira:-1,   story:0,   garbo:-.5,  pOpt:7, pTol:9, coffee:0,   rush:.2,  tics:['amico mio', 'senti', 'guarda', 'capo'] },
+  sbrigativo: { open:.8,  pay:.95,  anchor:.75, conc:.6,  pat:3, firm:-1,  weak:.5,  tira:-1,   story:-1,  garbo:-1,   pOpt:7, pTol:8, coffee:0,   rush:.5,  tics:['bro', 'dai', 'oh', 'fra'] },
+  entusiasta: { open:.85, pay:1.1,  anchor:.7,  conc:.5,  pat:5, firm:0,   weak:.5,  tira:-.5,  story:1.5, garbo:.5,   pOpt:6, pTol:8, coffee:.1,  rush:.1,  tics:['zio', 'oddio', 'raga', 'troppo forte'] },
+  diffidente: { open:.5,  pay:.95,  anchor:.6,  conc:.3,  pat:4, firm:1,   weak:-1,  tira:-2.5, story:.5,  garbo:0,    pOpt:4, pTol:6, coffee:0,   rush:.1,  tics:['mh', 'vediamo', 'ripeto', 'ascolta'] }
+};
+const TR_OF = { collezionista:['pignolo','entusiasta'], contessa:['dolce','altezzosa','nonnina'], notaio:['diffidente','pignolo'], professore:['pignolo','entusiasta'],
+  lacroix:['affarista','altezzosa'], baumann:['pignolo','diffidente'], ashcombe:['altezzosa','dolce'], varga:['affarista','sbrigativo'], roux:['altezzosa','affarista'],
+  ragazzo:['sbrigativo','entusiasta'], fumettaro:['entusiasta','sbrigativo'], stilista:['entusiasta','altezzosa'], sommelier:['affarista','dolce'], gallerista:['altezzosa','entusiasta'],
+  gattara:['nonnina','dolce'], allevatore:['sbrigativo','affarista'], armiere:['sbrigativo','diffidente'], occultista:['diffidente','entusiasta'], principe:['affarista','altezzosa'] };
+const TR_GROUPS = [['monete','antichita','carte','penne','leggende','arte'], ['orologi','gioielli','borse','moda','vini','penne'], ['tech','tcg','memorabilia','curiosita','stranezze'], ['animali'], ['armi']];
+
+const TR_L = {
+  _: {
+    hello:['Pronto? Ah, sei tu. Dimmi.', 'Sì? Ti ascolto.', 'Allora, novità?', 'Ciao. Hai trovato qualcosa?', 'Eccoti. Spero sia una buona notizia.'],
+    yes:['Va bene, affare fatto.', 'D’accordo, lo prendo.', 'Mi hai convinto. Portamelo.', 'Sì, mi sta bene.', 'Ok, chiudiamo così.'],
+    yesRush:['Sì sì, va bene, ho da fare. Portalo.', 'Ok, ok, chiudiamo. Devo scappare.', 'Va bene, basta che fai in fretta.'],
+    yesSour:['E va bene, prendo questo. Ma non era quello che volevo.', 'D’accordo… però mi aspettavo di più da te.', 'Va bene, chiudiamola qui. Ma non farlo più.'],
+    counter:['A {x} no. A {y} sì.', 'Facciamo {y} e ci stringiamo la mano.', 'Troppo. Ti do {y}, prendere o lasciare.', '{y}, non un euro di più.'],
+    no:['Mm, non mi convince.', 'No, non è quello che cerco.', 'Ci devo pensare… per ora no.', 'Non ci siamo.', 'Preferisco aspettare {c}.'],
+    noHard:['Adesso basta, non insistere.', 'Ti ho detto di no. Non chiamarmi per queste cose.', 'Stai esagerando. Trovami {c} e basta.'],
+    absurd:['Ma che c’entra {p} con {c}? Mi prendi in giro?', 'Ti ho chiesto {c} e mi proponi {p}? Lascia perdere.', 'Questa è una barzelletta, vero?'],
+    close:['Senti, ne riparliamo un’altra volta.', 'Per oggi basta così. Trovami {c}.', 'Lasciamo stare, ci sentiamo.'],
+    fake:['L’ho fatto vedere a un esperto: è un falso! Vergogna.', 'Un falso? A me? Ci rivediamo… forse.'],
+    boss:['Io ti ho chiesto {c}. Non altro. Non farmelo ripetere.', 'Non tratto. Voglio {c}, e lo voglio presto.', 'Ragazzo, con me gli accordi sono quelli presi. {c}.']
+  },
+  dolce: {
+    hello:['Oh, caro! Che piacere sentirti.', 'Tesoro, dimmi tutto.', 'Ah, sei tu! Stavo giusto prendendo il tè.'],
+    yes:['Oh caro, ma certo! Tanto volevo solo un po’ di compagnia.', 'Che pensiero gentile. Va benissimo, portamelo pure.', 'Sai che ti dico? Mi piace l’idea. Affare fatto, tesoro.', 'Ma sì, non sono mica difficile. Va bene così.'],
+    yesSour:['Va bene, caro… anche se ci tenevo a {c}. Pazienza.', 'D’accordo, tesoro. Un po’ ci sono rimasta, ma va bene.'],
+    counter:['Caro, {x} mi sembra tanto per me. Facciamo {y}?', 'Sono una pensionata, sai… {y} ti va bene?'],
+    no:['Oh, caro, è carino, ma non fa per me.', 'Mi dispiace, tesoro, aspetterei {c}.', 'Sei gentile, ma no, grazie.'],
+    noHard:['Caro, adesso mi fai stancare. Ne parliamo un’altra volta.', 'Su, su, non insistere così con una signora.'],
+    press:['Che foga, caro! Mi fai venire il batticuore.'],
+    coffee:['Va bene, caro. Ma passa a prendere un caffè da me, eh?'],
+    coffeeYes:['Che bello! Allora ti aspetto, faccio anche i biscotti.'], coffeeNo:['Oh… va bene lo stesso, caro. Sarà per un’altra volta.']
+  },
+  nonnina: {
+    hello:['Pronto? Chi è? Ah, sei tu, bel ragazzo!', 'Oh, finalmente qualcuno che mi chiama!', 'Pronto pronto! Parla forte che non ci sento bene.'],
+    yes:['Ma sì, va bene! Tanto la casa è grande e vuota.', 'Affare fatto, giovanotto. Sei proprio un bravo ragazzo.', 'Va bene, va bene. Basta che me lo porti tu di persona.'],
+    yesSour:['Uff, va bene… però mio nipote me l’avrebbe trovato, {c}.'],
+    counter:['Con la pensione che ho? Facciamo {y}, dai.', '{x}? Ai miei tempi con {x} ci compravi una casa! {y}.'],
+    no:['No, no, caro. Io volevo {c}.', 'Ma che me ne faccio io di {p}?', 'Mmm… no, non mi piace tanto.'],
+    noHard:['Oh, ma che modi! Mia nonna ti avrebbe dato una sberla.', 'Basta, basta, mi fai venire il mal di testa.'],
+    coffee:['Va bene, bel ragazzo, ma vieni a prendere un caffè con me, eh? Che mi sento sola.', 'D’accordo! Però poi resti a pranzo, ho fatto le lasagne.', 'Te lo prendo, ma solo se vieni a farmi compagnia per un caffè.'],
+    coffeeYes:['Che caro! Ti preparo la moka grande. E ti racconto di quando ero giovane.', 'Lo sapevo che eri un bravo ragazzo! Porta anche lo zucchero.'],
+    coffeeNo:['Ah, i giovani d’oggi… sempre di corsa. Va bene, prendo lo stesso.', 'Peccato. Va be’, prendo lo stesso, ma non ti offro più niente.']
+  },
+  altezzosa: {
+    hello:['Mi auguro che sia importante.', 'Sì? Ho un ricevimento tra poco, sii breve.', 'Ah. Tu.'],
+    yes:['Accettabile. Fallo recapitare.', 'Per questa volta passi. Lo prendo.', 'Non è {c}, ma ha una certa grazia. D’accordo.'],
+    yesSour:['Lo prendo solo per non perdere altro tempo.', 'Che delusione. Va bene, ma che non si ripeta.'],
+    counter:['{x}? Non sono una sprovveduta. {y}.', 'Le offro {y}. Ed è già un favore.'],
+    no:['Non è all’altezza.', 'Non mi interessa, grazie.', 'Io avevo chiesto {c}. Mi pare chiaro.', 'Lei mi sorprende. Negativamente.'],
+    noHard:['Non si permetta di insistere con me.', 'La conversazione è finita.'],
+    press:['Abbassi i toni, prego.']
+  },
+  pignolo: {
+    hello:['Pronto. Mi dica i dettagli, prima di tutto.', 'Sì? Spero abbia delle carte in regola.', 'Mi dica. Con precisione.'],
+    yes:['La provenienza mi convince. Va bene.', 'È un pezzo serio. Lo prendo.', 'Ha descritto bene il pezzo. D’accordo.'],
+    yesSour:['Non è il mio campo, ma va bene. Che sia documentato.'],
+    counter:['Per la condizione che descrive, {y} è il prezzo giusto.', 'Ho controllato le quotazioni: {y}.'],
+    no:['Manca la documentazione. No.', 'Non è coerente con la mia collezione.', 'Le avevo chiesto {c}. Sono stato preciso.'],
+    noHard:['Non mi faccia perdere tempo con approssimazioni.', 'Insistere non rende un pezzo più autentico.']
+  },
+  affarista: {
+    hello:['Parla, il tempo è denaro.', 'Sì. Che hai?', 'Dimmi il prezzo, poi il resto.'],
+    yes:['Il prezzo è giusto. Chiuso.', 'Affare. Mi piace come lavori.', 'Ok, ci sto. Fammi la fattura… si fa per dire.'],
+    yesRush:['Va bene, chiudi, ho un’altra chiamata.'],
+    yesSour:['Mi stai spennando, ma ok. Ricordatelo la prossima volta.'],
+    counter:['{x} è fuori mercato. {y} e chiudiamo adesso.', 'Ti faccio {y}. Contanti.', '{y}. Ultima offerta.'],
+    no:['Non ci guadagno niente. No.', 'Non mi serve. Passo.', 'Il prezzo non sta in piedi.'],
+    noHard:['Non mi piace chi pressa. Ciao.']
+  },
+  sbrigativo: {
+    hello:['Eh? Veloce che sono in giro.', 'Dimmi tutto in dieci secondi.', 'Sì, sì, dimmi.'],
+    yes:['Va bene, ok, portalo.', 'Sì, ci sta. Ciao.', 'Fatto. Ci vediamo.'],
+    yesRush:['Sì sì sì, va bene tutto, devo andare!', 'Ok, ok, sì, chiudi tu. Ciao!', 'Fai tu, mi fido. Ciao!'],
+    counter:['Ti do {y}, ok? Dai.', '{y} e chiudiamo, ho fretta.'],
+    no:['No, dai, non mi serve.', 'Nah.', 'No, cerca ancora.'],
+    noHard:['Bro, basta, ho da fare.', 'Non ho tempo per sta roba.'],
+    press:['Oh, calma!']
+  },
+  entusiasta: {
+    hello:['Ehi! Dimmi che hai trovato qualcosa di figo!', 'Ciao! Sono tutto orecchie!', 'Oddio, finalmente! Racconta!'],
+    yes:['Ma che figata! Lo voglio!', 'Non ci avevo pensato, ma è perfetto!', 'Sì! Mi hai fatto venire voglia. Affare!'],
+    yesSour:['Va bene… non è {c}, ma ci sta.'],
+    counter:['Lo voglio, ma sono un po’ al verde: {y}?', 'Dai, {y} e sono tuo amico per sempre.'],
+    no:['Mm, carino, ma non mi accende.', 'No, dai, io sognavo {c}.', 'Non è il mio genere.'],
+    noHard:['Ok, adesso mi stai stressando.'],
+    coffee:['Sì! E poi andiamo a bere qualcosa insieme, eh?'],
+    coffeeYes:['Grande! Offro io!'], coffeeNo:['Peccato! Ok, lo prendo lo stesso.']
+  },
+  diffidente: {
+    hello:['…Chi ti ha dato questo numero?', 'Sì? Cosa vuoi?', 'Parla. Ma ti avverto, non mi fido facilmente.'],
+    yes:['…Va bene. Ma lo controllo.', 'Ok. Mi fido, per questa volta.', 'D’accordo. Non fregarmi.'],
+    yesSour:['Va bene, ma da adesso ti tengo d’occhio.'],
+    counter:['Troppo bello per {x}. Ti do {y}.', '{y}. Se è vero quello che dici, ci stai.'],
+    no:['Puzza. No.', 'Non mi fido. Passo.', 'Troppo comodo. No.'],
+    noHard:['Più insisti, meno mi fido. Ciao.', 'Ecco, lo sapevo. Lasciami stare.']
+  }
+};
+/* reazioni del cliente alle tue mosse (generiche + per carattere) e frasi sul prezzo: si combinano tra loro */
+const TR_R = {
+  _: {
+    firmOk:['Mi piace chi tiene il punto.', 'Sei uno che non molla, eh.', 'Ok, hai le idee chiare.'],
+    firmBad:['Sempre la stessa cifra… ti sei incantato?', 'Ancora? Mi sembri un disco rotto.', 'Non ti muovi di un millimetro, vedo.'],
+    weakSmell:['Scendi così in fretta? Allora quanto vale davvero?', 'Ah, adesso cala. Interessante…', 'Se scendi così, posso aspettare che scendi ancora.'],
+    weakSweet:['Che gentile, così mi vieni incontro.', 'Apprezzo, davvero.', 'Ecco, così si ragiona.'],
+    tira:['Aspetta: prima avevi detto un’altra cifra.', 'Prima scendi e poi risali? Mi prendi in giro?', 'Deciditi, che non sono al mercato.'],
+    story:['Racconta, racconta…', 'Interessante, non lo sapevo.', 'Mi stai facendo venire voglia.'],
+    storyBored:['Sì, sì, ho capito.', 'Taglia corto.', 'Non mi serve la favola.'],
+    garboOk:['Sei sempre così educato?', 'Che modi, mi piace.', 'Gentile da parte tua.'],
+    garboBad:['Lascia stare i complimenti.', 'Meno chiacchiere.', 'Non mi incanti con le buone maniere.'],
+    pushOk:['Si sente che ci tieni.', 'Vedo che ti serve proprio.', 'Ci metti l’anima, eh.'],
+    pushBad:['Non mettermi fretta.', 'Abbassa i toni.', 'Così mi fai venire voglia di dire di no.'],
+    neutral:['Mm.', 'Vediamo…', 'Allora…', 'Ok.', 'Senti…']
+  },
+  dolce: { firmBad:['Su, caro, non essere così rigido.'], weakSweet:['Oh, che caro che sei!', 'Sei un tesoro, lo sapevo.'], tira:['Caro, mi confondi, prima era un’altra cifra.'], garboOk:['Che ragazzo educato! Non ne fanno più così.'], story:['Oh, che bella storia! Continua.'] },
+  nonnina: { firmBad:['Testone come mio marito, buonanima.'], weakSweet:['Bravo, figliolo, così si fa con le nonne.'], garboOk:['Che educazione! Tua madre ti ha cresciuto bene.', 'Mi ricordi mio nipote, sai?'], story:['Oh, ai miei tempi queste cose valevano oro.'], pushBad:['Piano, piano, che mi viene la pressione alta.'] },
+  altezzosa: { firmOk:['Finalmente qualcuno con un po’ di spina dorsale.'], weakSmell:['Che caduta di stile, abbassare così.'], garboOk:['Ecco, così si parla a una signora.'], tira:['Prima una cifra, poi un’altra. Che volgarità.'], pushBad:['Non tollero chi alza la voce.'] },
+  pignolo: { story:['Mi dica di più sulla provenienza.', 'Questo dettaglio è rilevante, prosegua.', 'Finalmente informazioni utili.'], tira:['Lei si contraddice. Annoto.', 'La cifra di prima era diversa. Non è serio.'], garboBad:['Le formalità non aggiungono valore.'] },
+  affarista: { firmOk:['Rispetto. Uno che sa quanto vale la sua merce.'], weakSmell:['Ti ho fiutato: hai fretta di liberartene.', 'Chi scende così ha qualcosa da nascondere.'], garboBad:['Niente salamelecchi, parliamo di numeri.'], pushOk:['Così mi piaci: deciso.'] },
+  sbrigativo: { storyBored:['Bro, non ho tempo per la storia.', 'Saltiamo la poesia.'], garboBad:['Sì sì, ciao, veloce.'], firmBad:['Muoviti, dai.'] },
+  entusiasta: { story:['Noooo, davvero?! Racconta ancora!', 'Ma è pazzesco!', 'Mi stai facendo impazzire.'], weakSweet:['Grande! Sei un amico.'] },
+  diffidente: { firmOk:['Almeno sei coerente.'], weakSmell:['Ecco. Lo sapevo che c’era sotto qualcosa.'], tira:['Su e giù. Non mi fido di chi cambia idea.', 'Prima un prezzo, poi un altro. Brutto segno.'], story:['…E dove sono i documenti?', 'Belle parole. Le carte?'] }
+};
+const TR_P = {
+  _: {
+    near:['Ci siamo quasi: {y}.', 'Facciamo {y} e chiudiamo.', 'Ti vengo incontro: {y}.', 'Arrivo a {y}, dai.', '{y}. Siamo vicini.'],
+    mid:['Ti offro {y}.', 'Io sono a {y}.', 'Posso arrivare a {y}.', 'Per me vale {y}.', '{y}, ragioniamo.'],
+    far:['Siamo lontani. Io dico {y}.', '{x}? No. Al massimo {y}.', 'Troppo. {y}.', 'Ti do {y} e sto già esagerando.'],
+    insult:['{x}?! Ma ti senti?', 'Con {x} ci compro il negozio intero.', '{x} per quello? Ma per piacere.'],
+    still:['Io resto a {y}.', 'Sono ferma a {y}.', '{y}, non mi sposto.']
+  },
+  altezzosa: { mid:['Le concedo {y}.', 'Posso considerare {y}.'], far:['Non scherziamo. {y}, al massimo.'] },
+  affarista: { mid:['{y}, contanti, adesso.', 'Ti faccio {y}. Pensaci in fretta.'], near:['{y} e ci stringiamo la mano.'] },
+  sbrigativo: { mid:['{y}, ok?', 'Dai, {y}.'], near:['{y} e via!'] },
+  nonnina: { mid:['Con la pensione che ho… {y}?', 'Ti posso dare {y}, figliolo.'], far:['Ai miei tempi con {x} ci compravi una casa! {y}.'] },
+  dolce: { mid:['Caro, io pensavo a {y}.', 'Che ne dici di {y}, tesoro?'] }
+};
+/* le tue frasi, a pezzi: come apri + cosa dici del prezzo + quanto spingi */
+const TR_ME = {
+  open: { garbo:['Mi scusi se la disturbo,', 'Con tutto il rispetto,', 'Le dico la verità,', 'Senza impegno,', 'Glielo chiedo con gentilezza:'],
+          racconta:['{p} viene da una collezione privata, e si vede.', 'Le racconto: {p} è passato per pochissime mani.', 'Guardi le condizioni di {p}: come nuovo.', '{p} così in giro non lo trova, glielo assicuro.', 'Dietro {p} c’è una bella storia.'],
+          duro:['Il prezzo è quello.', 'Non mi muovo.', 'Più di così non posso.', 'Sono già al limite.', 'Ci ho già rimesso abbastanza.'],
+          incontro:['Va bene, le vengo incontro.', 'Faccio un passo io.', 'Scendo, ma solo per lei.', 'Dai, ci vengo incontro.'] },
+  price: { first:['{p}, a {x}.', 'Le lascerei {p} a {x}.', 'Per lei, {p} a {x}.'], same:['{x}, come le ho detto.', 'Resto a {x}.', '{x}.'],
+           lower:['{x}.', 'Facciamo {x}.', 'Le dico {x}.'], higher:['Anzi, ci ho ripensato: {x}.', 'A pensarci bene, {x}.', 'Rialzo: {x}.'] },
+  push: [['…se le va.', '…senza fretta.', ''], ['', '', ''], ['Mi serve proprio chiudere.', 'Ci tengo davvero.', 'Mi faccia questo favore.'], ['Deve decidere adesso!', 'Non ripasserà un’occasione così!', 'O adesso o mai più!']]
+};
+const TR_MODES = [['garbo', 'Con garbo'], ['racconta', 'Racconto il pezzo'], ['duro', 'Tengo duro'], ['incontro', 'Ti vengo incontro']];
+const trPressWord = p => p <= 3 ? 'Delicato' : p <= 6 ? 'Normale' : p <= 8 ? 'Insisto' : 'Pressante';
+const trClima = M => M <= -2.5 ? ['Gelo', 'gelo'] : M <= -1 ? ['Freddo', 'freddo'] : M < 1 ? ['Tiepido', 'tiepido'] : M < 2.5 ? ['Caldo', 'caldo'] : ['Rovente', 'rovente'];
+
+const trChar = inc => { if (!inc.trc) { const l = TR_OF[inc.clientId] || Object.keys(TR_CHARS); inc.trc = l[Math.floor(rnd() * l.length)]; } return inc.trc; };
+const trVal = e => r10(BY_ID[e.itemId].est * mkt(BY_ID[e.itemId].cat) * cert(e));
+// quanto il pezzo è vicino a quello che chiedeva: 1 giusto, .8 giusto ma sotto il minimo, .6 stessa categoria o stile, .3 azzardo sensato, 0 assurdo
+function trSim(itemId, inc) {
+  if (matches(itemId, inc)) return 1;
+  const t = tagOf(inc.tag), it = BY_ID[itemId];
+  if (kindMatch(itemId, t)) return .8;
+  const req = t.startsWith('id:') ? [BY_ID[t.slice(3)]] : CATALOG.filter(i => i.tags.includes(t.split('>')[0]));
+  const cats = new Set(req.map(i => i.cat)), tags = new Set(req.flatMap(i => i.tags));
+  if (cats.has(it.cat) || it.tags.some(x => tags.has(x))) return .6;
+  if (TR_GROUPS.some(g => g.includes(it.cat) && [...cats].some(c => g.includes(c)))) return .3;
+  return 0;
+}
+const trCands = inc => G.bunker.filter(e => e.appraised !== 'falso' && !BY_ID[e.itemId].set && !G.incs.some(i => i !== inc && !e.mine && e.incId === i.id));
+const trCan = inc => inc && !inc.boss && !(inc.trBan > G.day) && trCands(inc).length > 0;
+
+const trPick = (pool, T) => { if (!pool || !pool.length) return ''; let s = pool[Math.floor(rnd() * pool.length)]; if (pool.length > 1 && T && T.seen && T.seen.has(s)) s = pool[Math.floor(rnd() * pool.length)]; if (T) { T.seen = T.seen || new Set(); T.seen.add(s); } return s; };
+// prende una frase del carattere (70%) o generica
+const trPool = (D, key, ch) => { const own = (D[ch] || {})[key] || [], gen = (D._ || {})[key] || []; return own.length && (rnd() < .7 || !gen.length) ? own : gen.length ? gen : own; };
+function trFill(s) {
+  const T = G.ui.tr, inc = incOf(T.incId), e = T.u && G.bunker.find(x => x.uid === T.u);
+  return esc(s).replace(/\{p\}/g, e ? `<b>${esc(BY_ID[e.itemId].name)}</b>` : 'questo').replace(/\{c\}/g, `<b>${esc(tagName(inc.tag).toLowerCase())}</b>`)
+    .replace(/\{x\}/g, `<b>${eur(T.price)}</b>`).replace(/\{y\}/g, `<b>${eur(T.H || 0)}</b>`).replace(/\{n\}/g, esc(G.name || 'caro'));
+}
+// frase del cliente: [intercalare] + reazione alla tua mossa + frase sul prezzo [+ intercalare]
+function trHerSay(parts) {
+  const T = G.ui.tr, C = TR_CHARS[T.ch] || {}, tic = C.tics ? C.tics[Math.floor(rnd() * C.tics.length)] : '';
+  let s = parts.filter(Boolean).join(' ');
+  if (tic && rnd() < .35) s = tic.charAt(0).toUpperCase() + tic.slice(1) + ', ' + s.charAt(0).toLowerCase() + s.slice(1);
+  else if (tic && rnd() < .25) s = s.replace(/[.!?]$/, '') + ', ' + tic + '.';
+  T.log.push({ who:'lei', t:trFill(s) });
+}
+const trHer = key => { const T = G.ui.tr; trHerSay([trPick(trPool(TR_L, key, T.ch), T)]); };
+function trPatienceDown(inc) { const pd = patDays(inc), drop = Math.max(1, Math.round(pd * 0.25)); inc.startDay = Math.max(inc.startDay - drop, G.day - Math.floor(pd * 0.9)); }
+function trStop(T, inc, hard) { if (hard) { trPatienceDown(inc); inc.trBan = G.day + 2; T.hurt = true; } else inc.trBan = G.day + 1; T.phase = 'done'; }
+
+Object.assign(A, {
+  trOpen(id) {
+    if (id && incOf(id)) G.act = id; const inc = G.inc; if (!inc || G.state !== 'HUB') return;
+    if (inc.boss) { G.ui.tr = { incId:inc.id, ch:'_', log:[], press:5, round:0, phase:'done', price:0, M:0 }; trHer('boss'); return openSheet('tratta'); }
+    if (inc.trBan > G.day) return toast('Per oggi non vuole sentirne parlare: riprova domani');
+    if (!trCands(inc).length) return toast('Nel bunker non hai niente da proporre');
+    const ch = trChar(inc);
+    G.ui.tr = { incId:inc.id, ch, log:[], press:5, round:0, M:0, I:0, phase:'pick', u:null, price:0, H:null, left:TR_CHARS[ch].pat, moves:[], stories:0 };
+    trHer('hello'); openSheet('tratta');
+  },
+  trPick(u) {
+    const T = G.ui.tr; if (!T) return; const e = G.bunker.find(x => x.uid === u), inc = incOf(T.incId); if (!e || !inc) return;
+    const C = TR_CHARS[T.ch], v = trVal(e), base = e.cost ? r10(e.cost * 1.1) : v, sim = trSim(e.itemId, inc);
+    T.u = u; T.sim = sim; T.price = Math.max(10, Math.min(inc.cash, Math.max(base, v)));
+    // quello che è disposto a pagare (non lo vedi): dipende da quanto il pezzo è vicino, dal carattere e dal suo budget
+    T.I = sim * C.open; T.R = Math.min(inc.cash, v * C.pay * (.7 + .6 * T.I)); T.H = null; T.lastX = null; T.phase = 'talk'; openSheet('tratta');
+  },
+  trBack() { const T = G.ui.tr; if (T && T.phase === 'talk' && !T.round) { T.u = null; T.phase = 'pick'; openSheet('tratta'); } },
+  trAdj(d) { const T = G.ui.tr, inc = T && incOf(T.incId), e = T && G.bunker.find(x => x.uid === T.u); if (!e || !inc || T.phase !== 'talk') return;
+    const st = Math.max(10, r10(trVal(e) * 0.05)); T.price = Math.max(10, Math.min(inc.cash, T.price + d * st)); openSheet('tratta'); },
+  trPress(d) { const T = G.ui.tr; if (!T) return; T.press = Math.max(0, Math.min(10, T.press + d)); openSheet('tratta'); },
+  trSend(mode) {
+    const T = G.ui.tr, inc = T && incOf(T.incId), e = T && G.bunker.find(x => x.uid === T.u); if (!e || !inc || T.phase !== 'talk') return;
+    const C = TR_CHARS[T.ch], p = T.press, v = Math.max(10, trVal(e));
+    if (mode === 'duro' && T.lastX) T.price = T.lastX;
+    if (mode === 'incontro') T.price = Math.max(10, r10((T.lastX || T.price) * .9));
+    const X = T.price, prev = T.lastX, mv = prev ? (X - prev) / prev : 0;
+    // le tue parole
+    const pk = !prev ? 'first' : mv === 0 ? 'same' : mv < 0 ? 'lower' : 'higher', b = p <= 3 ? 0 : p <= 6 ? 1 : p <= 8 ? 2 : 3;
+    const mine = [mode === 'racconta' && pk === 'first' ? '' : trPick(TR_ME.open[mode], T), trPick(TR_ME.price[pk], T), trPick(TR_ME.push[b], T)].filter(Boolean).join(' ');
+    T.log.push({ who:'io', t:trFill(mode === 'racconta' && pk === 'first' ? trPick(TR_ME.open.racconta, T) + ' ' + trPick(['Glielo lascio a {x}.', 'Per lei, {x}.', 'Lo do a {x}.'], T) : mine) });
+    T.round++; T.left--;
+    if (!T.sim) { trHerSay([trPick(trPool(TR_L, 'absurd', T.ch), T)]); trStop(T, inc, true); return openSheet('tratta'); }
+    // come prende le tue mosse: tenere duro, mollare tanto, tira e molla, racconto, garbo, quanto spingi
+    let dM = 0, react = null;
+    const firm = prev && mv === 0, weak = mv <= -.12, tira = mv > 0 && T.moves.some(x => x < 0);
+    if (mv) T.moves.push(mv);
+    if (tira) { dM += C.tira; react = 'tira'; }
+    else if (firm) { dM += C.firm * .7; react = C.firm > 0 ? 'firmOk' : C.firm < 0 ? 'firmBad' : null; }
+    else if (weak) { dM += C.weak * .7; react = C.weak < 0 ? 'weakSmell' : C.weak > 0 ? 'weakSweet' : null; if (C.weak < 0 && T.H) T.H = r10(T.H * .95); }
+    if (mode === 'racconta') { if (C.story > 0 && T.stories < 2) { T.I += .06 * C.story; T.R = Math.min(inc.cash, T.R * (1 + .05 * C.story)); dM += .3 * C.story; react = react || 'story'; } else { dM -= .6; react = react || 'storyBored'; } T.stories++; }
+    if (mode === 'garbo') { dM += C.garbo * .6; react = react || (C.garbo > 0 ? 'garboOk' : C.garbo < 0 ? 'garboBad' : null); }
+    if (p > C.pTol) { dM -= (p - C.pTol) * .7; react = 'pushBad'; } else if (Math.abs(p - C.pOpt) <= 1 && p >= 6) { dM += .4; react = react || 'pushOk'; }
+    if (p >= 10) dM -= 1.5;
+    T.M = Math.max(-4, Math.min(4, T.M + dM)); if (T.M <= -2) T.left--;
+    const pressF = 1 + .025 * (Math.min(p, C.pTol) - 5), Reff = T.R * (1 + .05 * T.M) * pressF;
+    if (T.H == null) T.H = r10(Math.min(Reff, T.R) * C.anchor * U([.9, 1.1]));
+    const reactTxt = react && rnd() < .8 ? trPick(trPool(TR_R, react, T.ch), T) : rnd() < .3 ? trPick(TR_R._.neutral, T) : '';
+    T.lastX = X;
+    // si arrabbia
+    if (T.M <= -3.5 || (p >= 10 && rnd() < .6)) {
+      if (X <= Reff && rnd() < .25) { trHerSay([reactTxt, trPick(trPool(TR_L, 'yesSour', T.ch), T)]); T.phase = 'offer'; return openSheet('tratta'); }
+      trHerSay([reactTxt, trPick(trPool(TR_L, 'noHard', T.ch), T)]); trStop(T, inc, true); return openSheet('tratta');
+    }
+    // accetta
+    const accept = key => { if (C.coffee && rnd() < C.coffee) { trHerSay([reactTxt, trPick(trPool(TR_L, 'coffee', T.ch), T)]); T.phase = 'coffee'; } else { trHerSay([key === 'yes' ? '' : reactTxt, trPick(trPool(TR_L, key, T.ch), T)]); T.phase = 'offer'; } return openSheet('tratta'); };
+    if (X <= T.H) return accept(T.M < 0 ? 'yesSour' : 'yes');
+    if (X <= Reff) {
+      const pAcc = .2 + .1 * T.M + ((X - T.H) / v < .08 ? .35 : 0) + (C.rush && rnd() < C.rush ? .3 : 0);
+      if (rnd() < pAcc) return accept(C.rush > .3 && rnd() < .5 ? 'yesRush' : T.M < 0 ? 'yesSour' : 'yes');
+      T.H = Math.min(X, r10(T.H + (X - T.H) * C.conc * (1 + .12 * T.M)));
+      if ((X - T.H) / v < .04) return accept('yes');
+      trHerSay([reactTxt, trPick(trPool(TR_P, (X - T.H) / v < .12 ? 'near' : 'mid', T.ch), T)]);
+    } else {
+      const gap = (X - Reff) / v;
+      const nh = r10(T.H + (Math.min(Reff, X) - T.H) * C.conc * .6); const moved = nh > T.H; T.H = Math.max(T.H, nh);
+      if (gap > .35) { T.M = Math.max(-4, T.M - 1); trHerSay([reactTxt, trPick(trPool(TR_P, 'insult', T.ch), T), trPick(trPool(TR_P, 'far', T.ch).filter(s => !s.includes('{x}')), T) || trPick(TR_P._.mid, T)]); }
+      else trHerSay([reactTxt, trPick(trPool(TR_P, moved ? 'far' : 'still', T.ch), T)]);
+    }
+    if (T.left <= 0) { trHer('close'); trStop(T, inc, false); }
+    openSheet('tratta');
+  },
+  trTakeH() {   // accetti la sua offerta: è un sì, l'affare è fatto
+    const T = G.ui.tr; if (!T || T.phase !== 'talk' || !T.H) return;
+    T.price = T.H; T.log.push({ who:'io', t:trFill(trPick(['Va bene, {x}.', 'Affare, {x}.', 'Ok, ci sto: {x}.', 'Ha vinto lei: {x}.'], T)) });
+    T.phase = 'offer'; A.trDeal(true);
+  },
+  trCoffee(ok) {
+    const T = G.ui.tr; if (!T || T.phase !== 'coffee') return;
+    T.log.push({ who:'io', t: ok ? trPick(['Volentieri! Arrivo.', 'Ma certo, con piacere.', 'Un caffè non si rifiuta mai.'], T) : trPick(['Grazie, ma oggi proprio non posso.', 'Magari un’altra volta, scusi.'], T) });
+    trHer(ok ? 'coffeeYes' : 'coffeeNo');
+    if (ok) T.tip = r10(T.price * .05);
+    else if (rnd() < .3) { trHer('close'); trStop(T, incOf(T.incId), false); return openSheet('tratta'); }
+    T.phase = 'offer'; openSheet('tratta');
+  },
+  trDeal(yes) {
+    const T = G.ui.tr, inc = T && incOf(T.incId), e = T && G.bunker.find(x => x.uid === T.u); if (!inc || !e || T.phase !== 'offer') return;
+    if (!yes) { T.log.push({ who:'io', t:'Ci ripenso, la richiamo io.' }); trStop(T, inc, false); return openSheet('tratta'); }
+    if (e.fake) { e.appraised = 'falso'; trHer('fake'); const d = lvDrop(CFG.lv.dropFake); trStop(T, inc, true);
+      note(`${clientOf(inc.clientId).name} ha scoperto che ${nm(e.itemId)} è un falso${d ? `: scendi di ${d} livello` : ''}`); return openSheet('tratta'); }
+    // affare fatto: ti tieni il prezzo dal suo budget, il resto torna a lui; il pezzo esce dal bunker; meno livello di una consegna vera
+    const got = Math.min(inc.cash, T.price + (T.tip || 0)), back = inc.cash - got, c = clientOf(inc.clientId);
+    G.bunker = G.bunker.filter(x => x !== e); G.personal += got; G.stats.delivered++;
+    const pts = G.debt > 0 ? 0 : Math.max(.5, lvPoints(inc.budget) / 2), gain = pts ? lvGain(pts, got) : 0;
+    G.incs = G.incs.filter(i => i !== inc); G.act = G.incs[0] ? G.incs[0].id : null;
+    note(`Trattativa chiusa con ${c.name}: ${nm(e.itemId)} per ${eur(got)}${back > 0 ? ` (gli restituisci ${eur(back)})` : ''}`);
+    T.phase = 'deal'; T.got = got; T.back = back; T.gain = gain; T.cost = e.mine || e.incId !== inc.id ? e.cost || 0 : 0;
+    fillBoard(); openSheet('tratta'); save();
+  },
+  trEnd() { G.ui.tr = null; closeSheet(); render(); }
+});
+
+function trSheet() {
+  const T = G.ui.tr; if (!T) return '';
+  const inc = incOf(T.incId) || { tag:'', cash:0, clientId:'' }, c = clientOf(inc.clientId) || { name:'' }, e = T.u && G.bunker.find(x => x.uid === T.u);
+  const chat = `<div class="trchat" id="trchat">${T.log.map(l => `<p class="${l.who === 'io' ? 'me' : 'her'}">${l.t}</p>`).join('')}</div>`;
+  const [cl, ck] = trClima(T.M || 0), pat = T.u && T.phase === 'talk' ? `<span class="trpat" title="Quanto ti ascolta ancora">${'●'.repeat(Math.max(0, T.left))}${'○'.repeat(Math.max(0, TR_CHARS[T.ch].pat - Math.max(0, T.left)))}</span>` : '';
+  const head = `<div class="trhead"><div><div class="eyebrow">In trattativa</div><h2 style="margin:0">${esc(c.name)}</h2></div>${T.u ? `<div class="trmood"><span class="clima ${ck}">Clima: ${cl}</span>${pat}</div>` : ''}</div>`;
+  if (T.phase === 'pick') {
+    const list = trCands(inc);
+    return `${head}${chat}<p class="note" style="margin:6px 0">Ti ha chiesto <b>${esc(tagName(inc.tag))}</b>. Cosa gli proponi?</p>
+      <ul class="items trpick">${list.map(x => { const it = BY_ID[x.itemId]; return `<li><button class="trp" data-act="trPick" data-u="${x.uid}"><span class="ic-w">${ic(it.icon)}</span><span>${mktMark(it.cat)} ${esc(it.name)}<br><small class="muted">vale ${eur(trVal(x))}${x.cost ? ` · pagato ${eur(x.cost)}` : ''}</small></span></button></li>`; }).join('')}</ul>
+      <button class="btn btn-ghost" data-act="trEnd">Lascia stare</button>`;
+  }
+  if (T.phase === 'deal') return `${head}${chat}<div class="card trok"><b class="c-go">Affare fatto: +${eur(T.got)}</b>${T.back > 0 ? `<span class="note">Il resto del suo budget (${eur(T.back)}) torna a lui.</span>` : ''}${T.cost ? `<span class="note">L’avevi pagato ${eur(T.cost)}: ${signed(T.got - T.cost)}</span>` : ''}${T.gain ? `<span class="note">Sali di ${T.gain} ${T.gain === 1 ? 'livello' : 'livelli'}.</span>` : ''}</div>
+      <button class="btn btn-gold" data-act="trEnd">Chiudi</button>`;
+  const it = e && BY_ID[e.itemId], v = e ? trVal(e) : 0, cost = e && (e.mine || e.incId !== inc.id) ? e.cost || 0 : 0, gain = T.price - cost, live = T.phase === 'talk';
+  const info = e ? `<div class="trinfo">
+      <div><span>Chiedeva</span><b>${esc(tagName(inc.tag))}</b></div>
+      <div><span>Suo budget</span><b class="c-gold num">${eur(inc.cash)}</b></div>
+      <div><span>${esc(it.name)}</span><b class="c-go num">vale ${eur(v)}</b></div>
+      <div><span>La sua offerta</span>${T.H ? `<b class="num">${eur(T.H)}</b>${live ? `<button class="btn btn-go btn-sm trtake" data-act="trTakeH">Accetto</button>` : ''}` : '<b class="muted">—</b>'}</div>
+      <div class="trprice"><span>Tu chiedi</span><div class="row"><button class="btn btn-ghost btn-sm" data-act="trAdj" data-d="-1" ${live ? '' : 'disabled'}>−</button><b class="num">${eur(T.price)}</b><button class="btn btn-ghost btn-sm" data-act="trAdj" data-d="1" ${live ? '' : 'disabled'}>+</button></div>
+        <small class="${gain >= 0 ? 'c-go' : 'c-risk'}">${cost ? `pagato ${eur(cost)} · ` : ''}ci guadagni ${signed(gain)}</small></div></div>` : '';
+  let ctl = '';
+  if (live) ctl = `<div class="trpress"><span>Quanto spingi</span><button class="btn btn-ghost btn-sm" data-act="trPress" data-d="-1">−</button>
+      <div class="pbar"><i style="width:${T.press * 10}%;background:${T.press <= 6 ? 'var(--go,#3ccf7a)' : T.press <= 8 ? 'var(--gold,#f2c14e)' : 'var(--risk,#ff5a4f)'}"></i></div><b class="num">${T.press}</b><button class="btn btn-ghost btn-sm" data-act="trPress" data-d="1">+</button><small>${trPressWord(T.press)}</small></div>
+      <div class="trmodes">${TR_MODES.map(([k, l]) => `<button class="btn btn-gold btn-sm" data-act="trSend" data-v="${k}" ${k === 'duro' && !T.lastX ? 'disabled' : ''}>${l}${k === 'incontro' ? ' <small>−10%</small>' : ''}</button>`).join('')}</div>
+      <div class="row">${T.round ? '' : '<button class="link" data-act="trBack">Cambia pezzo</button>'}<button class="link" data-act="trEnd">Lascia stare</button></div>`;
+  else if (T.phase === 'coffee') ctl = `<div class="row"><button class="btn btn-go" data-act="trCoffee" data-v="1">Sì, volentieri</button><button class="btn btn-ghost" data-act="trCoffee" data-v="0">No, grazie</button></div>`;
+  else if (T.phase === 'offer') ctl = `<p class="note" style="margin:0">Ha detto sì. Se dici sì anche tu, l’affare è fatto e il pezzo va a ${esc(c.name)}.</p><div class="row"><button class="btn btn-go" data-act="trDeal" data-v="1">Sì, affare fatto · +${eur(Math.min(inc.cash, T.price + (T.tip || 0)))}</button><button class="btn btn-ghost" data-act="trDeal" data-v="0">No</button></div>`;
+  else ctl = `${T.hurt ? '<p class="note warn" style="margin:0">Ci è rimasto male: la sua pazienza è scesa.</p>' : ''}<button class="btn btn-ghost" data-act="trEnd">Chiudi</button>`;
+  return `${head}${info}${chat}${ctl}`;
+}
 
 /* ---------- testata: soldi, rango, incarico sempre visibile ---------- */
 const pips = (n, cls = '') => `<span class="pips ${cls}" aria-hidden="true">${[1, 2, 3, 4].map(i => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span>`;
@@ -4435,6 +4919,14 @@ const HELP = [
     ['Padrino', 'Paga il triplo, ma se lo deludi (un falso, una rinuncia, troppa attesa) si prende il pezzo più bello del tuo bunker e torni in strada con 100 €. Per chi vuole svoltare, o è alla frutta.'],
     ['Pezzo grosso', 'Paga il doppio, ma se lo deludi perdi un terzo dei tuoi soldi, un po’ di fama e 5 livelli. Con lui niente Persuadilo.'],
     ['Non deluderli', 'Con Padrino e Pezzo grosso fai periziare il pezzo prima di consegnarlo, compra il listino della sala e paga gli informatori: costano poco rispetto a quello che rischi.'],
+    ['Proponi un pezzo', 'Non trovi quello che chiede? Chiamalo e proponigli un pezzo del bunker. Scegli il prezzo (quanto ti tieni del suo budget, il resto torna a lui), quanto spingere e come parlargli. Ogni cliente ha il suo carattere: c’è chi si lascia convincere e chi no. Una proposta assurda (un revolver a chi vuole un gattino) lo fa arrabbiare: la sua pazienza scende. Un affare così vale meno livello di una consegna vera.'],
+    ['Soprannomi', 'Se vendi tanto di una cosa, in giro ti danno un soprannome: Tic Tac per gli orologi, Canne Mozze per le armi… Se vendi caro diventi il Condor; se svendi tutto ti chiamano Aspirapolvere.'],
+    ['Stelle di fama', 'Bronzo, argento e oro, ognuno da 1 a 3 stelle, poi il Platino. Più sali, più pagano i tuoi pezzi in quello stile e più amatori arrivano. Se per un po’ non vendi in quello stile la fama cala piano, ma non perdi mai più di due gradini; dal Platino non scendi sotto l’oro a 3 stelle.'],
+    ['La tua firma', 'In un’asta firmata, se vendi quasi tutto la tua fama sale di più; se resta invenduta più di metà roba, la firma perde credibilità. Prezzi alti sì, ma nel momento giusto.'],
+    ['Frecce nel magazzino', 'Accanto a ogni pezzo: ▲ verde se venderlo adesso rende di più, ▼ rossa se rende di meno, ▶ bianca se è il prezzo normale.'],
+    ['La settimana', 'Ogni settimana una categoria si vende di più e una di meno. La vedi in cima ad Aste e Bunker: decidi tu se andare in asta o restare a vendere quello che hai. In asta, un pezzo “in calo” puoi comprarlo lo stesso e rivenderlo la settimana dopo, quando torna normale.'],
+    ['Crescerà', 'Ogni tanto una categoria entra in una bolla: per qualche settimana vale sempre di più (anche il doppio, dipende dalla bolla), poi resta al massimo e si sgonfia. In asta i suoi pezzi hanno l’etichetta Crescerà: puoi pagarli anche un po’ sopra la stima, se poi vendi al momento giusto.'],
+    ['Rivali', 'Quasi tutti comprano un po’ sotto la stima, qualcuno aspetta di più, alcuni non sono interessati: a volte lo prendi al minimo. Sopra la stima compra solo chi vuole un pezzo raro o uno che crescerà.'],
     ['Pezzo raro', 'Ogni tanto in asta esce un pezzo raro: a volte non interessa a nessuno, più spesso qualcuno lo prende un po’ sopra la stima. Ogni tanto c’è l’hype e sparisce subito. Gli amatori lo pagano molto di più.'],
     ['Amatori', 'Vengono alle tue aste firmate per la tua categoria, soprattutto per i pezzi rari: guardano poco la stima e pagano anche 2 o 3 volte tanto. Nella svendita non vengono. Nelle richieste li riconosci dall’etichetta Amatore.'],
     ['Un falso nella tua asta', 'Puoi provare a rifilarlo come vero. Se il compratore lo fa periziare ti becca: vendita saltata, piccola multa e un po’ di fama in meno.'],
@@ -4446,7 +4938,7 @@ const HELP = [
     ['Banditore', 'Alla prossima visita in quella sala molti rivali si fanno da parte.']]],
   ['Gli imprevisti', [
     ['Caduto dal camion', 'Ricomponi il puzzle in 30 secondi e il pezzo è tuo, gratis. Se aspetti troppo, se lo prende un altro.'],
-    ['Mystery box', 'Pezzi a sorpresa, e anche il prezzo cambia ogni volta. Più o meno 4 volte su 10 ci perdi, ma ogni tanto c’è il colpo grosso.'],
+    ['Mystery box', 'Pezzi a sorpresa a un prezzo che cambia ogni volta. Di solito vale un po’ più o un po’ meno di quanto la paghi. Ogni tanto, a caso, c’è il colpo (2-3 volte il prezzo) o la truffa (con dei falsi): la truffa ti costa meno di quanto ti dà il colpo.'],
     ['Mercato della settimana', 'Per qualche giorno certe cose valgono di più, altre di meno.']]],
   ['Soldi e livello', [
     ['Livello', 'Sali solo consegnando ai clienti. Valgono di più i budget grandi, un bell’avanzo e la consegna veloce; consegnare all’ultimo vale meno. Ogni 20 livelli si aprono nuove sale e nuovi clienti.'],
@@ -4549,7 +5041,7 @@ function vClienti() {
       <div class="ic-box">${ic(tagIcon(G.inc.tag), 'gold')}</div>
       <div>${bossTag(G.inc)}<div class="who">Incarico in corso · ${esc(c.name)}, ${esc(c.city)}</div><div class="req">${esc(tagLabel(G.inc.tag))}</div>${G.inc.naive ? '<div class="naive">Non se ne intende · budget largo</div>' : ''}</div>
       <div class="foot"><div class="budget num">${eur(G.inc.cash)}<small>Budget rimasto su ${eur(G.inc.budget)}</small></div>
-        <div class="row" style="align-items:center">${G.bunker.some(e => matches(e.itemId, G.inc) && e.appraised !== 'falso') ? `<button class="btn btn-go btn-sm" data-act="askDeliver" data-id="${G.inc.id}">Consegna dal bunker</button>` : `<button class="btn btn-gold btn-sm" data-act="tab" data-v="aste">Vai alle aste</button>`}<button class="link" data-act="askAbandon" data-id="${G.inc.id}">Rinuncia</button></div></div>
+        <div class="row" style="align-items:center">${G.bunker.some(e => matches(e.itemId, G.inc) && e.appraised !== 'falso') ? `<button class="btn btn-go btn-sm" data-act="askDeliver" data-id="${G.inc.id}">Consegna dal bunker</button>` : `<button class="btn btn-gold btn-sm" data-act="tab" data-v="aste">Vai alle aste</button>`}${trCan(G.inc) ? `<button class="btn btn-ghost btn-sm" data-act="trOpen" data-id="${G.inc.id}">Proponi un pezzo</button>` : ''}<button class="link" data-act="askAbandon" data-id="${G.inc.id}">Rinuncia</button></div></div>
       <p style="grid-column:1/-1;display:flex;align-items:center;gap:8px"><i class="sdot" style="margin:0;background:${patColor(patience())};box-shadow:0 0 8px ${patColor(patience())}"></i><span>Pazienza del cliente: <b>${patWord(patience())}</b>. ${G.inc.boss ? 'Ha meno pazienza degli altri e non perdona: niente falsi, niente rinunce, niente ritardi. Fai periziare il pezzo prima di consegnarlo.' : 'Se consegni presto guadagni più reputazione; se aspetti troppo si riprende l’incarico.'}</span></p>
       <p class="note" style="grid-column:1/-1">${G.bunker.some(e => matches(e.itemId, G.inc) && e.appraised !== 'falso') ? `Hai già il pezzo: se lo consegni ora ti tieni ${eur(G.inc.cash)}.` : 'Compra un pezzo adatto e consegnalo: quello che resta del budget è tuo.'}${spent ? ` Se rinunci, i ${eur(spent)} già spesi diventano debito.` : ''}</p>
     </article>`; })(); }).join('');
@@ -4634,6 +5126,7 @@ function vAste() {
   return `<div class="stack">
     <div class="sec-h"><div><div class="eyebrow">Giorno ${G.day} · ${G.inc ? 'Paghi dal budget' : 'Paghi con i soldi tuoi'}</div><h1>Dove vai a comprare?</h1></div>
       <button class="btn btn-ghost btn-sm" data-act="wait">Passa la notte · giorno ${G.day + 1}</button></div>
+    ${marketStrip()}
     ${openCities().length ? '' : `<div class="card" style="border-color:var(--gold)"><b class="c-gold">Tutte le tue sale sono chiuse.</b> <span class="muted">La prima riapre tra ${daysToReopen()} ${daysToReopen() === 1 ? 'giorno' : 'giorni'}. Intanto i giorni portano offerte e richieste nel bunker.</span>
       <div class="row" style="margin-top:12px"><button class="btn btn-gold btn-sm" data-act="waitUntil">Aspetta ${daysToReopen()} ${daysToReopen() === 1 ? 'giorno' : 'giorni'}</button><button class="btn btn-ghost btn-sm" data-act="tab" data-v="bunker">Vai al bunker</button></div></div>`}
     <div class="stack">${hint}<div class="citylist">${list}</div></div>
@@ -4697,7 +5190,7 @@ function vBunker() {
   if (G.btab === 'magazzino') {
     body = `<div class="card under" style="padding:14px 16px"><div><b>La tua asta</b><div class="note">${G.bunker.length >= CFG.myAuctionMin ? `Scegli da ${CFG.myAuctionPick[0]} a ${CFG.myAuctionPick[1]} pezzi e vendili uno dopo l’altro.` : `Ti servono almeno ${CFG.myAuctionMin} pezzi: ne hai ${G.bunker.length}.`}</div></div><button class="btn btn-go btn-sm" data-act="myOpen" ${G.bunker.length >= CFG.myAuctionMin ? '' : 'disabled'}>Organizza un’asta</button></div><div class="card under" style="padding:14px 16px"><div><b>Box chiusa</b><div class="note">Più pezzi insieme a un prezzo tuo: utile per liberarti degli invenduti.</div></div><button class="btn btn-ghost btn-sm" data-act="boxOpen" ${G.bunker.filter(boxOk).length >= 2 ? '' : 'disabled'}>Fai una box</button></div>${fameCard()}` + (G.bunker.length ? `<div class="shelves">${G.bunker.map(e => { const it = BY_ID[e.itemId], forIncs = G.incs.filter(i => okFor(e, i)), forInc = forIncs.length > 0, sale = e.listed || G.auto;
       return `<button class="slot${e.mine ? ' card-mine' : ''}" data-act="item" data-u="${e.uid}">${e.mine ? '<span class="flag mine">★ Tuo</span>' : ''}${forInc ? '<span class="flag inc">Incarico</span>' : ''}${wantsFor(e.itemId).length ? '<span class="flag sale">Richiesto</span>' : sale ? '<span class="flag sale">In vendita</span>' : ''}
-        ${cardArt(e.itemId, 'c' + e.uid)}<div class="nm">${esc(it.name)}${it.set ? ` <b>×${it.set.length}</b>` : ''}</div><div class="vl num ${e.appraised === 'falso' ? 'c-risk' : ''}">${eur(marketVal(e))}${e.appraised === 'falso' ? '' : mktArrow(it.cat)}</div><div class="pd">pagato ${eur(e.cost)}</div>${e.appraised === 'vero' ? '<span class="perok">✓ Autentico</span>' : ''}${e.appraised ? '' : `<span class="perbtn" data-act="appraiseItem" data-u="${e.uid}" role="button">Perito · ${eur(appraisalCost(e.itemId))}</span>`}${e.appraised === 'falso' ? '<span class="flag fakef">Falso</span>' : ''}</button>`; }).join('')}</div>`
+        ${cardArt(e.itemId, 'c' + e.uid)}<div class="nm">${mktMark(it.cat)} ${esc(it.name)}${it.set ? ` <b>×${it.set.length}</b>` : ''}</div><div class="vl num ${e.appraised === 'falso' ? 'c-risk' : ''}">${eur(marketVal(e))}${e.appraised === 'falso' ? '' : mktArrow(it.cat)}</div><div class="pd">pagato ${eur(e.cost)}</div>${e.appraised === 'vero' ? '<span class="perok">✓ Autentico</span>' : ''}${e.appraised ? '' : `<span class="perbtn" data-act="appraiseItem" data-u="${e.uid}" role="button">Perito · ${eur(appraisalCost(e.itemId))}</span>`}${e.appraised === 'falso' ? '<span class="flag fakef">Falso</span>' : ''}</button>`; }).join('')}</div>`
       : `<div class="card empty">${ic('bunker')}<p style="margin-top:10px">Il bunker è vuoto. Quello che compri alle aste finisce qui.</p></div>`);
   } else if (G.btab === 'richieste') {
     const list = (G.wants || []).slice().sort((a, b) => a.exp - b.exp).map(w => {
@@ -4725,7 +5218,7 @@ function vBunker() {
     const cost = k => CFG.bribe[k] * r, poor = k => !canPayInfo(cost(k));
     body = mysteryCard() + `<p class="note">Si pagano con i soldi tuoi; se non bastano, il resto lo prendi dal budget del cliente. Costano di più man mano che sali di rango.</p><div class="informers">
       <div class="card informer"><div class="ic-w">${ic('occhio')}</div><div><h3>La soffiata</h3><p class="note">Ti dice in quali sale aperte oggi c’è un pezzo per il tuo incarico.</p></div>
-        <div class="foot"><button class="btn btn-go btn-sm" data-act="bribe" data-k="soffiata" ${!G.inc || poor('soffiata') ? 'disabled' : ''}>Paga ${eur(cost('soffiata'))}</button>${G.inc ? '' : '<span class="note">Serve un incarico in corso.</span>'}</div></div>
+        <div class="foot">${soffValid() ? '<button class="btn btn-ghost btn-sm" data-act="bribe" data-k="soffiata">Rivedi la soffiata</button>' : `<button class="btn btn-go btn-sm" data-act="bribe" data-k="soffiata" ${!G.inc || poor('soffiata') ? 'disabled' : ''}>Paga ${eur(cost('soffiata'))}</button>`}${G.inc ? '' : '<span class="note">Serve un incarico in corso.</span>'}</div></div>
       <div class="card informer"><div class="ic-w">${ic('pergamena')}</div><div><h3>Il commesso</h3><p class="note">Ti passa il catalogo completo di una sala prima che tu entri. ${eur(cost('commesso'))}.</p></div>
         <div class="foot">${chips('commesso', c => poor('commesso') || G.intel[c.id].catalog)}</div></div>
       <div class="card informer"><div class="ic-w">${ic('mazzetta')}</div><div><h3>Il banditore</h3><p class="note">Alla tua prossima visita in quella sala, molti rivali si faranno da parte. ${eur(cost('banditore'))}.</p></div>
@@ -4854,14 +5347,20 @@ function cardArt(itemId, u) { const it = BY_ID[itemId], r = rarity(it.est); retu
 
 /* ---------- mercato ---------- */
 const mktArrow = cat => !G.market ? '' : cat === G.market.up ? ' <span class="c-go" title="Mercato in rialzo">▲</span>' : cat === G.market.down ? ' <span class="c-risk" title="Mercato in calo">▼</span>' : '';
-const mktChip = cat => !G.market ? '' : cat === G.market.up ? ` · <span class="c-go">▲ mercato in rialzo</span>` : cat === G.market.down ? ` · <span class="c-risk">▼ mercato in calo</span>` : '';
+// in asta: dice cosa significa per te (23/11): in calo = questa settimana si rivende male, tienilo per la prossima; in rialzo = rivendilo subito
+const mktChip = cat => !G.market ? '' : cat === G.market.up ? ` · <span class="c-go">▲ rivendilo questa settimana</span>` : cat === G.market.down ? ` · <span class="c-risk">▼ in calo: rivendilo la prossima settimana</span>` : '';
+// gradini di fama: bronzo, argento, oro (1-3 stelle), poi platino
+const fameBadge = k => { if (!k) return ''; if (k >= 10) return '<b class="fst plat" title="Platino">✦</b>'; const m = k <= 3 ? 'bronzo' : k <= 6 ? 'argento' : 'oro'; return `<b class="fst ${m}" title="${m[0].toUpperCase() + m.slice(1)}">${'★'.repeat((k - 1) % 3 + 1)}</b>`; };
+// freccina nel magazzino: venderlo adesso rende più (verde), meno (rossa) o il normale (bianca)
+const mktMark = cat => { const f = mkt(cat); return f > 1.03 ? '<span class="mkm up" title="Adesso rende di più">▲</span>' : f < 0.97 ? '<span class="mkm dn" title="Adesso rende di meno">▼</span>' : '<span class="mkm eq" title="Prezzo normale">▶</span>'; };
 function marketStrip() {
   if (!G.market) return '';
-  const M = G.market, left = CFG.marketWeek - (G.day - M.from);
-  return `<div class="card mkt"><span class="eyebrow">Mercato della settimana</span>
-    <span class="c-go"><b>▲ ${CATS[M.up]}</b> +${Math.round((M.upF - 1) * 100)}%</span>
-    <span class="c-risk"><b>▼ ${CATS[M.down]}</b> −${Math.round((1 - M.downF) * 100)}%</span>
-    <span class="note">cambia tra ${left} ${left === 1 ? 'giorno' : 'giorni'}</span></div>`;
+  const M = G.market, left = CFG.marketWeek - (G.day - M.from), n = G.bunker.filter(e => BY_ID[e.itemId].cat === M.up).length;
+  const B = G.trend, tn = B ? trendNow(B.cat) : null, bub = tn && tn.ph ? `<div class="bub ${tn.ph}"><b>${tn.ph === 'su' ? '↗ Crescerà' : tn.ph === 'top' ? '★ Al massimo' : '↘ Si sgonfia'} · ${esc(CATS[B.cat])}</b> <span>${tn.f >= 1 ? '+' : ''}${Math.round((tn.f - 1) * 100)}% sul valore normale${tn.ph === 'su' ? ', e sale ancora' : tn.ph === 'top' ? ': è il momento di vendere' : ''}</span></div>` : '';
+  return `<div class="card mkt week"><div class="wk-h"><span class="eyebrow">La settimana di</span><span class="note">cambia tra ${left} ${left === 1 ? 'giorno' : 'giorni'}</span></div>
+    <div class="wk-up c-go">▲ ${esc(CATS[M.up])} <b>+${Math.round((M.upF - 1) * 100)}%</b></div>
+    <div class="wk-dn c-risk">▼ ${esc(CATS[M.down])} −${Math.round((1 - M.downF) * 100)}%</div>
+    ${n ? `<p class="note" style="margin:0">Nel bunker ne hai ${n}: puoi restare a vendere invece di andare in asta.</p>` : ''}${bub}</div>`;
 }
 
 /* ---------- lotto ---------- */
@@ -4895,7 +5394,7 @@ function vLot() {
   const lot = curLot(), it = BY_ID[lot.itemId], c = cityOf(G.city), running = G.state === 'LOT_RUNNING';
   const fit = G.inc && (matches(it.id, G.inc) || (it.set && it.set.some(id => matches(id, G.inc))));
   const pct = v => Math.max(0, Math.min(100, (v - lot.floor) / (lot.start - lot.floor) * 100));
-  const estP = pct(it.est), w = W(), inR = v => v < lot.start && v > lot.floor, mine = payer() !== 'budget' ? ' mine' : '';
+  const lE = lot.est || it.est, estP = pct(lE), w = W(), inR = v => v < lot.start && v > lot.floor, mine = payer() !== 'budget' ? ' mine' : '';
   // "Per te" con un cliente: due tacche, l'azzurra dove finiscono i tuoi soldi, la gialla dove arrivi col budget del cliente
   const split = payer() === 'mio' && G.inc, nb = G.incs.length > 1 ? ' ' + incNum(G.inc) : '';
   const ticks = split ? [[G.personal, ' mine', 'tuoi'], [w, '', '+ budget' + nb]] : [[w, mine, payer() === 'budget' ? 'budget' : 'tuoi']];
@@ -4906,17 +5405,17 @@ function vLot() {
   const wantsHere = it.set ? [] : (G.wants || []).filter(w => wantFits(w, it.id)).sort((a, b) => b.f - a.f);
   const wantHint = wantsHere.length ? `<p class="wanthint">${ic('acquirente')}<span>Nel bunker lo cerca <b>${esc(wantsHere[0].buyer)}</b>${wantsHere.length > 1 ? (wantsHere.length === 2 ? ' · e un altro' : ` · e altri ${wantsHere.length - 1}`) : ''}. Quanto paga lo scopri solo quando hai il pezzo.</span></p>` : '';
   const tag = (!fitAll.length && !cheapFor && wantsHere.length) ? '<span class="tag fit buyer">Ha un compratore</span>' : G.incs.length ? `<span class="tag fit ${fitAll.length ? (risky ? 'yes near' : 'yes') : 'no'}">${fitAll.length ? risky ? `Sotto soglia del ${Math.max(1, Math.round((1 - it.est / tagMin(fitAll[0].tag)) * 100))}% · ${esc(clientOf(fitAll[0].clientId).name)}` : (G.incs.length > 1 ? '✓ Per ' + fitAll.map(i => esc(incName(i))).join(', ') : '✓ Per l’incarico') : cheapFor ? `Vale troppo poco per ${esc(incName(cheapFor))}` : wantsHere.length ? 'Ha un compratore' : 'Non richiesto'}</span>` : (wantsHere.length ? '<span class="tag fit yes">Ha un compratore</span>' : '');
-  return `<section class="lot">${plate(it.id, lot.uid, lot.n, (lot.rare ? '<span class="tag rare">Pezzo raro</span>' : '') + tag, sessColor(lot), lot.appraised)}
+  return `<section class="lot">${plate(it.id, lot.uid, lot.n, (lot.rare ? '<span class="tag rare">Pezzo raro</span>' : '') + (lot.grow ? '<span class="tag grow">Crescerà</span>' : '') + tag, sessColor(lot), lot.appraised)}
     <div class="info">
       <div class="eyebrow"><b>${c.name}</b> · ${venueOf(c)} · ${CATS[it.cat]}${mktChip(it.cat)}</div>
       <h1 class="lot-name">${esc(it.name)}</h1>
-      <div class="ladder num" aria-label="Minimo, stima e prezzo di partenza"><div><span>Minimo</span><b>${eur(lot.floor)}</b></div><i>›</i><div><span>Stima</span><b>${eur(it.est)}</b></div><i>›</i><div class="start"><span>Parte da</span><b>${eur(lot.start)}</b></div></div>
+      <div class="ladder num" aria-label="Minimo, stima e prezzo di partenza"><div><span>Minimo</span><b>${eur(lot.floor)}</b></div><i>›</i><div><span>Stima</span><b>${eur(lE)}</b></div><i>›</i><div class="start"><span>Parte da</span><b>${eur(lot.start)}</b></div></div>
       <p class="desc">${esc(it.desc)}${lot.vague ? ' <i>Provenienza non documentata.</i>' : ''}${it.box ? ` Contenitore chiuso con ${it.set.length} pezzi: vedi cosa c’è dentro solo quando è tuo. Nel bunker puoi separarli e venderli uno per uno.` : it.set ? ` Nel bunker puoi separarli e venderli uno per uno.` : ''}${fit && it.set ? ' Per consegnarne uno, separa il lotto.' : ''}</p>${wantHint}
       <div class="pricebox pc">
         <div class="lbl"><span class="eyebrow">${running ? 'Prezzo attuale' : 'Prezzo di partenza'}</span></div>
         <div id="price" class="price ${running ? 'live' : ''}">${eur(lot.start)}</div>
         <div class="track" aria-hidden="true"><div id="fill" class="fill"></div><div class="mk" style="left:${estP}%"></div>${tk.map(t => `<div class="mk cash${t.c}" style="left:${t.p}%"></div>`).join('')}</div>
-        <div class="marks" aria-hidden="true"><span class="l">${eur(lot.floor)}</span><span class="est" style="left:${estP}%">${eur(it.est)}</span>${tk.map(t => `<span class="cash${t.c}" style="left:${t.p}%">${t.l}</span>`).join('')}<span class="r">${eur(lot.start)}</span></div>
+        <div class="marks" aria-hidden="true"><span class="l">${eur(lot.floor)}</span><span class="est" style="left:${estP}%">${eur(lE)}</span>${tk.map(t => `<span class="cash${t.c}" style="left:${t.p}%">${t.l}</span>`).join('')}<span class="r">${eur(lot.start)}</span></div>
         <p id="msg" class="msg">${running ? '' : 'Nessuna fretta: l’asta parte solo quando premi Avvia.'}</p>
       </div>
       <div class="dock">${paySwitch(fit)}<div class="actions">
@@ -4999,7 +5498,7 @@ function vDelivered() {
   const S = G.summary, c = clientOf(S.inc.clientId), it = BY_ID[S.itemId];
   return `<section class="lot">${plate(it.id, 'dl' + S.inc.id, 0)}
     <div class="info">
-      <div><span class="stampbig green slam">Consegnato</span></div>
+      ${S.boss ? `<div class="bling"><div class="coins" aria-hidden="true">${'<i></i>'.repeat(14)}</div><span class="eyebrow">${S.boss === 'padrino' ? 'Il Padrino' : 'Il Pezzo grosso'}</span><b class="bl-t">${S.boss === 'padrino' ? 'È soddisfatto di te' : 'Lavoro pulito'}</b><span class="bl-s">${pick(S.boss === 'padrino' ? ['Le persone giuste ora sanno chi sei.', 'Da oggi, in certi giri, il tuo nome conta.', 'Rispetto. E chi ti rispetta, ti chiama ancora.'] : ['Ha fatto girare il tuo nome. Quello giusto.', 'Gente seria si ricorderà di te.', 'Puntuale e preciso: così si lavora.'])}</span>${S.gift ? `<span class="bl-g">Regalo per il disturbo: <b>+${eur(S.gift)}</b></span>` : ''}</div>` : `<div><span class="stampbig green slam">Consegnato</span></div>`}
       <h1 class="lot-name">Hai consegnato: ${esc(it.name)}</h1>
       <p class="desc">È uscito dal tuo bunker ed è ora di ${esc(c.name)}${S.fromStock ? ` · preso dal tuo bunker (l’avevi pagato ${eur(S.itemCost)} con altri soldi)` : ''}.</p>
       <div class="card"><table class="ledger"><tbody>
@@ -5008,7 +5507,7 @@ function vDelivered() {
         <tr><td>Acquisti con il budget</td><td>${signed(-S.inc.spent)}</td></tr>
         ${S.inc.borrowed ? `<tr><td class="c-risk">di cui usati per pezzi tuoi</td><td class="c-risk">${eur(S.inc.borrowed)}</td></tr>` : ''}
         ${S.caught ? `<tr><td class="c-risk">Se n’è accorto: si riprende</td><td class="c-risk">${signed(-S.lost)}</td></tr>` : ''}
-        <tr class="total"><td>Avanzo sul tuo conto</td><td class="c-go">${signed(S.avanzo)}</td></tr></tbody></table>
+        <tr class="total"><td>Avanzo sul tuo conto</td><td class="c-go">${signed(S.avanzo)}</td></tr>${S.gift ? `<tr><td class="c-gold">Regalo ${S.boss === 'padrino' ? 'del Padrino' : 'del Pezzo grosso'}</td><td class="c-gold">${signed(S.gift)}</td></tr>` : ''}</tbody></table>
         ${S.pitch ? `<p class="note${S.caught ? ' warn' : ''}">${S.pitch.hit ? (S.pitch.notice ? `Bravo, ce l’hai fatta: l’hai persuaso. Senza di te se ne sarebbe accorto.` : `Bravo, l’hai persuaso. Ma tanto non se ne sarebbe accorto${S.pitch.naive ? ': è troppo ingenuo' : ''}.`) : S.pitch.notice ? `Non l’hai persuaso e se n’è accorto: metà avanzo indietro, niente livello e per qualche giorno non ti chiama.` : `Peccato, non l’hai persuaso… ma non se n’è accorto lo stesso. Ti è andata bene.`}</p>` : ''}
         ${S.others.length ? `<p class="note">Restano nel tuo bunker, non consegnati: ${S.others.map(o => esc(BY_ID[o.itemId].name) + (o.mine ? ' (pagato da te)' : ' (pagato col budget)')).join(', ')}.</p>` : ''}</div>
       <div class="card lvsum"><div class="row" style="align-items:center;gap:10px">${S.from != null ? `${lvBadge(S.from)}<span aria-hidden="true">→</span>${lvBadge(S.to)}` : ''}<b>${S.gain ? `Sali di ${S.gain} ${S.gain === 1 ? 'livello' : 'livelli'}` : 'Livello invariato'}</b>${S.boost && S.gain ? '<b class="lvx">Esperienza ×2</b>' : ''}</div>
@@ -5050,7 +5549,7 @@ function vMy() {
     return `<div class="stack" style="max-width:640px;margin:0 auto"><div><span class="stampbig ${sold.length ? 'green' : 'grey'} slam">Asta chiusa</span></div>
       <h1 style="font-size:clamp(26px,4vw,36px)">${sold.length} venduti su ${M.results.length} · <span class="c-go">${signed(net)}</span></h1>
       <ul class="items">${M.results.map(r => `<li><div class="ic-w">${ic(BY_ID[r.itemId].icon)}</div><span>${esc(BY_ID[r.itemId].name)}</span><span class="vl ${r.outcome === 'venduto' ? 'c-go' : r.outcome === 'beccato' ? 'c-risk' : 'muted'}">${r.outcome === 'venduto' ? signed(r.net) + (r.fake ? ' · falso passato' : '') : r.outcome === 'beccato' ? 'Beccato · ' + signed(-r.fine) : r.outcome}</span></li>`).join('')}</ul>
-      <p class="note">I pezzi invenduti o ritirati restano nel bunker.</p>${fameCard()}
+      ${M.cred === 'su' ? '<p class="c-go"><b>Asta riuscita:</b> hai venduto quasi tutto, la tua firma vale di più.</p>' : M.cred === 'giu' ? '<p class="c-risk"><b>Troppi invenduti:</b> la tua firma perde un po’ di credibilità.</p>' : ''}<p class="note">I pezzi invenduti o ritirati restano nel bunker.</p>${fameCard()}
       <div class="dock"><div class="row"><button class="btn btn-gold" data-act="myExit">Torna al bunker</button></div></div></div>`;
   }
   const C = M.cur, it = BY_ID[C.itemId], last = M.results[M.results.length - 1];
@@ -5074,7 +5573,7 @@ function paintMy(t) {
 }
 function fameCard() {
   const top = topFame().slice(0, 5);
-  return `<div class="card fame"><span class="eyebrow">La tua fama</span>${top.length ? top.map(([t]) => `<span class="fchip">${esc(styleLabel(t))} <b>${'★'.repeat(fameStars(t))}</b></span>`).join('') : '<span class="note">Ancora nessuno ti conosce. Metti pezzi nelle tue aste per farti un nome: le richieste seguiranno il tuo stile.</span>'}</div>`;
+  return `<div class="card fame"><span class="eyebrow">La tua fama</span>${G.nick ? `<span class="fnick">Ti chiamano <b>«${esc(G.nick)}»</b></span>` : ''}${top.length ? top.map(([t]) => `<span class="fchip">${esc(styleLabel(t))} ${fameBadge(fameTier(t))}</span>`).join('') : '<span class="note">Ancora nessuno ti conosce. Metti pezzi nelle tue aste per farti un nome: le richieste seguiranno il tuo stile.</span>'}</div>`;
 }
 
 /* ---------- fogli ---------- */
@@ -5086,6 +5585,7 @@ function openSheet(kind, arg) {
   else if (kind === 'abandon') { const owed = G.inc.budget - G.inc.cash; html = `<div class="eyebrow">Rinuncia</div><h2>Lasci l’incarico?</h2>
       <p class="desc">Restituisci al cliente i ${eur(G.inc.cash)} rimasti.${owed ? ` I <b class="c-risk">${eur(owed)}</b> già spesi diventano debito tuo.` : ''} Scendi di ${CFG.lv.dropAbandon} livelli e il cliente, deluso, non ti contatterà per almeno 2 settimane. I pezzi comprati restano nel bunker.</p>
       <div class="row"><button class="btn btn-risk" data-act="abandon">Rinuncia</button><button class="btn btn-ghost" data-act="close">Continuo</button></div>`; }
+  else if (kind === 'tratta') html = trSheet();
   else if (kind === 'deliver') {
     const list = G.bunker.filter(e => okFor(e, G.inc)), c = clientOf(G.inc.clientId);
     const inSala = G.city ? ' Non esci dalla sala: dopo continui con i soldi tuoi.' : '';
@@ -5178,6 +5678,7 @@ function openSheet(kind, arg) {
   $('#sheet').innerHTML = `<div class="sheet-bg${still ? ' still' : ''}${kind === 'style' ? ' styl' : ''}" data-act="bgclose"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;
   if (keep) { const ns = document.querySelector('#sheet .sheet'); if (ns) ns.scrollTop = keep; }
   if (keepX.length) document.querySelectorAll('#sheet .themes').forEach((t, i) => { if (keepX[i]) t.scrollLeft = keepX[i]; });
+  { const tc = document.getElementById('trchat'); if (tc) tc.scrollTop = tc.scrollHeight; }
   lastRenderAt = performance.now();
 }
 function closeSheet() {
@@ -5234,7 +5735,7 @@ document.addEventListener('click', e => {
   const act = el.dataset.act;
   if (act === 'bgclose') { if (e.target === el && !(G && G.ui.tz && G.ui.tz.phase === 'play') && !(G && G.ui.pitch && G.ui.pitch.phase !== 'ready')) closeSheet(); return; } // durante il puzzle non si chiude per sbaglio
   if (el.disabled) return;
-  if (!['step', 'myAdj', 'myMin', 'boxAdj', 'boxToggle', 'boxCut', 'setTheme', 'close'].includes(act) && performance.now() - lastRenderAt < 320) return; // doppio tap
+  if (!['step', 'myAdj', 'myMin', 'boxAdj', 'boxToggle', 'boxCut', 'setTheme', 'close', 'trAdj', 'trPress'].includes(act) && performance.now() - lastRenderAt < 320) return; // doppio tap
   const d = el.dataset;
   switch (act) {
     case 'tab': return A.tab(d.v);
@@ -5260,6 +5761,16 @@ document.addEventListener('click', e => {
       const nb = document.querySelector(`#sheet [data-act="setTheme"][data-v="${d.v}"]`), row = nb && nb.closest('.themes'); if (row) row.scrollLeft += nb.getBoundingClientRect().left - bx; return; }
     case 'askAbandon': return A.askAbandon(d.id);
     case 'deliver': return A.deliver(d.u);
+    case 'trOpen': return A.trOpen(d.id);
+    case 'trPick': return A.trPick(d.u);
+    case 'trBack': return A.trBack();
+    case 'trAdj': return A.trAdj(+d.d);
+    case 'trPress': return A.trPress(+d.d);
+    case 'trSend': return A.trSend(d.v);
+    case 'trTakeH': return A.trTakeH();
+    case 'trCoffee': return A.trCoffee(d.v === '1');
+    case 'trDeal': return A.trDeal(d.v === '1');
+    case 'trEnd': return A.trEnd();
     case 'pitchGo': return A.pitchGo();
     case 'boxOpen': return A.boxOpen();
     case 'boxToggle': return A.boxToggle(d.u);
@@ -5313,7 +5824,7 @@ window.claude?.hot?.snapshot?.(() => ({ G: JSON.parse(JSON.stringify(G)) }));
 window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data ?? {});
 /* tutte le illustrazioni caricate una volta sola e tenute in memoria: niente sfarfallio quando la schermata si ridisegna */
 const PRELOAD = Object.values(IMG).map(src => { const im = new Image(); im.src = src; if (im.decode) im.decode().catch(() => {}); return im; });
-window.BM = { get G() { return G; }, A, THEMES, payer, CFG, CATALOG, CITIES, CLIENTS, newGame: s => { newGame(s); render(); }, render, priceAt, matches, nextDay, elapsed, W, makeOffer, fillBoard, fall, collect, lvGain, lvDrop, addDebt, toast, IMG, genTruck, closeSheet, art, feeOfPublic: c => feeOf(c), genSessionPublic: c => genSession(c), sigOkPublic: (s, it) => sigOk(s, it) };
+window.BM = { get G() { return G; }, A, THEMES, payer, CFG, CATALOG, CITIES, CLIENTS, newGame: s => { newGame(s); render(); }, render, priceAt, matches, nextDay, elapsed, W, makeOffer, fillBoard, marketVal, fall, collect, lvGain, lvDrop, addDebt, toast, IMG, genTruck, closeSheet, art, feeOfPublic: c => feeOf(c), genSessionPublic: c => genSession(c), sigOkPublic: (s, it) => sigOk(s, it) };
 
 })();
 </script>
