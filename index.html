@@ -1724,6 +1724,7 @@ html[data-theme="hud"] .track .mk{width:3px;z-index:2;box-shadow:0 0 0 1px #0209
 .trinfo .trtake{margin-top:4px;padding:4px 10px;min-height:0}
 .trmodes{grid-template-columns:1fr 1fr!important}
 .fnick{display:block;margin:2px 0 6px;font-size:14px}.fnick b{color:var(--gold,#f2c14e)}
+.bossq{font-family:var(--f-display);font-size:34px;line-height:1;color:#f2c14e;text-shadow:0 0 12px rgba(242,193,78,.6)}
 
 /* ====== PROVE DI PALETTE E STILI (dalle tavole PNG) ====== */
 /* struttura comune delle prove di palette */
@@ -3592,7 +3593,7 @@ function makeLot(item, c, i, seq) {
   const fF = U(CFG.floorByCat[item.cat] || CFG.floorFactor);
   const start = r10(item.est * tN.f * U(fake && vagueRoll < 0.7 ? [1.1, 1.3] : CFG.startFactor)), floor = r10(item.est * tN.f * fF);
   const vague = fake ? vagueRoll < 0.65 : vagueRoll < 0.18;
-  const gapE = start - floor, dur = +((CFG.durationS[item.cat] || 15) * (gapE < 100 ? 0.72 : gapE < 300 ? 0.82 : gapE < 1000 ? 0.92 : 1)).toFixed(2), step = gapE < 150 ? 1 : gapE < 600 ? 5 : 10, aggr = c.aggr[item.cat] ?? 0.6;
+  const gapE = start - floor, dur = +((CFG.durationS[item.cat] || 15) * (gapE < 100 ? 0.55 : gapE < 300 ? 0.7 : gapE < 1000 ? 0.88 : 1)).toFixed(2), step = gapE < 150 ? 1 : gapE < 600 ? 5 : 10, aggr = c.aggr[item.cat] ?? 0.6;
   // fascia del rivale: le sale aggressive hanno più gente che scatta subito, i falsi attirano meno
   let br = rnd() * (fake ? 0.85 : 1); const eager = (aggr - 0.6) * 0.25; let band = CFG.rivalBands[CFG.rivalBands.length - 1];
   for (let k = 0, acc = 0; k < CFG.rivalBands.length; k++) { acc += CFG.rivalBands[k].p + (k === 0 ? eager : k === 2 ? -eager : 0); if (br < acc) { band = CFG.rivalBands[k]; break; } }
@@ -4783,7 +4784,7 @@ function header() {
       const c = clientOf(G.inc.clientId);
       const chips = G.incs.length > 1 ? `<div class="incs" role="group" aria-label="Incarichi in corso">${G.incs.map(i => `<button class="incchip${hasFor(i) ? ' ready' : ''}" data-act="selInc" data-id="${i.id}" aria-pressed="${i.id === G.act}" style="--ic:${incCol(i)}"><i class="sdot" style="background:${patColor(patOf(i))}"></i><em class="inum">${incNum(i)}</em><span${i.naive ? ' class="nvn" title="Non se ne intende"' : ''}>${esc(incName(i))}</span><b class="num">${eur(i.cash)}</b></button>`).join('')}</div>` : '';
       strip = `${chips}<div class="strip" style="border-left:3px solid ${incCol(G.inc)}"><div class="ic">${ic(tagIcon(G.inc.tag), 'gold')}</div>
-        <div class="txt"><b><i class="sdot" style="background:${patColor(patience())};box-shadow:0 0 8px ${patColor(patience())}" title="Pazienza del cliente"></i>${esc(tagName(G.inc.tag))}</b><span>${G.inc.borrowed ? `<span class="c-risk">Usati per te: ${eur(G.inc.borrowed)}</span>` : tagMin(G.inc.tag) ? `${G.inc.naive ? '<i class="nvt">Non se ne intende</i>' : esc(c.name)} · <i class="c-gold" style="font-style:normal;font-weight:600">da ${eur(tagMin(G.inc.tag))}</i>` : `${esc(c.name)} · ${esc(c.city)}`}</span></div>
+        <div class="txt"><b><i class="sdot" style="background:${patColor(patience())};box-shadow:0 0 8px ${patColor(patience())}" title="Pazienza del cliente"></i>${esc(tagName(G.inc.tag))}</b><span>${G.inc.borrowed ? `<span class="c-risk">Usati per te: ${eur(G.inc.borrowed)}</span>` : tagMin(G.inc.tag) ? `${G.inc.naive ? '<i class="nvt">Non se ne intende</i>' : esc(c.name)} · <i class="c-gold" style="font-style:normal;font-weight:600">da ${eur(tagMin(G.inc.tag))}</i>` : G.inc.boss ? esc(c.name) : `${esc(c.name)} · ${esc(c.city)}`}</span></div>
         <div class="money gold"><small>Budget</small><strong class="num">${eur(G.inc.cash)}</strong></div>
         ${canDeliver ? `<button class="btn btn-gold btn-xs${readyNow ? ' pulse' : ''}" data-act="askDeliver">Consegna${readyIncs().length > 1 ? ` · ${readyIncs().length}` : ''}</button>` : ''}</div>`;
     } else {
@@ -4918,7 +4919,7 @@ const HELP = [
     ['Box chiusa', 'Per sbarazzarti della roba: più pezzi in una box a un prezzo tuo (di base pagato +10%). Chi la compra non sa cosa c’è dentro e guarda solo il prezzo. Il colore ti dice se ci guadagni, vai in pari o ci perdi. Se rifili fuffa cara la voce gira e per una settimana le box si vendono peggio.'],
     ['Padrino', 'Paga il triplo, ma se lo deludi (un falso, una rinuncia, troppa attesa) si prende il pezzo più bello del tuo bunker e torni in strada con 100 €. Per chi vuole svoltare, o è alla frutta.'],
     ['Pezzo grosso', 'Paga il doppio, ma se lo deludi perdi un terzo dei tuoi soldi, un po’ di fama e 5 livelli. Con lui niente Persuadilo.'],
-    ['Non deluderli', 'Con Padrino e Pezzo grosso fai periziare il pezzo prima di consegnarlo, compra il listino della sala e paga gli informatori: costano poco rispetto a quello che rischi.'],
+    ['Non deluderli', 'Cosa vogliono Padrino e Pezzo grosso lo scopri solo dopo aver accettato: prima decidi se rischiare. Con loro fai periziare il pezzo prima di consegnarlo, compra il listino della sala e paga gli informatori: costano poco rispetto a quello che rischi.'],
     ['Proponi un pezzo', 'Non trovi quello che chiede? Chiamalo e proponigli un pezzo del bunker. Scegli il prezzo (quanto ti tieni del suo budget, il resto torna a lui), quanto spingere e come parlargli. Ogni cliente ha il suo carattere: c’è chi si lascia convincere e chi no. Una proposta assurda (un revolver a chi vuole un gattino) lo fa arrabbiare: la sua pazienza scende. Un affare così vale meno livello di una consegna vera.'],
     ['Soprannomi', 'Se vendi tanto di una cosa, in giro ti danno un soprannome: Tic Tac per gli orologi, Canne Mozze per le armi… Se vendi caro diventi il Condor; se svendi tutto ti chiamano Aspirapolvere.'],
     ['Stelle di fama', 'Bronzo, argento e oro, ognuno da 1 a 3 stelle, poi il Platino. Più sali, più pagano i tuoi pezzi in quello stile e più amatori arrivano. Se per un po’ non vendi in quello stile la fama cala piano, ma non perdi mai più di due gradini; dal Platino non scendi sotto l’oro a 3 stelle.'],
@@ -5039,7 +5040,7 @@ function vClienti() {
   const active = G.incs.map(I => { G.act = I.id; return (() => { const c = clientOf(G.inc.clientId), spent = G.inc.budget - G.inc.cash;
     return `<article class="card client active${G.inc.boss ? ' boss' : ''}" style="border-left:3px solid ${incCol(G.inc)}">
       <div class="ic-box">${ic(tagIcon(G.inc.tag), 'gold')}</div>
-      <div>${bossTag(G.inc)}<div class="who">Incarico in corso · ${esc(c.name)}, ${esc(c.city)}</div><div class="req">${esc(tagLabel(G.inc.tag))}</div>${G.inc.naive ? '<div class="naive">Non se ne intende · budget largo</div>' : ''}</div>
+      <div>${bossTag(G.inc)}<div class="who">Incarico in corso · ${esc(c.name)}${G.inc.boss ? '' : `, ${esc(c.city)}`}</div><div class="req">${esc(tagLabel(G.inc.tag))}</div>${G.inc.naive ? '<div class="naive">Non se ne intende · budget largo</div>' : ''}</div>
       <div class="foot"><div class="budget num">${eur(G.inc.cash)}<small>Budget rimasto su ${eur(G.inc.budget)}</small></div>
         <div class="row" style="align-items:center">${G.bunker.some(e => matches(e.itemId, G.inc) && e.appraised !== 'falso') ? `<button class="btn btn-go btn-sm" data-act="askDeliver" data-id="${G.inc.id}">Consegna dal bunker</button>` : `<button class="btn btn-gold btn-sm" data-act="tab" data-v="aste">Vai alle aste</button>`}${trCan(G.inc) ? `<button class="btn btn-ghost btn-sm" data-act="trOpen" data-id="${G.inc.id}">Proponi un pezzo</button>` : ''}<button class="link" data-act="askAbandon" data-id="${G.inc.id}">Rinuncia</button></div></div>
       <p style="grid-column:1/-1;display:flex;align-items:center;gap:8px"><i class="sdot" style="margin:0;background:${patColor(patience())};box-shadow:0 0 8px ${patColor(patience())}"></i><span>Pazienza del cliente: <b>${patWord(patience())}</b>. ${G.inc.boss ? 'Ha meno pazienza degli altri e non perdona: niente falsi, niente rinunce, niente ritardi. Fai periziare il pezzo prima di consegnarlo.' : 'Se consegni presto guadagni più reputazione; se aspetti troppo si riprende l’incarico.'}</span></p>
@@ -5048,8 +5049,8 @@ function vClienti() {
   G.act = act0;
   const board = G.board.map(o => { const c = clientOf(o.clientId);
     return `<article class="card client${o.boss ? ' boss' : ''}">
-      <div class="ic-box">${ic(tagIcon(o.tag))}</div>
-      <div>${bossTag(o)}<div class="who">${esc(c.name)} · ${esc(c.city)}</div><div class="req">${esc(tagLabel(o.tag))}</div>${o.naive ? '<div class="naive">Non se ne intende · budget largo</div>' : ''}${G.bunker.some(e => matches(e.itemId, o) && e.appraised !== 'falso') ? '<div class="c-go" style="font-size:14px;margin-top:4px">✓ Ce l’hai già nel bunker: accetta e consegni subito</div>' : ''}</div>
+      <div class="ic-box">${o.boss ? '<b class="bossq">?</b>' : ic(tagIcon(o.tag))}</div>
+      <div>${bossTag(o)}<div class="who">${esc(c.name)}</div><div class="req">${o.boss ? 'Cosa vuole te lo dice solo se accetti' : esc(tagLabel(o.tag))}</div>${o.naive ? '<div class="naive">Non se ne intende · budget largo</div>' : ''}${!o.boss && G.bunker.some(e => matches(e.itemId, o) && e.appraised !== 'falso') ? '<div class="c-go" style="font-size:14px;margin-top:4px">✓ Ce l’hai già nel bunker: accetta e consegni subito</div>' : ''}</div>
       <div class="foot"><div class="budget num">${eur(o.budget)}<small>Budget anticipato</small></div>
         <button class="btn btn-gold btn-sm" data-act="accept" data-id="${o.id}" ${full ? 'disabled' : ''}>Accetta</button></div>
     </article>`; }).join('');
