@@ -3676,7 +3676,10 @@ function fillBoard() {
     const wts = avail.map(c => 1 + c.rank); let r = rnd() * wts.reduce((a, b) => a + b, 0), k = 0;
     while (r > wts[k]) { r -= wts[k]; k++; }
     const c = avail.splice(k, 1)[0];
-    const o = makeOffer(c); if (o) { if (o.boss) o.clientId = o.boss; G.board.push(o); }
+    // mai due richieste uguali insieme (stessa cosa da due clienti diversi): riprova, se no salta quel cliente
+    const dup = x => x && [...G.board, ...G.incs].some(y => tagOf(y.tag) === tagOf(x.tag));
+    let o = makeOffer(c); for (let t = 0; t < 4 && dup(o); t++) o = makeOffer(c);
+    if (o && !dup(o)) { if (o.boss) o.clientId = o.boss; G.board.push(o); }
   }
 }
 function makeOffer(c) {
