@@ -1725,7 +1725,9 @@ html[data-theme="hud"] .track .mk{width:3px;z-index:2;box-shadow:0 0 0 1px #0209
 .trmodes{grid-template-columns:1fr 1fr!important}
 .fnick{display:block;margin:2px 0 6px;font-size:14px}.fnick b{color:var(--gold,#f2c14e)}
 .bossq{font-family:var(--f-display);font-size:34px;line-height:1;color:#f2c14e;text-shadow:0 0 12px rgba(242,193,78,.6)}
-.c-mine{color:var(--c-mine,#5cc8ff)}.c-plain{color:var(--ink,#f1efe8)}
+.c-mine{color:var(--c-mine,#5cc8ff)}.c-plain{color:var(--ivory,#f1efe8)}
+/* cifra del valore nel bunker: il colore dice la settimana (vince sul verde di base) */
+.slot .vl.c-go{color:var(--go,#3ccf7a)}.slot .vl.c-risk{color:var(--risk,#ff5a4f)}.slot .vl.c-plain{color:var(--ivory,#f1efe8)}
 
 /* ====== PROVE DI PALETTE E STILI (dalle tavole PNG) ====== */
 /* struttura comune delle prove di palette */
@@ -3485,6 +3487,8 @@ function migrateVariants() {
   (G.incs || []).forEach(o => o.tag = fxTag(o.tag)); (G.board || []).forEach(o => o.tag = fxTag(o.tag));
   Object.values(G.sessions || {}).forEach(s => (s.lots || []).forEach(l => l.itemId = fx(l.itemId)));
   if (G.truck) G.truck.itemId = fx(G.truck.itemId);
+  // richieste doppie salvate prima della correzione: tengo la prima
+  if (G.board) { const seen = new Set((G.incs || []).map(i => tagOf(i.tag))); G.board = G.board.filter(o => { const t = tagOf(o.tag); if (seen.has(t)) return false; seen.add(t); return true; }); }
   for (const i of [...(G.incs || []), ...(G.board || [])]) if (i.boss && BOSSES[i.boss] && i.clientId !== i.boss) { i.from = i.clientId; i.clientId = i.boss; }
   if (G.box && !G.box.items) G.box = null; // riparazione: la box chiusa finiva per sbaglio al posto della mystery box
   if (G.box) (G.box.items || []).forEach(x => x.itemId = fx(x.itemId));
@@ -4701,7 +4705,7 @@ function trSheet() {
   if (T.phase === 'pick') {
     const list = trCands(inc);
     return `${head}${chat}<p class="note" style="margin:6px 0">Ti ha chiesto <b>${esc(tagName(inc.tag))}</b>. Cosa gli proponi?</p>
-      <ul class="items trpick">${list.map(x => { const it = BY_ID[x.itemId]; return `<li><button class="trp" data-act="trPick" data-u="${x.uid}"><span class="ic-w">${ic(it.icon)}</span><span>${mktMark(it.cat)} ${esc(it.name)}<br><small class="muted">vale ${eur(trVal(x))}${x.cost ? ` · pagato ${eur(x.cost)}` : ''}</small></span></button></li>`; }).join('')}</ul>
+      <ul class="items trpick">${list.map(x => { const it = BY_ID[x.itemId]; return `<li><button class="trp" data-act="trPick" data-u="${x.uid}"><span class="ic-w">${ic(it.icon)}</span><span>${esc(it.name)}<br><small class="muted">vale ${eur(trVal(x))}${x.cost ? ` · pagato ${eur(x.cost)}` : ''}</small></span></button></li>`; }).join('')}</ul>
       <button class="btn btn-ghost" data-act="trEnd">Lascia stare</button>`;
   }
   if (T.phase === 'deal') return `${head}${chat}<div class="card trok"><b class="c-go">Affare fatto: +${eur(T.got)}</b>${T.back > 0 ? `<span class="note">Il resto del suo budget (${eur(T.back)}) torna a lui.</span>` : ''}${T.cost ? `<span class="note">L’avevi pagato ${eur(T.cost)}: ${signed(T.got - T.cost)}</span>` : ''}${T.gain ? `<span class="note">Sali di ${T.gain} ${T.gain === 1 ? 'livello' : 'livelli'}.</span>` : ''}</div>
@@ -4928,7 +4932,7 @@ const HELP = [
     ['Soprannomi', 'Se vendi tanto di una cosa, in giro ti danno un soprannome: Tic Tac per gli orologi, Canne Mozze per le armi… Se vendi caro diventi il Condor; se svendi tutto ti chiamano Aspirapolvere.'],
     ['Stelle di fama', 'Bronzo, argento e oro, ognuno da 1 a 3 stelle, poi il Platino. Più sali, più pagano i tuoi pezzi in quello stile e più amatori arrivano. Se per un po’ non vendi in quello stile la fama cala piano, ma non perdi mai più di due gradini; dal Platino non scendi sotto l’oro a 3 stelle.'],
     ['La tua firma', 'In un’asta firmata, se vendi quasi tutto la tua fama sale di più; se resta invenduta più di metà roba, la firma perde credibilità. Prezzi alti sì, ma nel momento giusto.'],
-    ['Frecce nel magazzino', 'Accanto a ogni pezzo: ▲ verde se venderlo adesso rende di più, ▼ rossa se rende di meno, ▶ bianca se è il prezzo normale.'],
+    ['Colori nel magazzino', 'La cifra di quanto vale un pezzo è verde se venderlo adesso rende di più, rossa se rende di meno, bianca se è il prezzo normale. Quanto l’hai pagato è in azzurro.'],
     ['La settimana', 'Ogni settimana una categoria si vende di più e una di meno. La vedi in cima ad Aste e Bunker: decidi tu se andare in asta o restare a vendere quello che hai. In asta, un pezzo “in calo” puoi comprarlo lo stesso e rivenderlo la settimana dopo, quando torna normale.'],
     ['Crescerà', 'Ogni tanto una categoria entra in una bolla: per qualche settimana vale sempre di più (anche il doppio, dipende dalla bolla), poi resta al massimo e si sgonfia. In asta i suoi pezzi hanno l’etichetta Crescerà: puoi pagarli anche un po’ sopra la stima, se poi vendi al momento giusto.'],
     ['Rivali', 'Quasi tutti comprano un po’ sotto la stima, qualcuno aspetta di più, alcuni non sono interessati: a volte lo prendi al minimo. Sopra la stima compra solo chi vuole un pezzo raro o uno che crescerà.'],
@@ -5195,7 +5199,7 @@ function vBunker() {
   if (G.btab === 'magazzino') {
     body = `<div class="card under" style="padding:14px 16px"><div><b>La tua asta</b><div class="note">${G.bunker.length >= CFG.myAuctionMin ? `Scegli da ${CFG.myAuctionPick[0]} a ${CFG.myAuctionPick[1]} pezzi e vendili uno dopo l’altro.` : `Ti servono almeno ${CFG.myAuctionMin} pezzi: ne hai ${G.bunker.length}.`}</div></div><button class="btn btn-go btn-sm" data-act="myOpen" ${G.bunker.length >= CFG.myAuctionMin ? '' : 'disabled'}>Organizza un’asta</button></div><div class="card under" style="padding:14px 16px"><div><b>Box chiusa</b><div class="note">Più pezzi insieme a un prezzo tuo: utile per liberarti degli invenduti.</div></div><button class="btn btn-ghost btn-sm" data-act="boxOpen" ${G.bunker.filter(boxOk).length >= 2 ? '' : 'disabled'}>Fai una box</button></div>${fameCard()}` + (G.bunker.length ? `<div class="shelves">${G.bunker.map(e => { const it = BY_ID[e.itemId], forIncs = G.incs.filter(i => okFor(e, i)), forInc = forIncs.length > 0, sale = e.listed || G.auto;
       return `<button class="slot${e.mine ? ' card-mine' : ''}" data-act="item" data-u="${e.uid}">${e.mine ? '<span class="flag mine">★ Tuo</span>' : ''}${forInc ? '<span class="flag inc">Incarico</span>' : ''}${wantsFor(e.itemId).length ? '<span class="flag sale">Richiesto</span>' : sale ? '<span class="flag sale">In vendita</span>' : ''}
-        ${cardArt(e.itemId, 'c' + e.uid)}<div class="nm">${mktMark(it.cat)} ${esc(it.name)}${it.set ? ` <b>×${it.set.length}</b>` : ''}</div><div class="vl num ${e.appraised === 'falso' ? 'c-risk' : mktCls(it.cat)}">${eur(marketVal(e))}${e.appraised === 'falso' ? '' : mktArrow(it.cat)}</div><div class="pd">pagato <b class="c-mine">${eur(e.cost)}</b></div>${e.appraised === 'vero' ? '<span class="perok">✓ Autentico</span>' : ''}${e.appraised ? '' : `<span class="perbtn" data-act="appraiseItem" data-u="${e.uid}" role="button">Perito · ${eur(appraisalCost(e.itemId))}</span>`}${e.appraised === 'falso' ? '<span class="flag fakef">Falso</span>' : ''}</button>`; }).join('')}</div>`
+        ${cardArt(e.itemId, 'c' + e.uid)}<div class="nm">${esc(it.name)}${it.set ? ` <b>×${it.set.length}</b>` : ''}</div><div class="vl num ${e.appraised === 'falso' ? 'c-risk' : mktCls(it.cat)}">${eur(marketVal(e))}</div><div class="pd">pagato <b class="c-mine">${eur(e.cost)}</b></div>${e.appraised === 'vero' ? '<span class="perok">✓ Autentico</span>' : ''}${e.appraised ? '' : `<span class="perbtn" data-act="appraiseItem" data-u="${e.uid}" role="button">Perito · ${eur(appraisalCost(e.itemId))}</span>`}${e.appraised === 'falso' ? '<span class="flag fakef">Falso</span>' : ''}</button>`; }).join('')}</div>`
       : `<div class="card empty">${ic('bunker')}<p style="margin-top:10px">Il bunker è vuoto. Quello che compri alle aste finisce qui.</p></div>`);
   } else if (G.btab === 'richieste') {
     const list = (G.wants || []).slice().sort((a, b) => a.exp - b.exp).map(w => {
@@ -5272,7 +5276,7 @@ function boxSheet() {
   return `<div class="eyebrow">Box chiusa</div>${res}<h2>Metti più pezzi in una box</h2>
     <p class="desc">Scegli i pezzi, poi decidi il prezzo. Di base è quello che hai pagato più il 10% (la stima più il 10% per i pezzi avuti gratis). Chi la compra non sa cosa c’è dentro: guarda solo il prezzo. Più è bassa più è facile, ma nessun prezzo è sicuro. Per sapere se l’hanno presa passa un giorno.</p>${boxRepNow() < 0 ? '<p class="note warn">La voce gira male: per qualche giorno le tue box si vendono peggio.</p>' : boxRepNow() > 0 ? '<p class="note">La voce gira bene: per qualche giorno le tue box si vendono meglio.</p>' : ''}
     <ul class="items boxlist">${list.map(e => { const it = BY_ID[e.itemId], on = B.sel.includes(e.uid);
-      return `<li><button class="boxrow${on ? ' on' : ''}" data-act="boxToggle" data-u="${e.uid}" aria-pressed="${on}"><span class="ic-w">${ic(it.icon)}</span><span class="bn">${esc(it.name)}${e.appraised === 'falso' ? ' <i class="c-risk">falso</i>' : ''}</span><span class="bp"><small>Pagato</small><b class="c-mine">${e.cost > 0 ? eur(e.cost) : 'gratis'}</b></span><span class="bp"><small>Stima</small><b class="c-est">${eur(myStima(e))}</b></span><span class="bchk">${on ? '✓' : ''}</span></button></li>`; }).join('') || '<li class="note">Nessun pezzo libero nel bunker.</li>'}</ul>
+      return `<li><button class="boxrow${on ? ' on' : ''}" data-act="boxToggle" data-u="${e.uid}" aria-pressed="${on}"><span class="ic-w">${ic(it.icon)}</span><span class="bn">${esc(it.name)}${e.appraised === 'falso' ? ' <i class="c-risk">falso</i>' : ''}</span><span class="bp"><small>Pagato</small><b class="c-mine">${e.cost > 0 ? eur(e.cost) : 'gratis'}</b></span><span class="bp"><small>Stima</small><b class="${mktCls(it.cat)}">${eur(myStima(e))}</b></span><span class="bchk">${on ? '✓' : ''}</span></button></li>`; }).join('') || '<li class="note">Nessun pezzo libero nel bunker.</li>'}</ul>
     ${sel.length ? `<div class="boxsum"><span>Pagato in tutto <b class="c-mine num">${eur(paid)}</b></span><span>Vale <b class="c-est num">${eur(boxVal())}</b></span></div>
     <div class="boxprice"><button class="btn btn-ghost" data-act="boxAdj" data-d="-1" aria-label="Abbassa">−</button><b class="num ${cls}">${eur(B.price)}</b><button class="btn btn-ghost" data-act="boxAdj" data-d="1" aria-label="Alza">+</button></div>
     <p class="boxverdict ${cls}">${verdict}</p>
@@ -5355,7 +5359,7 @@ function cardArt(itemId, u) { const it = BY_ID[itemId], r = rarity(it.est); retu
 const mktCls = cat => { const f = mkt(cat); return f > 1.03 ? 'c-go' : f < 0.97 ? 'c-risk' : 'c-plain'; };
 const mktArrow = cat => !G.market ? '' : cat === G.market.up ? ' <span class="c-go" title="Mercato in rialzo">▲</span>' : cat === G.market.down ? ' <span class="c-risk" title="Mercato in calo">▼</span>' : '';
 // in asta: dice cosa significa per te (23/11): in calo = questa settimana si rivende male, tienilo per la prossima; in rialzo = rivendilo subito
-const mktChip = cat => !G.market ? '' : cat === G.market.up ? ` · <span class="c-go">▲ rivendilo questa settimana</span>` : cat === G.market.down ? ` · <span class="c-risk">▼ in calo: rivendilo la prossima settimana</span>` : '';
+const mktChip = cat => !G.market ? '' : cat === G.market.up ? ` · <span class="c-go">rivendilo questa settimana</span>` : cat === G.market.down ? ` · <span class="c-risk">in calo: rivendilo la prossima settimana</span>` : '';
 // gradini di fama: bronzo, argento, oro (1-3 stelle), poi platino
 const fameBadge = k => { if (!k) return ''; if (k >= 10) return '<b class="fst plat" title="Platino">✦</b>'; const m = k <= 3 ? 'bronzo' : k <= 6 ? 'argento' : 'oro'; return `<b class="fst ${m}" title="${m[0].toUpperCase() + m.slice(1)}">${'★'.repeat((k - 1) % 3 + 1)}</b>`; };
 // freccina nel magazzino: venderlo adesso rende più (verde), meno (rossa) o il normale (bianca)
@@ -5363,10 +5367,10 @@ const mktMark = cat => { const f = mkt(cat); return f > 1.03 ? '<span class="mkm
 function marketStrip() {
   if (!G.market) return '';
   const M = G.market, left = CFG.marketWeek - (G.day - M.from), n = G.bunker.filter(e => BY_ID[e.itemId].cat === M.up).length;
-  const B = G.trend, tn = B ? trendNow(B.cat) : null, bub = tn && tn.ph ? `<div class="bub ${tn.ph}"><b>${tn.ph === 'su' ? '↗ Crescerà' : tn.ph === 'top' ? '★ Al massimo' : '↘ Si sgonfia'} · ${esc(CATS[B.cat])}</b> <span>${tn.f >= 1 ? '+' : ''}${Math.round((tn.f - 1) * 100)}% sul valore normale${tn.ph === 'su' ? ', e sale ancora' : tn.ph === 'top' ? ': è il momento di vendere' : ''}</span></div>` : '';
+  const B = G.trend, tn = B ? trendNow(B.cat) : null, bub = tn && tn.ph ? `<div class="bub ${tn.ph}"><b>${tn.ph === 'su' ? 'Crescerà' : tn.ph === 'top' ? 'Al massimo' : 'Si sgonfia'} · ${esc(CATS[B.cat])}</b> <span>${tn.f >= 1 ? '+' : ''}${Math.round((tn.f - 1) * 100)}% sul valore normale${tn.ph === 'su' ? ', e sale ancora' : tn.ph === 'top' ? ': è il momento di vendere' : ''}</span></div>` : '';
   return `<div class="card mkt week"><div class="wk-h"><span class="eyebrow">La settimana di</span><span class="note">cambia tra ${left} ${left === 1 ? 'giorno' : 'giorni'}</span></div>
-    <div class="wk-up c-go">▲ ${esc(CATS[M.up])} <b>+${Math.round((M.upF - 1) * 100)}%</b></div>
-    <div class="wk-dn c-risk">▼ ${esc(CATS[M.down])} −${Math.round((1 - M.downF) * 100)}%</div>
+    <div class="wk-up c-go">${esc(CATS[M.up])} <b>+${Math.round((M.upF - 1) * 100)}%</b></div>
+    <div class="wk-dn c-risk">In calo: ${esc(CATS[M.down])} −${Math.round((1 - M.downF) * 100)}%</div>
     ${n ? `<p class="note" style="margin:0">Nel bunker ne hai ${n}: puoi restare a vendere invece di andare in asta.</p>` : ''}${bub}</div>`;
 }
 
