@@ -1,4 +1,4 @@
-<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Black Market</title><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="Black Market"><meta name="theme-color" content="#111113"></head><body><style>@font-face {
+<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>BLACK MARKET</title><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="theme-color" content="#111113"></head><body><style>@font-face {
   font-family: 'Bebas Neue';
   font-style: normal;
   font-display: swap;
@@ -1649,6 +1649,11 @@ html[data-theme="hud"] .track .mk{width:3px;z-index:2;box-shadow:0 0 0 1px #0209
 .boxlist li{display:block;padding:0;border:0;background:none}
 .boxrow{box-sizing:border-box;max-width:100%}.boxrow .bn{flex:1 1 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .boxlist{grid-template-columns:minmax(0,1fr)}.boxlist li{min-width:0}
+/* pezzo raro e amatori */
+.tag.rare{background:linear-gradient(135deg,#ffd76a,#ff9f3a);color:#1a1000;border-color:transparent;font-weight:800;box-shadow:0 0 0 1px rgba(0,0,0,.25),0 2px 10px rgba(255,170,60,.35)}
+.plate .tag.rare+.tag{margin-left:6px}
+.plate .tag.rare{top:auto!important;bottom:12px;left:12px;right:auto!important}
+.tag.rare{padding:6px 12px;border-radius:999px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-family:var(--f-display)}
 
 /* ====== PROVE DI PALETTE E STILI (dalle tavole PNG) ====== */
 /* struttura comune delle prove di palette */
@@ -2305,7 +2310,7 @@ const CFG = {
   trade: { minF:[1.10,1.25], askF:[1.35,1.65], maxAttempts:2, concession:[0.30,0.50], greed:[0.7,1.8], baseAccept:0.10, spanAccept:0.80 },
   quickSale: 0.55,                    // vendi subito (provv.)
   offerChance: 0.45,                  // probabilità di un'offerta al giorno per pezzo in vendita
-  offerFactor: [0.72, 1.12], amatoreChance: 0.13, amatoreFactor: [1.28, 1.6], offerDays: 2,
+  offerFactor: [0.72, 1.12], amatoreChance: 0.13, amatoreFactor: [1.28, 1.6], amatoreRare: [1.5, 3.0], amatWantP: 0.12, rareP: 0.07, rareHype: 0.04, rareHypeEarly: 0.25, offerDays: 2,
   myAuctionFee: 0.08, myAuctionDur: 13,
   wantChance: 0.5, wantMax: 6, wantFactor: [0.95, 1.3], wantLow: [0.6, 0.85], wantHigh: [1.45, 1.9], wantSpike: 0.15, wantDays: 6,   // richieste di compratori nel bunker (provv.)
   bribe: { soffiata:150, commesso:100, banditore:300 }  // × rango
@@ -3490,7 +3495,14 @@ function makeLot(item, c, i, seq) {
   const T = CFG.trade;
   const tr = { minF:U(T.minF), askF:U(T.askF), greed:U(T.greed), conc:U(T.concession), rolls:[rnd(), rnd(), rnd()] };
   const paddle = 3 + Math.floor(rnd() * 94), bribeRoll = rnd();
-  return { uid:`${c.id}-${seq}-${i}`, itemId:item.id, n:i + 1, start, floor, dur, rivalT: buyRoll < 1 ? +t.toFixed(3) : null, paddle, tr, bribeRoll, fake, vague, appraised:null };
+  let rivalT = buyRoll < 1 ? +t.toFixed(3) : null; const rare = !fake && rnd() < CFG.rareP;
+  if (rare) {   // pezzo raro: a volte non interessa a nessuno, più spesso qualcuno lo prende un po' sopra la stima; ogni tanto c'è "hype" e sparisce subito
+    const r2 = rnd(), hype = rnd() < (G.day <= 5 ? CFG.rareHypeEarly : CFG.rareHype);
+    if (r2 < 0.3) rivalT = null;
+    else { const tgt = item.est * U([0.95, 1.3]); rivalT = +Math.min(dur * 0.97, Math.max(dur * 0.14, dur * (start - tgt) / (start - floor))).toFixed(3); }
+    if (hype) rivalT = +(dur * 0.04).toFixed(3);
+  }
+  return { uid:`${c.id}-${seq}-${i}`, itemId:item.id, n:i + 1, start, floor, dur, rivalT, rare, paddle, tr, bribeRoll, fake, vague, appraised:null };
 }
 const priceAt = (lot, t) => Math.max(lot.floor, r10(lot.start - (lot.start - lot.floor) * Math.min(1, Math.max(0, t) / lot.dur)));
 
@@ -3626,11 +3638,13 @@ const topFame = () => Object.entries(G.fame || {}).filter(([, p]) => p >= 2).sor
 const BOX_ORIGINS = ['un container da Hong Kong', 'l’eredità di un roadie', 'un magazzino sequestrato a Marsiglia', 'un baule da una villa sul lago', 'una spedizione senza mittente da Buenos Aires', 'il retro di un museo di provincia', 'un hangar vicino a Tangeri', 'una cassa da New Orleans'];
 function boxPool(lo, hi) { const p = CATALOG.filter(it => !it.set && it.est >= lo && it.est <= hi); return p.length ? p : CATALOG.filter(it => !it.set).sort((a, b) => a.est - b.est).slice(0, 10); }
 function genBox() {
-  const base = CFG.boxPrice[rankIdx()], price = r10(base * U([0.85, 1.15])), roll = rnd(), origin = pick(BOX_ORIGINS), items = [];
-  if (roll < 0.18) { items.push({ itemId:pick(boxPool(base * 4, base * 14)).id, fake:rnd() < 0.15 }); if (rnd() < 0.5) items.push({ itemId:pick(boxPool(0, base * 0.9)).id, fake:rnd() < 0.4 }); }
-  else if (roll < 0.6) { const n = 3 + Math.floor(rnd() * 3), p = boxPool(base * 0.25, base * 0.9); for (let i = 0; i < n; i++) items.push({ itemId:pick(p).id, fake:rnd() < 0.3 }); }
-  else if (roll < 0.75) { const kp = CATALOG.filter(it => it.box && it.est <= base * 6); if (kp.length) items.push({ itemId:pick(kp).id, fake:rnd() < 0.35 }); else items.push({ itemId:pick(boxPool(0, base)).id, fake:false }); }
-  else { const n = 2 + Math.floor(rnd() * 3), p = boxPool(0, base * 0.9); for (let i = 0; i < n; i++) items.push({ itemId:pick(p).id, fake:rnd() < 0.5 }); }
+  // prezzo e contenuto variano molto e non vanno d'accordo: puoi pagarla poco e trovarci il colpo, o pagarla cara e trovarci fuffa
+  const base = CFG.boxPrice[rankIdx()], price = r10(base * U([0.6, 1.6])), roll = rnd(), origin = pick(BOX_ORIGINS), items = [];
+  if (roll < 0.15) { items.push({ itemId:pick(boxPool(base * 4, base * 14)).id, fake:rnd() < 0.15 }); if (rnd() < 0.5) items.push({ itemId:pick(boxPool(0, base * 0.9)).id, fake:rnd() < 0.4 }); }
+  else if (roll < 0.50) { const n = 3 + Math.floor(rnd() * 3), p = boxPool(base * 0.4, base * 1.3); for (let i = 0; i < n; i++) items.push({ itemId:pick(p).id, fake:rnd() < 0.25 }); }
+  else if (roll < 0.72) { const n = 2 + Math.floor(rnd() * 3), p = boxPool(base * 0.2, base * 0.7); for (let i = 0; i < n; i++) items.push({ itemId:pick(p).id, fake:rnd() < 0.3 }); }
+  else if (roll < 0.82) { const kp = CATALOG.filter(it => it.box && it.est <= base * 6); if (kp.length) items.push({ itemId:pick(kp).id, fake:rnd() < 0.35 }); else items.push({ itemId:pick(boxPool(0, base)).id, fake:false }); }
+  else { const n = 2 + Math.floor(rnd() * 3), p = boxPool(0, base * 0.35); for (let i = 0; i < n; i++) items.push({ itemId:pick(p).id, fake:rnd() < 0.5 }); }
   G.box = { id:uid('x'), origin, price, items, exp:G.day + CFG.boxDays };
 }
 
@@ -3643,7 +3657,7 @@ function makeWant() {
   const top = topFame().slice(0, 3).map(x => x[0]), fr = rnd();
   if (top.length && fr < Math.min(0.75, 0.3 + 0.15 * top.length)) { const fp = CATALOG.filter(it => !it.set && it.est <= maxEst * 2.5 && styleTags(it.id).some(t => top.includes(t))); if (fp.length) pool = fp; }
   const it = pick(pool), exact = rnd() < 0.35, tag = pick(it.tags.filter(t => TAGS[t])), f = wantF() + 0.06 * fameBoost(it.id), who = pick(BUYERS);
-  const w = { id:uid('w'), itemId: exact || !tag ? it.id : null, tag: exact || !tag ? null : tag, f, buyer:who, exp:G.day + CFG.wantDays };
+  const ama = rnd() < CFG.amatWantP, w = { id:uid('w'), itemId: exact || !tag ? it.id : null, tag: exact || !tag ? null : tag, f: ama ? U(CFG.amatoreRare) + 0.06 * fameBoost(it.id) : f, buyer:who, ama, exp:G.day + CFG.wantDays };
   G.wants.push(w); return w;
 }
 const wantFits = (w, itemId) => !BY_ID[itemId].set && (w.itemId ? w.itemId === itemId : matches(itemId, w.tag));
@@ -3940,12 +3954,16 @@ const A = {
   boxSell() {
     const B = G.mybox; if (!B || G.state !== 'HUB') return; const items = boxItems(); if (items.length < 2) return toast('Una box ha almeno 2 pezzi');
     // chi la compra non la apre: conta il prezzo rispetto a quanto vale davvero quello che c'è dentro
-    const x = B.price / Math.max(1, boxVal()), p = x <= 0.7 ? 0.95 : x >= 1.4 ? 0.05 : 0.95 - (x - 0.7) / 0.7 * 0.9;
+    const x = B.price / boxRef(items.length), p = boxP(x);
     const paid = boxPaid(), price = B.price; nextDay();
     if (rnd() < p) {
       items.forEach(e => removeEntry(e.uid)); G.personal += price; G.stats.sold += items.length;
       note(`Box chiusa venduta (${items.length} pezzi): +${eur(price)}`); const d = price - paid;
-      G.mybox = { sel:[], price:0, custom:false, res:{ ok:true, txt:`Box venduta: +${eur(price)}`, sub: d > 0 ? `+${eur(d)} sul pagato` : d < 0 ? `−${eur(-d)} sotto il pagato` : 'in pari' } };
+      // il compratore la apre: se c'era fuffa pagata cara la voce gira (box che si vendono peggio per una settimana), se ha fatto un affare gira bene
+      const val = items.reduce((s, e) => s + myStima(e), 0), ratio = val / price; let voice = '';
+      if (ratio < 0.6) { G.boxRep = { v: Math.max(-2, boxRepNow() - 1), until: G.day + 7 }; voice = ' · l’ha aperta: c’era poca roba, la voce gira e per una settimana le tue box si vendono peggio'; }
+      else if (ratio > 1.3) { G.boxRep = { v: Math.min(2, boxRepNow() + 1), until: G.day + 7 }; voice = ' · l’ha aperta e ci ha fatto un affare: la voce gira bene'; }
+      G.mybox = { sel:[], price:0, custom:false, res:{ ok:true, txt:`Box venduta: +${eur(price)}`, sub: (d > 0 ? `+${eur(d)} sul pagato` : d < 0 ? `−${eur(-d)} sotto il pagato` : 'in pari') + voice } };
       render(); openSheet('box'); flashMoney();
     } else { B.res = { ok:false, txt:`Nessuno l’ha presa a ${eur(price)}`, sub:'È passato un giorno: abbassa il prezzo o riprova' }; render(); openSheet('box'); }
   },
@@ -4091,7 +4109,7 @@ function nextLot() { closeSheet(); G.trade = null; G.state = curLot() ? 'LOT_PRE
 function acquire(lot, price, via) {
   const mineNow = payer() === 'mio';
   const borrowed = spend(price);
-  const e = { uid:uid('b'), itemId:lot.itemId, cost:price, mine:mineNow, incId:G.inc ? G.inc.id : null, day:G.day, listed:false, fake:!!lot.fake, appraised:lot.appraised || null };
+  const e = { uid:uid('b'), itemId:lot.itemId, cost:price, mine:mineNow, incId:G.inc ? G.inc.id : null, day:G.day, listed:false, fake:!!lot.fake, appraised:lot.appraised || null, rare:!!lot.rare };
   G.bunker.push(e); note(`Comprato ${nm(lot.itemId)} a ${eur(price)} ${e.mine ? 'per te' : 'col budget'}${borrowed ? ` (di cui ${eur(borrowed)} presi dal budget del cliente)` : ''}${via === 'trattativa' ? ', in trattativa' : ''}`);
   G.result = { kind:'won', lot, price, via, entry:e.uid, mine:e.mine, borrowed };
   G.state = 'LOT_RESULT'; render(); flashMoney(); window.scrollTo({ top:0 });
@@ -4117,12 +4135,12 @@ function myNext() {
   while (M.pos < M.queue.length && !G.bunker.find(x => x.uid === M.queue[M.pos])) M.pos++;
   if (M.pos >= M.queue.length) { stopLoop(); M.phase = 'done'; render(); return; }
   const e = G.bunker.find(x => x.uid === M.queue[M.pos]), it = BY_ID[e.itemId], mv = it.est * mkt(it.cat);
-  const a1 = U([0.6, 1.1]), a2 = U([0.6, 1.1]), am = rnd() < CFG.amatoreChance, af = U(CFG.amatoreFactor);
+  const a1 = U([0.6, 1.1]), a2 = U([0.6, 1.1]), amP = myAmP(e, M.kind), am = rnd() < amP, af = U(e.rare || fameBoost(e.itemId) >= 2 ? CFG.amatoreRare : CFG.amatoreFactor);
   const fame = M.kind === 'svendita' ? 1 : 1 + 0.07 * fameBoost(e.itemId);
   // un falso nella tua asta passa per vero: chi lo compra a volte lo fa periziare (più vale, più controlla) e ti becca
   const res = r10(mv * (e.fake ? 1 : fame) * (am && !e.fake ? af : Math.max(a1, a2))), caught = !!e.fake && rnd() < fakeCheckP(it.est);
   const floor = M.mins && M.mins[e.uid] != null ? M.mins[e.uid] : myDefMin(e), start = myStart(e, floor), dur = CFG.myAuctionDur;
-  M.cur = { uid:e.uid, itemId:e.itemId, cost:e.cost || 0, caught, start, floor, dur, saleT: res < floor ? null : Math.max(0.6, dur * (start - res) / Math.max(1, start - floor)) };
+  M.cur = { uid:e.uid, itemId:e.itemId, cost:e.cost || 0, am: am && !e.fake, caught, start, floor, dur, saleT: res < floor ? null : Math.max(0.6, dur * (start - res) / Math.max(1, start - floor)) };
   M.phase = 'run'; render(); startRun();
 }
 function myAdvance() { const M = G.my; M.pos++; M.phase = 'between'; render(); setTimeout(() => { if (G.state === 'MYAUCTION' && G.my === M && M.phase === 'between') myNext(); }, 1300); }
@@ -4137,8 +4155,8 @@ function mySold() {
     M.results.push({ itemId:C.itemId, outcome:'beccato', price:p, fine, cost:C.cost }); myAdvance(); return;
   }
   G.personal += net; removeEntry(C.uid); G.stats.sold++; if (!(e && e.fake) && M.kind !== 'svendita') addFame(C.itemId, 1);
-  note(`Venduto nella tua asta ${nm(C.itemId)}: +${eur(net)}${e && e.fake ? ' · era un falso e non se n’è accorto nessuno' : ''}`);
-  M.results.push({ itemId:C.itemId, outcome:'venduto', price:p, net, cost:C.cost, fake:!!(e && e.fake) }); flashMoney(); myAdvance();
+  note(`Venduto nella tua asta ${nm(C.itemId)}: +${eur(net)}${C.am ? ' · l’ha voluto un amatore' : ''}${e && e.fake ? ' · era un falso e non se n’è accorto nessuno' : ''}`);
+  M.results.push({ itemId:C.itemId, outcome:'venduto', price:p, net, cost:C.cost, am:!!C.am, fake:!!(e && e.fake) }); flashMoney(); myAdvance();
 }
 function myEnd(kind) { stopLoop(); const M = G.my; M.results.push({ itemId:M.cur.itemId, outcome:kind }); myAdvance(); }
 // ---- la tua asta: minimo pezzo per pezzo ----
@@ -4151,13 +4169,27 @@ function myDefMin(e) { const it = BY_ID[e.itemId], s = myStima(e);
 // partenza: la regola di sempre (140% della stima), ma sempre ben sopra il minimo
 const myStart = (e, min) => r10(Math.max(myStima(e) * 1.4, min * 1.35));
 // probabilità che venda col minimo scelto (compratore normale o amatore, più la fama nell'asta firmata)
+function myAmP(e, kind) { if (kind === 'svendita') return 0; const fb = fameBoost(e.itemId);
+  return Math.min(0.45, CFG.amatoreChance * 0.6 + 0.06 * fb + (e.rare ? 0.18 : 0)); }
 function mySellP(e, min, kind) { const f = kind === 'svendita' ? 1 : 1 + 0.07 * fameBoost(e.itemId), x = min / (myStima(e) * f);
   const pn = x <= 0.6 ? 1 : x >= 1.1 ? 0 : 1 - ((x - 0.6) / 0.5) ** 2, [a, b] = CFG.amatoreFactor, pa = Math.min(1, Math.max(0, (b - x) / (b - a)));
-  return CFG.amatoreChance * pa + (1 - CFG.amatoreChance) * pn; }
+  const amP = myAmP(e, kind), [ra, rb] = e.rare || fameBoost(e.itemId) >= 2 ? CFG.amatoreRare : CFG.amatoreFactor, pr = Math.min(1, Math.max(0, (rb * (kind === 'svendita' ? 1 : 1) - x) / (rb - ra)));
+  return amP * pr + (1 - amP) * pn; }
 function myReadName() { const el = document.getElementById('pname'); if (el) { const n = el.value.trim().replace(/\s+/g, ' ').slice(0, 18); if (n) G.name = n; } }
 // ---- box chiusa: più pezzi del bunker insieme, a un prezzo che decidi tu ----
 const boxOk = e => !reservedFor(e).length;                                    // i pezzi che un cliente aspetta non vanno nella box
 const boxDefOf = e => e.cost > 0 ? r10(e.cost * 1.1) : r10(myStima(e) * 1.1); // pagato +10%, o stima +10% se l'hai avuto gratis
+// chi compra al buio vuole uno sconto: più è bassa più la prendono, ma nessun prezzo è sicuro
+// (prezzo / valore → probabilità: metà valore 90%, 3/4 60%, al valore 35%, +30% 15%, oltre 5%)
+const boxP = x => { const P = [[0.5, .9], [0.75, .6], [1, .35], [1.3, .15], [1.6, .05]]; if (x <= P[0][0]) return P[0][1];
+  for (let i = 1; i < P.length; i++) if (x <= P[i][0]) { const [a, pa] = P[i - 1], [c, pc] = P[i]; return pa + (pc - pa) * (x - a) / (c - a); } return .05; };
+// il compratore non sa cosa c'è dentro: confronta il prezzo con quanto costa di solito una box al tuo livello
+// (e con la voce che gira sulle tue box: chi ci ha trovato fuffa cara lo racconta, chi ha fatto un affare pure)
+const boxRepNow = () => G.boxRep && G.boxRep.until > G.day ? G.boxRep.v : 0;
+const boxTyp = {}; // quanto vale di solito un pezzo al tuo livello (mediana delle stime della fascia)
+const typPiece = k => boxTyp[k] || (boxTyp[k] = (() => { const r = CFG.ranks[k], v = CATALOG.filter(i => !i.set && i.est >= r.minEst && i.est <= Math.min(r.maxEst, r.minEst * 20 + 1500)).map(i => i.est).sort((a, b) => a - b); return v.length ? v[v.length >> 1] : 300; })());
+// prezzo "giusto" di una box chiusa: i pezzi valgono di solito tanto, ma al buio si paga circa la metà
+const boxRef = n => typPiece(rankIdx()) * n * 1.0 * (1 + 0.15 * boxRepNow());
 const boxItems = () => (G.mybox ? G.mybox.sel : []).map(u => G.bunker.find(x => x.uid === u)).filter(Boolean);
 const boxDef = () => boxItems().reduce((s, e) => s + boxDefOf(e), 0);
 const boxPaid = () => boxItems().reduce((s, e) => s + (e.cost || 0), 0);
@@ -4359,7 +4391,9 @@ const HELP = [
     ['Svendita', 'Per liberarti della roba: non conta per la fama, né in bene né in male.'],
     ['Il minimo', 'Di base è quello che hai pagato più il 10%: non ci perdi. Alzalo per vendere bene; sopra la stima compra solo un amatore. I pallini ti dicono quanto è probabile che venda.'],
     ['Vendere un falso', 'A un compratore del bunker puoi rifilarlo come vero: il gioco ti avvisa che è un falso e parte Persuadilo. Più vale il pezzo, più è difficile. Se lo manchi e se ne accorge: vendita saltata, piccola multa e un po’ di fama in meno.'],
-    ['Box chiusa', 'Dal bunker metti più pezzi in una box a un prezzo tuo (di base pagato +10%). Chi la compra non la apre. Il colore del prezzo ti dice se ci guadagni, vai in pari o ci perdi; se nessuno la prende, abbassa e riprova.'],
+    ['Box chiusa', 'Per sbarazzarti della roba: più pezzi in una box a un prezzo tuo (di base pagato +10%). Chi la compra non sa cosa c’è dentro e guarda solo il prezzo. Il colore ti dice se ci guadagni, vai in pari o ci perdi. Se rifili fuffa cara la voce gira e per una settimana le box si vendono peggio.'],
+    ['Pezzo raro', 'Ogni tanto in asta esce un pezzo raro: a volte non interessa a nessuno, più spesso qualcuno lo prende un po’ sopra la stima. Ogni tanto c’è l’hype e sparisce subito. Gli amatori lo pagano molto di più.'],
+    ['Amatori', 'Vengono alle tue aste firmate per la tua categoria, soprattutto per i pezzi rari: guardano poco la stima e pagano anche 2 o 3 volte tanto. Nella svendita non vengono. Nelle richieste li riconosci dall’etichetta Amatore.'],
     ['Un falso nella tua asta', 'Puoi provare a rifilarlo come vero. Se il compratore lo fa periziare ti becca: vendita saltata, piccola multa e un po’ di fama in meno.'],
     ['Consegna', 'Quando torni dalla sala con un pezzo per un cliente, la consegna si apre da sola. Il tasto Consegna in alto lampeggia finché non consegni.'],
     ['Cofanetti', 'Si possono separare e vendere pezzo per pezzo.']]],
@@ -4369,7 +4403,7 @@ const HELP = [
     ['Banditore', 'Alla prossima visita in quella sala molti rivali si fanno da parte.']]],
   ['Gli imprevisti', [
     ['Caduto dal camion', 'Ricomponi il puzzle in 30 secondi e il pezzo è tuo, gratis. Se aspetti troppo, se lo prende un altro.'],
-    ['Mystery box', 'Pezzi a sorpresa a prezzo fisso: può essere un colpo o una fregatura.'],
+    ['Mystery box', 'Pezzi a sorpresa, e anche il prezzo cambia ogni volta. Più o meno 4 volte su 10 ci perdi, ma ogni tanto c’è il colpo grosso.'],
     ['Mercato della settimana', 'Per qualche giorno certe cose valgono di più, altre di meno.']]],
   ['Soldi e livello', [
     ['Livello', 'Sale con le consegne e con il valore consegnato. Ogni 20 livelli si aprono nuove sale e nuovi clienti.'],
@@ -4623,7 +4657,7 @@ function vBunker() {
     const list = (G.wants || []).slice().sort((a, b) => a.exp - b.exp).map(w => {
       const have = G.bunker.filter(e => wantFits(w, e.itemId)), icn = w.itemId ? BY_ID[w.itemId].icon : tagIcon(w.tag), left = w.exp - G.day;
       return `<div class="card offer-row ${have.length ? 'amatore' : ''}"><div class="ic-w">${ic(icn, have.length ? 'go-ic' : '')}</div>
-        <div><b>${esc(w.buyer)}</b> cerca<div style="font-weight:600">${esc(wantLabel(w))}</div><div class="note">${left <= 0 ? 'ultimo giorno' : `ancora ${left} ${left === 1 ? 'giorno' : 'giorni'}`}</div></div>
+        <div><b>${esc(w.buyer)}</b>${w.ama ? ' <span class="tag rare">Amatore</span>' : ''} cerca<div style="font-weight:600">${esc(wantLabel(w))}</div><div class="note">${left <= 0 ? 'ultimo giorno' : `ancora ${left} ${left === 1 ? 'giorno' : 'giorni'}`}</div></div>
         <div class="amt num" style="font-size:20px">${have.length ? 'Ce l’hai' : '<span class="muted" style="font-size:15px">Non ce l’hai</span>'}</div>
         ${have.length ? `<div class="btns" style="flex-direction:column">${have.length > 1 ? '<div class="samepiece" style="font-size:13px">Ne compra <b style="color:var(--gold-hi)">uno solo</b>: scegli quale vendergli, gli altri restano a te</div>' : ''}${have.slice(0, 3).map(e => { const pr = wantPrice(w, e.itemId), d = pr - e.cost;
           return `<div class="wantline"><div><b>${esc(BY_ID[e.itemId].name)}</b><div class="pp num"><span>Pagato <b>${eur(e.cost)}</b></span><span>Offre <b>${eur(pr)}</b></span></div>${reservedTxt(e)}${rivalsTxt(e, w.id, pr)}</div>${diffB(d)}<button class="btn ${reservedFor(e).length ? 'btn-ghost' : 'btn-go'} btn-sm" data-act="sellWant" data-id="${w.id}" data-u="${e.uid}">Vendi</button></div>`; }).join('')}</div>` : ''}</div>`; }).join('');
@@ -4692,7 +4726,7 @@ function boxSheet() {
   const cls = !sel.length ? '' : d > tol ? 'c-go' : d < -tol ? 'c-risk' : 'c-gold', verdict = !sel.length ? '' : d > tol ? `Ci guadagni +${eur(d)}` : d < -tol ? `Ci perdi −${eur(-d)}` : 'Vai in pari';
   const res = B.res ? `<div class="boxres ${B.res.ok ? 'ok' : 'ko'}"><b>${B.res.txt}</b><span>${B.res.sub}</span></div>` : '';
   return `<div class="eyebrow">Box chiusa</div>${res}<h2>Metti più pezzi in una box</h2>
-    <p class="desc">Chi la compra non la apre: la prende in blocco. Scegli i pezzi, poi decidi il prezzo. Di base è quello che hai pagato più il 10% (la stima più il 10% per i pezzi avuti gratis). Per sapere se l’hanno presa passa un giorno.</p>
+    <p class="desc">Scegli i pezzi, poi decidi il prezzo. Di base è quello che hai pagato più il 10% (la stima più il 10% per i pezzi avuti gratis). Chi la compra non sa cosa c’è dentro: guarda solo il prezzo. Più è bassa più è facile, ma nessun prezzo è sicuro. Per sapere se l’hanno presa passa un giorno.</p>${boxRepNow() < 0 ? '<p class="note warn">La voce gira male: per qualche giorno le tue box si vendono peggio.</p>' : boxRepNow() > 0 ? '<p class="note">La voce gira bene: per qualche giorno le tue box si vendono meglio.</p>' : ''}
     <ul class="items boxlist">${list.map(e => { const it = BY_ID[e.itemId], on = B.sel.includes(e.uid);
       return `<li><button class="boxrow${on ? ' on' : ''}" data-act="boxToggle" data-u="${e.uid}" aria-pressed="${on}"><span class="ic-w">${ic(it.icon)}</span><span class="bn">${esc(it.name)}${e.appraised === 'falso' ? ' <i class="c-risk">falso</i>' : ''}</span><span class="bp"><small>Pagato</small><b class="c-mine">${e.cost > 0 ? eur(e.cost) : 'gratis'}</b></span><span class="bp"><small>Stima</small><b class="c-est">${eur(myStima(e))}</b></span><span class="bchk">${on ? '✓' : ''}</span></button></li>`; }).join('') || '<li class="note">Nessun pezzo libero nel bunker.</li>'}</ul>
     ${sel.length ? `<div class="boxsum"><span>Pagato in tutto <b class="c-mine num">${eur(paid)}</b></span><span>Vale <b class="c-est num">${eur(boxVal())}</b></span></div>
@@ -4826,7 +4860,7 @@ function vLot() {
   const wantsHere = it.set ? [] : (G.wants || []).filter(w => wantFits(w, it.id)).sort((a, b) => b.f - a.f);
   const wantHint = wantsHere.length ? `<p class="wanthint">${ic('acquirente')}<span>Nel bunker lo cerca <b>${esc(wantsHere[0].buyer)}</b>${wantsHere.length > 1 ? (wantsHere.length === 2 ? ' · e un altro' : ` · e altri ${wantsHere.length - 1}`) : ''}. Quanto paga lo scopri solo quando hai il pezzo.</span></p>` : '';
   const tag = (!fitAll.length && !cheapFor && wantsHere.length) ? '<span class="tag fit buyer">Ha un compratore</span>' : G.incs.length ? `<span class="tag fit ${fitAll.length ? (risky ? 'yes near' : 'yes') : 'no'}">${fitAll.length ? risky ? `Sotto soglia del ${Math.max(1, Math.round((1 - it.est / tagMin(fitAll[0].tag)) * 100))}% · ${esc(clientOf(fitAll[0].clientId).name)}` : (G.incs.length > 1 ? '✓ Per ' + fitAll.map(i => esc(incName(i))).join(', ') : '✓ Per l’incarico') : cheapFor ? `Vale troppo poco per ${esc(incName(cheapFor))}` : wantsHere.length ? 'Ha un compratore' : 'Non richiesto'}</span>` : (wantsHere.length ? '<span class="tag fit yes">Ha un compratore</span>' : '');
-  return `<section class="lot">${plate(it.id, lot.uid, lot.n, tag, sessColor(lot), lot.appraised)}
+  return `<section class="lot">${plate(it.id, lot.uid, lot.n, (lot.rare ? '<span class="tag rare">Pezzo raro</span>' : '') + tag, sessColor(lot), lot.appraised)}
     <div class="info">
       <div class="eyebrow"><b>${c.name}</b> · ${venueOf(c)} · ${CATS[it.cat]}${mktChip(it.cat)}</div>
       <h1 class="lot-name">${esc(it.name)}</h1>
@@ -4977,7 +5011,7 @@ function vMy() {
   const between = M.phase === 'between';
   return `<section class="lot">${plate(it.id, 'my' + C.uid, 0, `<span class="stamp">LA TUA ASTA · ${Math.min(M.pos + (between ? 0 : 1), M.queue.length)}/${M.queue.length}</span>`)}
     <div class="info"><div class="eyebrow"><b>${M.kind === 'svendita' ? 'Svendita' : 'Asta firmata · ' + esc(G.name || '')}</b> · ${CATS[it.cat]}${M.kind !== 'svendita' && fameBoost(it.id) ? ' · <span class="c-go">il tuo stile</span>' : ''}</div><h1 class="lot-name">${esc(it.name)}</h1>
-    ${between ? `<div><span class="stampbig ${last.outcome === 'venduto' ? 'green' : last.outcome === 'beccato' ? 'red' : 'grey'} slam">${last.outcome === 'venduto' ? 'Venduto ' + eur(last.price) + (last.cost != null ? ` <small class="gainst">${last.net - last.cost >= 0 ? '+' : '−'}${eur(Math.abs(last.net - last.cost))} sul pagato</small>` : '') : last.outcome === 'beccato' ? 'Beccato: è falso' : last.outcome === 'ritirato' ? 'Ritirato' : 'Invenduto'}</span></div><p class="note">${M.pos < M.queue.length ? 'Arriva il prossimo pezzo…' : 'Era l’ultimo pezzo.'}</p>`
+    ${between ? `<div><span class="stampbig ${last.outcome === 'venduto' ? 'green' : last.outcome === 'beccato' ? 'red' : 'grey'} slam">${last.outcome === 'venduto' ? 'Venduto ' + eur(last.price) + (last.am ? ' <small class="gainst">un amatore l’ha voluto a tutti i costi</small>' : '') + (last.cost != null ? ` <small class="gainst">${last.net - last.cost >= 0 ? '+' : '−'}${eur(Math.abs(last.net - last.cost))} sul pagato</small>` : '') : last.outcome === 'beccato' ? 'Beccato: è falso' : last.outcome === 'ritirato' ? 'Ritirato' : 'Invenduto'}</span></div><p class="note">${M.pos < M.queue.length ? 'Arriva il prossimo pezzo…' : 'Era l’ultimo pezzo.'}</p>`
     : `<div class="pricebox"><div class="lbl"><span class="eyebrow">Prezzo attuale</span><span class="eyebrow">Minimo ${eur(C.floor)}</span></div>
         <div id="myPrice" class="price live">${eur(C.start)}</div><div class="track"><div id="myFill" class="fill"></div></div>
         <div class="paidrow"><span>${C.cost > 0 ? `Pagato <b class="c-mine num">${eur(C.cost)}</b>` : '<b class="c-mine">Avuto gratis</b>'}</span><span id="myGain" class="num"></span></div>
@@ -5237,4 +5271,4 @@ window.BM = { get G() { return G; }, A, THEMES, payer, CFG, CATALOG, CITIES, CLI
 
 })();
 </script>
-<script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
+<script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js"));</script></body></html>
