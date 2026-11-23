@@ -1,0 +1,10 @@
+BLACK MARKET — versione da mettere su GitHub Pages (funziona anche senza internet)
+
+File da caricare (tutti, nella cartella principale del repository):
+  index.html            il gioco, con dentro illustrazioni e caratteri
+  sw.js                 salva il gioco nel telefono
+  manifest.webmanifest  nome e icona dell'app
+  icon-192.png, icon-512.png, apple-touch-icon.png   l'icona
+
+Sul telefono: apri l'indirizzo da Safari, Condividi → Aggiungi alla schermata Home.
+Per aggiornare: ricarica index.html e sw.js nuovi (il resto resta uguale).
