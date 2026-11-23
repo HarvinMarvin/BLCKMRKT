@@ -1725,6 +1725,7 @@ html[data-theme="hud"] .track .mk{width:3px;z-index:2;box-shadow:0 0 0 1px #0209
 .trmodes{grid-template-columns:1fr 1fr!important}
 .fnick{display:block;margin:2px 0 6px;font-size:14px}.fnick b{color:var(--gold,#f2c14e)}
 .bossq{font-family:var(--f-display);font-size:34px;line-height:1;color:#f2c14e;text-shadow:0 0 12px rgba(242,193,78,.6)}
+.c-mine{color:var(--c-mine,#5cc8ff)}.c-plain{color:var(--ink,#f1efe8)}
 
 /* ====== PROVE DI PALETTE E STILI (dalle tavole PNG) ====== */
 /* struttura comune delle prove di palette */
@@ -2373,7 +2374,7 @@ const CFG = {
     carte:[0.55,0.65], antichita:[0.52,0.62], arte:[0.5,0.62], memorabilia:[0.5,0.62], orologi:[0.56,0.68], gioielli:[0.6,0.7], vini:[0.6,0.72], monete:[0.7,0.8] },
   // fasce dei rivali (frazione della stima a cui comprano): chi scatta subito, chi aspetta un po', chi gratta, a volte nessuno
   // 23/11: la massa dei rivali compra un po' sotto la stima (così c'è sempre un guadagno); sopra solo per pezzi rari o in crescita
-  rivalBands: [ { p:0.14, f:[0.93, 0.99] }, { p:0.38, f:[0.84, 0.93] }, { p:0.28, f:[0, 0.84] }, { p:0.20, none:true } ],
+  rivalBands: [ { p:0.13, f:[0.93, 0.99] }, { p:0.37, f:[0.84, 0.93] }, { p:0.25, f:[0, 0.84] }, { p:0.25, none:true } ],
   mbox: { colpoP:0.10, truffaP:0.10, normale:[0.75, 1.35], colpo:[2.0, 3.5], truffa:[0.4, 0.65] },  // mystery box (23/11)
   trend: { first:6, ramp:[21, 42], peak:[1.4, 2.1], hold:7, fall:14, after:1.05, gapDays:[5, 14], rivalAbove:0.4, rivalF:[1.0, 1.25] },
   durationS: { monete:15.5, antichita:16, carte:15.5, orologi:15, gioielli:14.5, borse:13.5, memorabilia:14, leggende:16.5, penne:13, curiosita:14 },
@@ -2382,7 +2383,7 @@ const CFG = {
   boxChance: 0.22, boxDays: 2, boxPrice: [600, 1200, 2200, 3800, 6000],  // mystery box (provv.)
   fameDecay: 0.9, fameTiers: [2, 5, 9, 14, 20, 27, 35, 45, 57, 72], credBonus: 1, credMalus: 1,                              // ogni settimana la fama si raffredda (provv.)
   rivalWindowS: [5.6, 13.9],
-  unsoldPauseS: 1.4,
+  unsoldPauseS: 2.5,
   trade: { minF:[1.10,1.25], askF:[1.35,1.65], maxAttempts:2, concession:[0.30,0.50], greed:[0.7,1.8], baseAccept:0.10, spanAccept:0.80 },
   quickSale: 0.55,                    // vendi subito (provv.)
   offerChance: 0.45,                  // probabilità di un'offerta al giorno per pezzo in vendita
@@ -3598,7 +3599,7 @@ function makeLot(item, c, i, seq) {
   let br = rnd() * (fake ? 0.85 : 1); const eager = (aggr - 0.6) * 0.25; let band = CFG.rivalBands[CFG.rivalBands.length - 1];
   for (let k = 0, acc = 0; k < CFG.rivalBands.length; k++) { acc += CFG.rivalBands[k].p + (k === 0 ? eager : k === 2 ? -eager : 0); if (br < acc) { band = CFG.rivalBands[k]; break; } }
   if (fake && rnd() < 0.35) band = CFG.rivalBands[CFG.rivalBands.length - 1];
-  const buyRoll = band.none ? 1 : 0, lo = band.f ? Math.max(band.f[0], fF + 0.08) : 0, target = band.f ? E * U([lo, Math.max(lo + 0.02, band.f[1])]) : E;
+  const buyRoll = band.none ? 1 : 0, lo = band.f ? Math.max(band.f[0], fF + 0.12) : 0, target = band.f ? E * U([lo, Math.max(lo + 0.02, band.f[1])]) : E;
   const sc = dur / 15.5;
   let t = dur * (start - target) / (start - floor);
   t = Math.min(dur * 0.97, Math.max(CFG.rivalWindowS[0] * sc * 0.7, t));
@@ -5194,7 +5195,7 @@ function vBunker() {
   if (G.btab === 'magazzino') {
     body = `<div class="card under" style="padding:14px 16px"><div><b>La tua asta</b><div class="note">${G.bunker.length >= CFG.myAuctionMin ? `Scegli da ${CFG.myAuctionPick[0]} a ${CFG.myAuctionPick[1]} pezzi e vendili uno dopo l’altro.` : `Ti servono almeno ${CFG.myAuctionMin} pezzi: ne hai ${G.bunker.length}.`}</div></div><button class="btn btn-go btn-sm" data-act="myOpen" ${G.bunker.length >= CFG.myAuctionMin ? '' : 'disabled'}>Organizza un’asta</button></div><div class="card under" style="padding:14px 16px"><div><b>Box chiusa</b><div class="note">Più pezzi insieme a un prezzo tuo: utile per liberarti degli invenduti.</div></div><button class="btn btn-ghost btn-sm" data-act="boxOpen" ${G.bunker.filter(boxOk).length >= 2 ? '' : 'disabled'}>Fai una box</button></div>${fameCard()}` + (G.bunker.length ? `<div class="shelves">${G.bunker.map(e => { const it = BY_ID[e.itemId], forIncs = G.incs.filter(i => okFor(e, i)), forInc = forIncs.length > 0, sale = e.listed || G.auto;
       return `<button class="slot${e.mine ? ' card-mine' : ''}" data-act="item" data-u="${e.uid}">${e.mine ? '<span class="flag mine">★ Tuo</span>' : ''}${forInc ? '<span class="flag inc">Incarico</span>' : ''}${wantsFor(e.itemId).length ? '<span class="flag sale">Richiesto</span>' : sale ? '<span class="flag sale">In vendita</span>' : ''}
-        ${cardArt(e.itemId, 'c' + e.uid)}<div class="nm">${mktMark(it.cat)} ${esc(it.name)}${it.set ? ` <b>×${it.set.length}</b>` : ''}</div><div class="vl num ${e.appraised === 'falso' ? 'c-risk' : ''}">${eur(marketVal(e))}${e.appraised === 'falso' ? '' : mktArrow(it.cat)}</div><div class="pd">pagato ${eur(e.cost)}</div>${e.appraised === 'vero' ? '<span class="perok">✓ Autentico</span>' : ''}${e.appraised ? '' : `<span class="perbtn" data-act="appraiseItem" data-u="${e.uid}" role="button">Perito · ${eur(appraisalCost(e.itemId))}</span>`}${e.appraised === 'falso' ? '<span class="flag fakef">Falso</span>' : ''}</button>`; }).join('')}</div>`
+        ${cardArt(e.itemId, 'c' + e.uid)}<div class="nm">${mktMark(it.cat)} ${esc(it.name)}${it.set ? ` <b>×${it.set.length}</b>` : ''}</div><div class="vl num ${e.appraised === 'falso' ? 'c-risk' : mktCls(it.cat)}">${eur(marketVal(e))}${e.appraised === 'falso' ? '' : mktArrow(it.cat)}</div><div class="pd">pagato <b class="c-mine">${eur(e.cost)}</b></div>${e.appraised === 'vero' ? '<span class="perok">✓ Autentico</span>' : ''}${e.appraised ? '' : `<span class="perbtn" data-act="appraiseItem" data-u="${e.uid}" role="button">Perito · ${eur(appraisalCost(e.itemId))}</span>`}${e.appraised === 'falso' ? '<span class="flag fakef">Falso</span>' : ''}</button>`; }).join('')}</div>`
       : `<div class="card empty">${ic('bunker')}<p style="margin-top:10px">Il bunker è vuoto. Quello che compri alle aste finisce qui.</p></div>`);
   } else if (G.btab === 'richieste') {
     const list = (G.wants || []).slice().sort((a, b) => a.exp - b.exp).map(w => {
@@ -5350,6 +5351,8 @@ const rarity = est => RAR.find(r => est < r[0]);
 function cardArt(itemId, u) { const it = BY_ID[itemId], r = rarity(it.est); return `<div class="cardf r-${r[1]}"><span class="rar">${it.box ? 'Contenitore' : r[2]}</span>${art(it, u, true)}</div>`; }
 
 /* ---------- mercato ---------- */
+// stima nel bunker: verde se adesso vale di più, rossa se vale di meno, bianca se normale
+const mktCls = cat => { const f = mkt(cat); return f > 1.03 ? 'c-go' : f < 0.97 ? 'c-risk' : 'c-plain'; };
 const mktArrow = cat => !G.market ? '' : cat === G.market.up ? ' <span class="c-go" title="Mercato in rialzo">▲</span>' : cat === G.market.down ? ' <span class="c-risk" title="Mercato in calo">▼</span>' : '';
 // in asta: dice cosa significa per te (23/11): in calo = questa settimana si rivende male, tienilo per la prossima; in rialzo = rivendilo subito
 const mktChip = cat => !G.market ? '' : cat === G.market.up ? ` · <span class="c-go">▲ rivendilo questa settimana</span>` : cat === G.market.down ? ` · <span class="c-risk">▼ in calo: rivendilo la prossima settimana</span>` : '';
@@ -5477,7 +5480,8 @@ function paintOfferHint() {
 
 function vResult() {
   const R = G.result, it = BY_ID[R.lot.itemId], left = lotsLeft(), won = R.kind === 'won';
-  const fitInc = won ? G.incs.find(i => matches(it.id, i)) : null, fit = !!fitInc;
+  // se il pezzo è stato rifiutato perché falso (o non c'è più), niente tasto Consegna a vuoto
+  const ent = won && G.bunker.find(x => x.uid === R.entry), fitInc = ent && ent.appraised !== 'falso' ? G.incs.find(i => matches(it.id, i)) : null, fit = !!fitInc;
   return `<section class="lot">${plate(it.id, R.lot.uid, R.lot.n, '', sessColor(R.lot), R.lot.appraised, won)}
     <div class="info">
       <div><span class="stampbig ${won ? 'green' : 'grey'} slam">${won ? (R.via === 'trattativa' ? 'Ricomprato' : 'Aggiudicato') : 'Perso'}</span></div>
@@ -5623,7 +5627,7 @@ function openSheet(kind, arg) {
   else if (kind === 'soffiata') { const s = G.intel.soffiata.cities;
     html = `<div class="eyebrow">La soffiata</div><h2>${s.length ? 'Ecco dove cercare' : 'Oggi non c’è da nessuna parte'}</h2>
       <p class="desc">${s.length ? `Un pezzo per il tuo incarico è in catalogo a: <b class="c-go">${s.map(id => cityOf(id).name).join(', ')}</b>. Sulla mappa le trovi segnate in verde.` : 'Nessuna sala aperta lo ha oggi. Lascia passare qualche giorno o prova a fidarti delle probabilità.'}</p>
-      <button class="btn btn-ghost" data-act="close">Chiudi</button>`; }
+      <div class="row">${s.length ? '' : `<button class="btn btn-gold" data-act="soffWait">Passa la notte · giorno ${G.day + 1}</button>`}<button class="btn btn-ghost" data-act="close">Chiudi</button></div>`; }
   else if (kind === 'catalog') { const s = G.sessions[arg];
     html = `<div class="eyebrow">Il commesso · ${cityOf(arg).name}</div><h2>${s.lots.length - s.idx} lotti in catalogo</h2><ul class="items">${s.lots.slice(s.idx).map(l => `<li><div class="ic-w ${G.incs.some(i => matches(l.itemId, i)) ? 'gold' : ''}">${ic(iconOf(l.itemId))}</div><span>${esc(BY_ID[l.itemId].name)}</span><span class="vl">${eur(BY_ID[l.itemId].est)}</span></li>`).join('')}</ul>
       <p class="note">Il catalogo resta visibile sulla scheda della città fino alla tua visita.</p><button class="btn btn-ghost" data-act="close">Chiudi</button>`; }
@@ -5678,10 +5682,12 @@ function openSheet(kind, arg) {
   const still = G.ui.sheet === kind; G.ui.sheet = kind;
   if (kind === 'notice') { clearTimeout(toastT); $('#toast').classList.remove('on'); }
   // se la scheda è già aperta (es. scegli uno stile dopo l'altro) resta dov'eri, senza tornare in cima
-  const oldSh = still && document.querySelector('#sheet .sheet'), keep = oldSh ? oldSh.scrollTop : 0, keepX = still ? [...document.querySelectorAll('#sheet .themes')].map(t => t.scrollLeft) : [];
+  const oldSh = still && document.querySelector('#sheet .sheet'), keep = oldSh ? oldSh.scrollTop : 0, keepX = still ? [...document.querySelectorAll('#sheet .themes')].map(t => t.scrollLeft) : [], keepIn = still ? [...document.querySelectorAll('#sheet .boxlist, #sheet .trpick')].map(t => t.scrollTop) : [];
   $('#sheet').innerHTML = `<div class="sheet-bg${still ? ' still' : ''}${kind === 'style' ? ' styl' : ''}" data-act="bgclose"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;
   if (keep) { const ns = document.querySelector('#sheet .sheet'); if (ns) ns.scrollTop = keep; }
   if (keepX.length) document.querySelectorAll('#sheet .themes').forEach((t, i) => { if (keepX[i]) t.scrollLeft = keepX[i]; });
+  // la lista dentro la box chiusa (e quella della trattativa) resta dov'era quando selezioni un pezzo
+  if (keepIn.length) document.querySelectorAll('#sheet .boxlist, #sheet .trpick').forEach((t, i) => { if (keepIn[i]) t.scrollTop = keepIn[i]; });
   { const tc = document.getElementById('trchat'); if (tc) tc.scrollTop = tc.scrollHeight; }
   lastRenderAt = performance.now();
 }
@@ -5772,6 +5778,7 @@ document.addEventListener('click', e => {
     case 'trPress': return A.trPress(+d.d);
     case 'trSend': return A.trSend(d.v);
     case 'trTakeH': return A.trTakeH();
+    case 'soffWait': closeSheet(); return A.wait();
     case 'trCoffee': return A.trCoffee(d.v === '1');
     case 'trDeal': return A.trDeal(d.v === '1');
     case 'trEnd': return A.trEnd();
