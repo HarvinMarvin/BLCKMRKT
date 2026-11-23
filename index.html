@@ -3373,6 +3373,7 @@ function migrateVariants() {
   (G.incs || []).forEach(o => o.tag = fxTag(o.tag)); (G.board || []).forEach(o => o.tag = fxTag(o.tag));
   Object.values(G.sessions || {}).forEach(s => (s.lots || []).forEach(l => l.itemId = fx(l.itemId)));
   if (G.truck) G.truck.itemId = fx(G.truck.itemId);
+  if (G.box && !G.box.items) G.box = null; // riparazione: la box chiusa finiva per sbaglio al posto della mystery box
   if (G.box) (G.box.items || []).forEach(x => x.itemId = fx(x.itemId));
   if (G.my && G.my.lots) G.my.lots.forEach(x => { if (x.itemId) x.itemId = fx(x.itemId); });
 }
@@ -3930,21 +3931,21 @@ const A = {
     render(); flashMoney();
   },
   // aste mie: servono almeno 5 pezzi; scegli da 3 a 8 pezzi; passano uno alla volta
-  boxOpen() { if (G.state !== 'HUB') return; G.box = { sel:[], price:0, custom:false }; openSheet('box'); },
-  boxToggle(u) { const B = G.box; if (!B || G.state !== 'HUB') return; const e = G.bunker.find(x => x.uid === u); if (!e || !boxOk(e)) return;
+  boxOpen() { if (G.state !== 'HUB') return; G.mybox = { sel:[], price:0, custom:false }; openSheet('box'); },
+  boxToggle(u) { const B = G.mybox; if (!B || G.state !== 'HUB') return; const e = G.bunker.find(x => x.uid === u); if (!e || !boxOk(e)) return;
     B.res = null; B.sel = B.sel.includes(u) ? B.sel.filter(x => x !== u) : [...B.sel, u]; if (!B.custom) B.price = boxDef(); else B.price = Math.min(B.price, boxDef() * 3); openSheet('box'); },
-  boxAdj(d) { const B = G.box; if (!B || !B.sel.length) return; const step = Math.max(10, r10(boxDef() * 0.05)); B.price = Math.max(10, r10(B.price + d * step)); B.custom = true; openSheet('box'); },
-  boxCut() { const B = G.box; if (!B || !B.sel.length) return; B.price = Math.max(10, r10(B.price * 0.9)); B.custom = true; openSheet('box'); },
-  boxStd() { const B = G.box; if (!B) return; B.price = boxDef(); B.custom = false; openSheet('box'); },
+  boxAdj(d) { const B = G.mybox; if (!B || !B.sel.length) return; const step = Math.max(10, r10(boxDef() * 0.05)); B.price = Math.max(10, r10(B.price + d * step)); B.custom = true; openSheet('box'); },
+  boxCut() { const B = G.mybox; if (!B || !B.sel.length) return; B.price = Math.max(10, r10(B.price * 0.9)); B.custom = true; openSheet('box'); },
+  boxStd() { const B = G.mybox; if (!B) return; B.price = boxDef(); B.custom = false; openSheet('box'); },
   boxSell() {
-    const B = G.box; if (!B || G.state !== 'HUB') return; const items = boxItems(); if (items.length < 2) return toast('Una box ha almeno 2 pezzi');
+    const B = G.mybox; if (!B || G.state !== 'HUB') return; const items = boxItems(); if (items.length < 2) return toast('Una box ha almeno 2 pezzi');
     // chi la compra non la apre: conta il prezzo rispetto a quanto vale davvero quello che c'è dentro
     const x = B.price / Math.max(1, boxVal()), p = x <= 0.7 ? 0.95 : x >= 1.4 ? 0.05 : 0.95 - (x - 0.7) / 0.7 * 0.9;
     const paid = boxPaid(), price = B.price; nextDay();
     if (rnd() < p) {
       items.forEach(e => removeEntry(e.uid)); G.personal += price; G.stats.sold += items.length;
       note(`Box chiusa venduta (${items.length} pezzi): +${eur(price)}`); const d = price - paid;
-      G.box = { sel:[], price:0, custom:false, res:{ ok:true, txt:`Box venduta: +${eur(price)}`, sub: d > 0 ? `+${eur(d)} sul pagato` : d < 0 ? `−${eur(-d)} sotto il pagato` : 'in pari' } };
+      G.mybox = { sel:[], price:0, custom:false, res:{ ok:true, txt:`Box venduta: +${eur(price)}`, sub: d > 0 ? `+${eur(d)} sul pagato` : d < 0 ? `−${eur(-d)} sotto il pagato` : 'in pari' } };
       render(); openSheet('box'); flashMoney();
     } else { B.res = { ok:false, txt:`Nessuno l’ha presa a ${eur(price)}`, sub:'È passato un giorno: abbassa il prezzo o riprova' }; render(); openSheet('box'); }
   },
@@ -4157,7 +4158,7 @@ function myReadName() { const el = document.getElementById('pname'); if (el) { c
 // ---- box chiusa: più pezzi del bunker insieme, a un prezzo che decidi tu ----
 const boxOk = e => !reservedFor(e).length;                                    // i pezzi che un cliente aspetta non vanno nella box
 const boxDefOf = e => e.cost > 0 ? r10(e.cost * 1.1) : r10(myStima(e) * 1.1); // pagato +10%, o stima +10% se l'hai avuto gratis
-const boxItems = () => (G.box ? G.box.sel : []).map(u => G.bunker.find(x => x.uid === u)).filter(Boolean);
+const boxItems = () => (G.mybox ? G.mybox.sel : []).map(u => G.bunker.find(x => x.uid === u)).filter(Boolean);
 const boxDef = () => boxItems().reduce((s, e) => s + boxDefOf(e), 0);
 const boxPaid = () => boxItems().reduce((s, e) => s + (e.cost || 0), 0);
 const boxVal = () => boxItems().reduce((s, e) => s + myStima(e), 0);
@@ -4686,7 +4687,7 @@ function tzTick() {
   tzT = setInterval(step, 50); step();
 }
 function boxSheet() {
-  const B = G.box; if (!B) return '';
+  const B = G.mybox; if (!B) return '';
   const list = G.bunker.filter(boxOk), sel = boxItems(), paid = boxPaid(), d = B.price - paid, tol = Math.max(10, paid * 0.02);
   const cls = !sel.length ? '' : d > tol ? 'c-go' : d < -tol ? 'c-risk' : 'c-gold', verdict = !sel.length ? '' : d > tol ? `Ci guadagni +${eur(d)}` : d < -tol ? `Ci perdi −${eur(-d)}` : 'Vai in pari';
   const res = B.res ? `<div class="boxres ${B.res.ok ? 'ok' : 'ko'}"><b>${B.res.txt}</b><span>${B.res.sub}</span></div>` : '';
