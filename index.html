@@ -1741,7 +1741,7 @@ html[data-theme="hud"] .track .mk{width:3px;z-index:2;box-shadow:0 0 0 1px #0209
 .trmood .clima{white-space:nowrap}
 
 /* tasti dell'incarico: su telefono verticale vanno a capo invece di uscire (24/11) */
-.incacts{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:stretch;margin-top:10px}
+.incacts{display:grid;grid-template-columns:1fr 1fr;width:100%;flex:1 1 100%;box-sizing:border-box;gap:8px;align-items:stretch;margin-top:10px}
 .incacts .btn{white-space:normal;line-height:1.15;min-width:0;padding:10px 8px;letter-spacing:.04em}
 .incacts.solo .btn{grid-column:1/-1}
 .incacts .link{grid-column:1/-1;justify-self:end;padding:4px 0}
@@ -6078,7 +6078,7 @@ function openSheet(kind, arg) {
   else if (kind === 'soffiata') { const s = G.intel.soffiata.cities;
     html = `<div class="eyebrow">La soffiata</div><h2>${s.length ? 'Ecco dove cercare' : 'Oggi non c’è da nessuna parte'}</h2>
       <p class="desc">${s.length ? `Un pezzo per il tuo incarico è in catalogo a: <b class="c-go">${s.map(id => cityOf(id).name).join(', ')}</b>. Sulla mappa le trovi segnate in verde.` : 'Nessuna sala aperta lo ha oggi. Lascia passare qualche giorno o prova a fidarti delle probabilità.'}</p>
-      <div class="row"><button class="btn ${s.length ? 'btn-ghost' : 'btn-gold'}" data-act="soffWait">Passa la notte · giorno ${G.day + 1}</button><button class="btn btn-ghost" data-act="close">Chiudi</button></div>`; }
+      <div class="incacts"><button class="btn ${s.length ? 'btn-ghost' : 'btn-gold'}" data-act="soffWait">Passa la notte · giorno ${G.day + 1}</button><button class="btn btn-ghost" data-act="close">Chiudi</button></div>`; }
   else if (kind === 'catalog') { const s = G.sessions[arg];
     html = `<div class="eyebrow">Il commesso · ${cityOf(arg).name}</div><h2>${s.lots.length - s.idx} lotti in catalogo</h2><ul class="items">${s.lots.slice(s.idx).map(l => `<li><div class="ic-w ${G.incs.some(i => matches(l.itemId, i)) ? 'gold' : ''}">${ic(iconOf(l.itemId))}</div><span>${esc(BY_ID[l.itemId].name)}</span><span class="vl">${eur(BY_ID[l.itemId].est)}</span></li>`).join('')}</ul>
       <p class="note">Il catalogo resta visibile sulla scheda della città fino alla tua visita.</p><button class="btn btn-ghost" data-act="close">Chiudi</button>`; }

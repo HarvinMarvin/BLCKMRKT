@@ -1,6 +1,6 @@
 // Black Market: salva il gioco nel telefono per giocare anche senza internet.
 // Ad ogni aggiornamento cambia VERSIONE: il telefono scarica il gioco nuovo la prima volta che è online.
-const VERSIONE = 'bm-2026-11-24h';
+const VERSIONE = 'bm-2026-11-24i';
 const FILE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSIONE).then(c => c.addAll(FILE)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(k => Promise.all(k.filter(n => n !== VERSIONE).map(n => caches.delete(n)))).then(() => self.clients.claim())); });
