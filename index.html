@@ -1729,6 +1729,17 @@ html[data-theme="hud"] .track .mk{width:3px;z-index:2;box-shadow:0 0 0 1px #0209
 /* cifra del valore nel bunker: il colore dice la settimana (vince sul verde di base) */
 .slot .vl.c-go{color:var(--go,#3ccf7a)}.slot .vl.c-risk{color:var(--risk,#ff5a4f)}.slot .vl.c-plain{color:var(--ivory,#f1efe8)}
 
+/* trattativa v2 (24/11) */
+.trlab{font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.65;margin:8px 0 6px}.trlab.trev{opacity:1;color:var(--gold,#f2c14e);font-weight:800}
+.trchips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.trchip{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:inherit;border-radius:10px;padding:8px 4px;font:600 13px/1.15 inherit;cursor:pointer;min-height:40px}
+.trchip.on{background:var(--mine,#5cc8ff);color:#06202e;border-color:transparent}
+.trmoves{display:grid;gap:6px}.trmv{background:var(--gold,#f2c14e);color:#1a1000;border:0;border-radius:10px;padding:11px 12px;font:700 15px/1.2 inherit;text-align:left;cursor:pointer}
+.trmv.alt{background:color-mix(in srgb,var(--gold,#f2c14e) 75%,transparent)}
+.trinfo small{font-size:12px;opacity:.8}
+.trok{display:flex;flex-direction:column;gap:4px}
+.trmood .clima{white-space:nowrap}
+
 /* ====== PROVE DI PALETTE E STILI (dalle tavole PNG) ====== */
 /* struttura comune delle prove di palette */
 html.pal .btn-gold{background:var(--acc);color:var(--on-acc)}
@@ -4394,171 +4405,544 @@ const boxVal = () => boxItems().reduce((s, e) => s + myStima(e), 0);
 const fakeCheckP = est => est <= 500 ? .35 : est <= 5000 ? .5 : .65;
 const priceAtMy = t => { const C = G.my.cur; return Math.max(C.floor, r10(C.start - (C.start - C.floor) * Math.min(1, Math.max(0, t) / C.dur))); };
 
-/* ---------- In trattativa: proponi al cliente un pezzo diverso da quello che chiedeva (23/11) ----------
-   Un gioco nel gioco. Il cliente ha un carattere che non vedi, un prezzo massimo che non vedi, un umore (il "clima")
-   e un po' di pazienza al telefono. Ogni tua mossa conta: tenere duro, venire incontro, raccontare il pezzo, il garbo,
-   quanto spingi (0-10) e anche il tira e molla (abbassare e poi rialzare). Le risposte sono composte a pezzi, così cambiano sempre. */
-const TR_CHARS = {
-  //            interesse  paga  prima offerta  quanto si muove  pazienza  tenere duro  mollare tanto  tira e molla  racconto  garbo  spinta ok  spinta max  caffè  fretta
-  dolce:      { open:.9,  pay:1.05, anchor:.75, conc:.5,  pat:5, firm:-1,  weak:1,   tira:-1,   story:1,   garbo:1,    pOpt:6, pTol:8, coffee:.15, rush:.1,  tics:['tesoro', 'caro', 'caro mio', 'cocco'] },
-  nonnina:    { open:.85, pay:1,    anchor:.7,  conc:.45, pat:6, firm:-1,  weak:1,   tira:-1,   story:1,   garbo:1.5,  pOpt:6, pTol:8, coffee:.5,  rush:0,   tics:['bel ragazzo', 'giovanotto', 'tesoro mio', 'figliolo', 'caro'] },
-  altezzosa:  { open:.55, pay:1.15, anchor:.65, conc:.3,  pat:4, firm:1,   weak:-1,  tira:-2,   story:.5,  garbo:1,    pOpt:4, pTol:6, coffee:0,   rush:.1,  tics:['mio caro', 'prego', 'mi creda', 'gentilmente'] },
-  pignolo:    { open:.6,  pay:1.05, anchor:.7,  conc:.35, pat:5, firm:0,   weak:0,   tira:-2,   story:1.5, garbo:0,    pOpt:5, pTol:7, coffee:0,   rush:0,   tics:['per la precisione', 'dunque', 'vede', 'sia chiaro'] },
-  affarista:  { open:.7,  pay:1,    anchor:.55, conc:.4,  pat:5, firm:1,   weak:-1,  tira:-1,   story:0,   garbo:-.5,  pOpt:7, pTol:9, coffee:0,   rush:.2,  tics:['amico mio', 'senti', 'guarda', 'capo'] },
-  sbrigativo: { open:.8,  pay:.95,  anchor:.75, conc:.6,  pat:3, firm:-1,  weak:.5,  tira:-1,   story:-1,  garbo:-1,   pOpt:7, pTol:8, coffee:0,   rush:.5,  tics:['bro', 'dai', 'oh', 'fra'] },
-  entusiasta: { open:.85, pay:1.1,  anchor:.7,  conc:.5,  pat:5, firm:0,   weak:.5,  tira:-.5,  story:1.5, garbo:.5,   pOpt:6, pTol:8, coffee:.1,  rush:.1,  tics:['zio', 'oddio', 'raga', 'troppo forte'] },
-  diffidente: { open:.5,  pay:.95,  anchor:.6,  conc:.3,  pat:4, firm:1,   weak:-1,  tira:-2.5, story:.5,  garbo:0,    pOpt:4, pTol:6, coffee:0,   rush:.1,  tics:['mh', 'vediamo', 'ripeto', 'ascolta'] }
-};
-const TR_OF = { collezionista:['pignolo','entusiasta'], contessa:['dolce','altezzosa','nonnina'], notaio:['diffidente','pignolo'], professore:['pignolo','entusiasta'],
-  lacroix:['affarista','altezzosa'], baumann:['pignolo','diffidente'], ashcombe:['altezzosa','dolce'], varga:['affarista','sbrigativo'], roux:['altezzosa','affarista'],
-  ragazzo:['sbrigativo','entusiasta'], fumettaro:['entusiasta','sbrigativo'], stilista:['entusiasta','altezzosa'], sommelier:['affarista','dolce'], gallerista:['altezzosa','entusiasta'],
-  gattara:['nonnina','dolce'], allevatore:['sbrigativo','affarista'], armiere:['sbrigativo','diffidente'], occultista:['diffidente','entusiasta'], principe:['affarista','altezzosa'] };
-const TR_GROUPS = [['monete','antichita','carte','penne','leggende','arte'], ['orologi','gioielli','borse','moda','vini','penne'], ['tech','tcg','memorabilia','curiosita','stranezze'], ['animali'], ['armi']];
+/* ---------- In trattativa v2 (24/11): proponi al cliente un pezzo diverso da quello che chiedeva ----------
+   Un gioco nel gioco. Il cliente ha un carattere che non vedi (cambia a ogni richiesta), una cifra massima che non vedi,
+   un clima (la fiducia) e un po' di pazienza al telefono. Ogni turno scegli il prezzo (tengo / scendo / rialzo) e cosa dire:
+   ogni carattere reagisce in modo diverso alle stesse parole. Un momento tipico del carattere per trattativa. */
+const TRV = (() => {
+  const r10 = v => Math.max(10, Math.round(v / 10) * 10), clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+/* In trattativa v2 — battute. Segnaposto: {p} il tuo pezzo, {c} cosa chiedeva, {x} il tuo prezzo, {y} la sua offerta, {z} cifra capita male, {w} prezzo con consegna */
 
-const TR_L = {
-  _: {
-    hello:['Pronto? Ah, sei tu. Dimmi.', 'Sì? Ti ascolto.', 'Allora, novità?', 'Ciao. Hai trovato qualcosa?', 'Eccoti. Spero sia una buona notizia.'],
-    yes:['Va bene, affare fatto.', 'D’accordo, lo prendo.', 'Mi hai convinto. Portamelo.', 'Sì, mi sta bene.', 'Ok, chiudiamo così.'],
-    yesRush:['Sì sì, va bene, ho da fare. Portalo.', 'Ok, ok, chiudiamo. Devo scappare.', 'Va bene, basta che fai in fretta.'],
-    yesSour:['E va bene, prendo questo. Ma non era quello che volevo.', 'D’accordo… però mi aspettavo di più da te.', 'Va bene, chiudiamola qui. Ma non farlo più.'],
-    counter:['A {x} no. A {y} sì.', 'Facciamo {y} e ci stringiamo la mano.', 'Troppo. Ti do {y}, prendere o lasciare.', '{y}, non un euro di più.'],
-    no:['Mm, non mi convince.', 'No, non è quello che cerco.', 'Ci devo pensare… per ora no.', 'Non ci siamo.', 'Preferisco aspettare {c}.'],
-    noHard:['Adesso basta, non insistere.', 'Ti ho detto di no. Non chiamarmi per queste cose.', 'Stai esagerando. Trovami {c} e basta.'],
-    absurd:['Ma che c’entra {p} con {c}? Mi prendi in giro?', 'Ti ho chiesto {c} e mi proponi {p}? Lascia perdere.', 'Questa è una barzelletta, vero?'],
-    close:['Senti, ne riparliamo un’altra volta.', 'Per oggi basta così. Trovami {c}.', 'Lasciamo stare, ci sentiamo.'],
-    fake:['L’ho fatto vedere a un esperto: è un falso! Vergogna.', 'Un falso? A me? Ci rivediamo… forse.'],
-    boss:['Io ti ho chiesto {c}. Non altro. Non farmelo ripetere.', 'Non tratto. Voglio {c}, e lo voglio presto.', 'Ragazzo, con me gli accordi sono quelli presi. {c}.']
-  },
+/* LEVE: cosa muove ogni carattere (-2 lo infastidisce … +2 lo convince) */
+const LEVE = {
+  storia:   'la storia del pezzo',
+  carte:    'carte e provenienza',
+  prestigio:'esclusività',
+  affetto:  'il lato umano',
+  affare:   'il buon affare',
+  fretta:   'la fretta (bluff)',
+  pieta:    'chiedere un favore',
+  garanzia: 'una garanzia',
+  gusto:    'un complimento al suo gusto',
+  risparmio:'fargli risparmiare (onestà sui tempi)'
+};
+
+const CHARS = {
+  dolce:      { tu:false, trust:5, pat:5, pay:1.08, anchor:.78, conc:.55, firm:-1, weak:+1, tira:-1, bluffCatch:.15,
+                w:{ storia:1, carte:0, prestigio:0, affetto:2, affare:-1, fretta:-2, pieta:2, garanzia:1, gusto:1 , risparmio:1 } },
+  nonnina:    { tu:false, trust:5, pat:6, pay:1.0,  anchor:.72, conc:.5,  firm:-1, weak:+1, tira:-1, bluffCatch:.1,
+                w:{ storia:1, carte:-1, prestigio:-1, affetto:2, affare:1, fretta:-2, pieta:1, garanzia:1, gusto:0 , risparmio:2 } },
+  altezzosa:  { tu:false, trust:3, pat:4, pay:1.18, anchor:.66, conc:.32, firm:+1, weak:-1, tira:-2, bluffCatch:.35,
+                w:{ storia:1, carte:0, prestigio:2, affetto:-1, affare:-2, fretta:-1, pieta:-2, garanzia:1, gusto:2 , risparmio:-1 } },
+  pignolo:    { tu:false, trust:3, pat:5, pay:1.06, anchor:.7,  conc:.36, firm:0,  weak:0,  tira:-2, bluffCatch:.4,
+                w:{ storia:2, carte:2, prestigio:0, affetto:-1, affare:0, fretta:-2, pieta:-1, garanzia:1, gusto:-1 , risparmio:1 } },
+  affarista:  { tu:true,  trust:3, pat:5, pay:1.0,  anchor:.56, conc:.42, firm:+1, weak:-1, tira:-1, bluffCatch:.55,
+                w:{ storia:-1, carte:1, prestigio:0, affetto:-2, affare:2, fretta:1, pieta:-2, garanzia:1, gusto:-1 , risparmio:1 } },
+  sbrigativo: { tu:true,  trust:4, pat:3, pay:.96,  anchor:.75, conc:.62, firm:-1, weak:+1, tira:-1, bluffCatch:.1,
+                w:{ storia:-2, carte:-1, prestigio:0, affetto:-1, affare:1, fretta:2, pieta:0, garanzia:0, gusto:0 , risparmio:2 } },
+  entusiasta: { tu:true,  trust:5, pat:5, pay:1.12, anchor:.7,  conc:.5,  firm:0,  weak:+1, tira:-1, bluffCatch:.15,
+                w:{ storia:2, carte:-1, prestigio:2, affetto:1, affare:0, fretta:1, pieta:0, garanzia:0, gusto:1 , risparmio:1 } },
+  diffidente: { tu:false, trust:2, pat:4, pay:.97,  anchor:.6,  conc:.3,  firm:+1, weak:-1, tira:-2, bluffCatch:.7,
+                w:{ storia:-1, carte:2, prestigio:-1, affetto:-1, affare:0, fretta:-2, pieta:-1, garanzia:2, gusto:-2 , risparmio:0 } }
+};
+
+/* LE TUE MOSSE: testo per lei (formale) e tu (informale), più varianti. Si scelgono 3 a turno */
+const MOSSE = {
+  storia:   { label:{ tu:'Ti racconto da dove viene', lei:'Le racconto da dove viene' },
+              lei:['Questo pezzo ha una storia: l’ultimo proprietario lo teneva in cassaforte e non l’ha mai mostrato a nessuno.', 'Le racconto una cosa: {p} è uscito da una casa d’aste di provincia, e nessuno aveva capito cosa fosse.'],
+              tu:['Ti racconto da dove arriva: il tizio che lo aveva non l’ha mai fatto vedere a nessuno.', 'Sai com’è arrivato a me {p}? Un’asta di provincia, nessuno aveva capito cos’era.'] },
+  carte:    { label:{ tu:'Ti garantisco che è originale', lei:'Le garantisco che è originale' },
+              lei:['Ha un passaggio di mano pulito, e se vuole le faccio avere tutte le carte.', 'Glielo dico chiaro: ha la sua documentazione, niente sorprese.'],
+              tu:['È pulito: passaggi di mano chiari, ti mando le carte se vuoi.', 'Ha i suoi documenti, nessuna sorpresa.'] },
+  prestigio:{ label:{ tu:'Ti dico che è un pezzo raro', lei:'Le dico che è un pezzo raro' },
+              lei:['In giro ce ne sono pochissimi. Chi ce l’ha non lo vende.', 'Questo non lo trova in nessuna vetrina, glielo garantisco.'],
+              tu:['Ce ne sono in giro pochissimi, e chi ce l’ha se lo tiene.', 'Questo non lo trovi in nessuna vetrina.'] },
+  affetto:  { label:{ tu:'Ti chiedo come stai', lei:'Le chiedo come sta' },
+              lei:['Prima di tutto: come sta? L’ultima volta mi aveva detto che non dormiva bene.', 'Come sta? È da un po’ che non ci sentiamo.'],
+              tu:['Prima di tutto, come stai? L’ultima volta eri giù.', 'Come stai? È da un po’ che non ci sentiamo.'] },
+  affare:   { label:{ tu:'Ti faccio due conti', lei:'Le faccio due conti' },
+              lei:['Facciamo due conti: a {x} lo paga meno di quanto vale. Domani costerà di più.', 'A {x} è un affare, e lei lo sa meglio di me.'],
+              tu:['Facciamo due conti: a {x} lo paghi meno di quanto vale.', 'A {x} è un affare, e lo sai.'] },
+  fretta:   { label:{ tu:'Ti dico che c’è un altro interessato', lei:'Le dico che c’è un altro interessato' },
+              lei:['Non vorrei metterle fretta, ma c’è un altro che me l’ha chiesto stamattina.', 'Glielo dico per correttezza: se non lo prende lei, stasera è già venduto.'],
+              tu:['Ti avviso: c’è un altro che me l’ha chiesto stamattina.', 'Se non lo prendi tu, stasera è già andato.'] },
+  pieta:    { label:{ tu:'Ti chiedo un favore', lei:'Le chiedo un favore' },
+              lei:['Le parlo chiaro: questo mese sono messo male. Mi farebbe un favore enorme.', 'Non glielo chiederei se non fossi in difficoltà, mi creda.'],
+              tu:['Ti parlo chiaro: sono messo male questo mese, mi faresti un favore.', 'Non te lo chiederei se non fossi nei guai.'] },
+  garanzia: { label:{ tu:'Ti offro una garanzia', lei:'Le offro una garanzia' },
+              lei:['Se entro una settimana non la convince, lo riprendo io. Parola mia.', 'Lo tenga qualche giorno: se non le piace, me lo ridà.'],
+              tu:['Se in una settimana non ti convince, lo riprendo io.', 'Tienilo qualche giorno: se non ti piace, me lo ridai.'] },
+  risparmio:{ label:{ tu:'Ti faccio risparmiare', lei:'Le faccio risparmiare' },
+              lei:['Le dico la verità: {c} nei tempi che mi ha dato non lo trovo. Ma così risparmia {s} del suo budget.', 'Non voglio farla aspettare per niente: {c} adesso non c’è. Con questo le restano {s} in tasca.', 'Sarò onesto: per {c} servirebbero settimane. Questo glielo do subito, e lei risparmia {s}.'],
+              tu:['Ti dico la verità: {c} nei tempi che mi hai dato non lo trovo. Però così risparmi {s}.', 'Non ti faccio aspettare per niente: {c} adesso non c’è. Con questo ti restano {s} in tasca.', 'Sarò onesto: per {c} ci vorrebbero settimane. Questo te lo do subito, e risparmi {s}.'] },
+  gusto:    { label:{ tu:'Lodo il tuo gusto', lei:'Lodo il suo gusto' },
+              lei:['Con il gusto che ha lei, questo pezzo starebbe finalmente nelle mani giuste.', 'Lei è l’unica persona che conosco che può capire un pezzo così.'],
+              tu:['Con il gusto che hai, starebbe finalmente nelle mani giuste.', 'Sei l’unico che conosco che può capire un pezzo così.'] }
+};
+
+/* COSA DICI DEL PREZZO (si aggiunge alla mossa) */
+const PREZZO_ME = {
+  primo:   { lei:['Al posto di {c} le propongo {p}. Glielo lascio a {x}.', 'Non ho {c}, ma ho {p}: per lei, {x}.'], tu:['Non ho {c}, ma ho {p}: per te, {x}.', 'Al posto di {c} ti propongo {p}. Te lo lascio a {x}.'] },
+  tengo:   { lei:['Il prezzo resta {x}.', 'Resto a {x}.'], tu:['Resto a {x}.', 'Il prezzo è {x}, non mi muovo.'] },
+  poco:    { lei:['Posso scendere a {x}.', 'Facciamo {x}.'], tu:['Ok, scendo a {x}.', 'Facciamo {x}.'] },
+  tanto:   { lei:['Va bene, scendo a {x}. Più di così non posso.', 'Le vengo incontro: {x}.'], tu:['Va bene, ti vengo incontro: {x}.', 'Scendo a {x}, ultimo prezzo.'] },
+  su:      { lei:['A pensarci bene, il prezzo è {x}.', 'Mi correggo: {x}.'], tu:['Anzi, ci ho ripensato: {x}.', 'Mi correggo: {x}.'] }
+};
+
+/* LE SUE BATTUTE per carattere.
+   hello · leva+ (positivo) e leva- (negativo) per ogni leva · bis (stessa leva ripetuta) · bluff (bluff scoperto)
+   p: risposte sul prezzo — vicino, medio, lontano, offesa, fermo · respect/annoy (tieni duro) · weak (molli troppo) · tira (tira e molla)
+   si: accetta (felice), siMa (a malincuore), siCorsa (di fretta) · chiude (finisce la pazienza) · rompe (si arrabbia) · assurdo */
+const L = {
   dolce: {
-    hello:['Oh, caro! Che piacere sentirti.', 'Tesoro, dimmi tutto.', 'Ah, sei tu! Stavo giusto prendendo il tè.'],
-    yes:['Oh caro, ma certo! Tanto volevo solo un po’ di compagnia.', 'Che pensiero gentile. Va benissimo, portamelo pure.', 'Sai che ti dico? Mi piace l’idea. Affare fatto, tesoro.', 'Ma sì, non sono mica difficile. Va bene così.'],
-    yesSour:['Va bene, caro… anche se ci tenevo a {c}. Pazienza.', 'D’accordo, tesoro. Un po’ ci sono rimasta, ma va bene.'],
-    counter:['Caro, {x} mi sembra tanto per me. Facciamo {y}?', 'Sono una pensionata, sai… {y} ti va bene?'],
-    no:['Oh, caro, è carino, ma non fa per me.', 'Mi dispiace, tesoro, aspetterei {c}.', 'Sei gentile, ma no, grazie.'],
-    noHard:['Caro, adesso mi fai stancare. Ne parliamo un’altra volta.', 'Su, su, non insistere così con una signora.'],
-    press:['Che foga, caro! Mi fai venire il batticuore.'],
-    coffee:['Va bene, caro. Ma passa a prendere un caffè da me, eh?'],
-    coffeeYes:['Che bello! Allora ti aspetto, faccio anche i biscotti.'], coffeeNo:['Oh… va bene lo stesso, caro. Sarà per un’altra volta.']
+    'risparmio+':['Che caro, pensi anche al mio portafoglio. Mio marito non l’avrebbe mai fatto.'],
+    hello:['Oh, caro! Che bella sorpresa. Stavo giusto annaffiando le ortensie.', 'Pronto? Ah, sei tu, tesoro. Dimmi tutto, ho tempo.'],
+    'storia+':['Oh, ma che storia… Mio marito adorava queste cose. Continua, continua.', 'Mi hai fatto venire la pelle d’oca. Davvero l’aveva nascosto così?'],
+    'storia-':['Sì, caro, ma io sono una donna semplice.'],
+    'affetto+':['Che caro che sei a ricordartelo. Va meglio, sai? Ho ripreso a fare le passeggiate.', 'Nessuno me lo chiede mai. Grazie, tesoro.'],
+    'pieta+':['Oh, povero caro. Non dirmi così, mi si stringe il cuore.', 'Sei in difficoltà? Allora vediamo di aiutarci a vicenda.'],
+    'affare-':['Caro, io non ci capisco niente di conti. Mi fido o non mi fido, tutto qui.'],
+    'fretta-':['Un altro? Oh… allora forse è meglio che lo prenda lui, se ha tanta fretta.'],
+    'gusto+':['Ma che complimento! Alla mia età non me ne fanno più.'],
+    'garanzia+':['Ecco, così mi sento più tranquilla.'],
+    bis:['Tesoro, me l’hai già detto. Non sono ancora così vecchia.'],
+    p:{ vicino:['Facciamo {y} e non ne parliamo più, va bene, caro?'], medio:['Io pensavo più a {y}, tesoro. Sono una pensionata.', 'Che ne dici di {y}? Per me è già tanto.'],
+        lontano:['Oh, caro… {x} è tantissimo. Al massimo {y}.'], offesa:['{x}?! Tesoro, con {x} ci pago il riscaldamento di un inverno intero.'], fermo:['Io resto a {y}, caro. Non posso di più.'] },
+    respect:['Sei testardo come mio marito, pace all’anima sua.'], annoy:['Su, caro, non fare il rigido con una vecchia signora.'],
+    weak:['Oh, che gentile che sei.'], tira:['Caro, mi confondi. Prima avevi detto un’altra cifra.'],
+    si:['Oh, ma sì, caro. In fondo volevo solo un po’ di compagnia in casa.', 'Affare fatto, tesoro. Mio marito avrebbe detto di sì.'],
+    siMa:['Va bene, caro… anche se ci tenevo tanto a {c}.'], siCorsa:['Sì, sì, va bene, caro.'],
+    chiude:['Tesoro, adesso devo andare, il tè si fredda. Ne riparliamo.'], rompe:['Caro, mi hai stancata. Richiamami un altro giorno, ma più gentile.'],
+    assurdo:['Ma caro… cosa me ne faccio io di {p}? Ti avevo chiesto {c}!']
   },
   nonnina: {
-    hello:['Pronto? Chi è? Ah, sei tu, bel ragazzo!', 'Oh, finalmente qualcuno che mi chiama!', 'Pronto pronto! Parla forte che non ci sento bene.'],
-    yes:['Ma sì, va bene! Tanto la casa è grande e vuota.', 'Affare fatto, giovanotto. Sei proprio un bravo ragazzo.', 'Va bene, va bene. Basta che me lo porti tu di persona.'],
-    yesSour:['Uff, va bene… però mio nipote me l’avrebbe trovato, {c}.'],
-    counter:['Con la pensione che ho? Facciamo {y}, dai.', '{x}? Ai miei tempi con {x} ci compravi una casa! {y}.'],
-    no:['No, no, caro. Io volevo {c}.', 'Ma che me ne faccio io di {p}?', 'Mmm… no, non mi piace tanto.'],
-    noHard:['Oh, ma che modi! Mia nonna ti avrebbe dato una sberla.', 'Basta, basta, mi fai venire il mal di testa.'],
-    coffee:['Va bene, bel ragazzo, ma vieni a prendere un caffè con me, eh? Che mi sento sola.', 'D’accordo! Però poi resti a pranzo, ho fatto le lasagne.', 'Te lo prendo, ma solo se vieni a farmi compagnia per un caffè.'],
-    coffeeYes:['Che caro! Ti preparo la moka grande. E ti racconto di quando ero giovane.', 'Lo sapevo che eri un bravo ragazzo! Porta anche lo zucchero.'],
-    coffeeNo:['Ah, i giovani d’oggi… sempre di corsa. Va bene, prendo lo stesso.', 'Peccato. Va be’, prendo lo stesso, ma non ti offro più niente.']
+    'risparmio+':['Risparmiare? Oh, questo sì che è parlare! Con quei soldi ci compro i regali per i nipoti.', 'Bravo, che i soldi non crescono sugli alberi. E tu sei sincero, mi piace.'],
+    hello:['PRONTO? Parla forte che non ci sento! Ah, sei tu, bel ragazzo!', 'Pronto? Finalmente qualcuno che mi chiama. Mio nipote non lo fa mai.'],
+    'storia+':['Oh, ai miei tempi queste cose si tramandavano di madre in figlia.', 'Bello! Me lo racconti meglio quando vieni, che adesso c’è la pentola sul fuoco.'],
+    'affetto+':['Che caro! Sto bene, sto bene, a parte le ginocchia. E tu mangi abbastanza?', 'Tu sì che sei un bravo ragazzo. Non come mio nipote.'],
+    'affare+':['Eh, i soldi non bastano mai. Se è un affare, allora ragioniamo.'],
+    'pieta+':['Povero figliolo! Vieni che ti preparo qualcosa, sei sciupato.'],
+    'carte-':['I certificati? Figliolo, io non ci vedo più bene nemmeno con gli occhiali.'],
+    'prestigio-':['Raro, raro… a me basta che sia bello.'],
+    'fretta-':['Un altro? E allora vallo a vendere a lui, se ha tanta fretta!'],
+    bis:['Me l’hai già detto, figliolo. Sono sorda, mica scema.'],
+    p:{ vicino:['{y}, e ti metto da parte una fetta di torta.'], medio:['Con la pensione che ho… {y}?', 'Ti posso dare {y}, figliolo. Di più non ho.'],
+        lontano:['Ai miei tempi con {x} ci compravi una casa! {y}.'], offesa:['{x}?! Madonna santa, mi vuoi far venire un colpo?'], fermo:['{y}, figliolo. Non ho altro sotto il materasso.'] },
+    respect:['Testone come mio marito, pace all’anima sua.'], annoy:['Uffa, che testone che sei.'],
+    weak:['Bravo, così si fa con le nonne.'], tira:['Eh? Prima era un’altra cifra, ti sento sai!'],
+    si:['Ma sì, va bene! Tanto la casa è grande e io sono sola.', 'Affare fatto, giovanotto. Me lo porti tu di persona, eh.'],
+    siMa:['Uffa, va bene… però mio nipote me l’avrebbe trovato, {c}.'], siCorsa:['Sì sì, va bene, che c’è la Ruota della Fortuna!'],
+    chiude:['Adesso vado, che c’è la Ruota della Fortuna. Ci sentiamo, caro.'], rompe:['Oh, ma che modi! Mia nonna ti avrebbe dato una sberla.'],
+    assurdo:['{p}?! Ma sei matto? Io volevo {c}, mica fare la guerra!']
   },
   altezzosa: {
-    hello:['Mi auguro che sia importante.', 'Sì? Ho un ricevimento tra poco, sii breve.', 'Ah. Tu.'],
-    yes:['Accettabile. Fallo recapitare.', 'Per questa volta passi. Lo prendo.', 'Non è {c}, ma ha una certa grazia. D’accordo.'],
-    yesSour:['Lo prendo solo per non perdere altro tempo.', 'Che delusione. Va bene, ma che non si ripeta.'],
-    counter:['{x}? Non sono una sprovveduta. {y}.', 'Le offro {y}. Ed è già un favore.'],
-    no:['Non è all’altezza.', 'Non mi interessa, grazie.', 'Io avevo chiesto {c}. Mi pare chiaro.', 'Lei mi sorprende. Negativamente.'],
-    noHard:['Non si permetta di insistere con me.', 'La conversazione è finita.'],
-    press:['Abbassi i toni, prego.']
+    'risparmio-':['Non mi interessa risparmiare. Mi interessa avere ciò che ho chiesto.', 'Il denaro non è un argomento, la prego.'],
+    hello:['Mi auguro sia importante. Tra un’ora ho il tè con l’ambasciatrice.', 'Sì? Sia breve, la prego.'],
+    'storia+':['Interessante. Prosegua.', 'Una provenienza con un po’ di mistero. Non mi dispiace.'],
+    'prestigio+':['Pochissimi, dice. E gli altri chi li ha?', 'Questo cambia le cose. Non sopporto di avere quello che hanno tutti.'],
+    'gusto+':['Almeno lei sa riconoscere chi ha occhio.', 'Lusinghiero. E, per una volta, vero.'],
+    'garanzia+':['Una garanzia. Bene, almeno lei è un uomo serio.'],
+    'affare-':['La prego, non mi parli di affari come al mercato. È volgare.', 'Non compro le cose perché costano poco.'],
+    'affetto-':['Non siamo amici. Restiamo sul pezzo.'],
+    'pieta-':['I suoi problemi non mi riguardano.', 'Questo genere di confidenze se le risparmi.'],
+    'fretta-':['Lo venda pure all’altro. Io non corro dietro a nessuno.'],
+    bis:['Me l’ha già detto. Non sono distratta.'],
+    p:{ vicino:['{y}. Ed è il mio ultimo pensiero sul prezzo.'], medio:['Le concedo {y}.', 'Posso considerare {y}.'],
+        lontano:['Non scherziamo. {y}, al massimo.'], offesa:['{x}? Mi ha preso per una turista?'], fermo:['Resto a {y}. Non insista.'] },
+    respect:['Finalmente qualcuno con un po’ di spina dorsale.'], annoy:['La sua cifra non migliora a forza di ripeterla.'],
+    weak:['Che caduta di stile, abbassare così.'], tira:['Prima una cifra, poi un’altra. Che volgarità.'],
+    si:['Accettabile. Lo faccia recapitare dal retro.', 'Non è {c}, ma ha una certa grazia. D’accordo.'],
+    siMa:['Lo prendo solo per non perdere altro tempo.'], siCorsa:['D’accordo. Ora devo andare.'],
+    chiude:['Mi faccia sapere quando avrà qualcosa di serio.'], rompe:['La conversazione è finita. Arrivederci.'],
+    assurdo:['{p}. Per me. Lei deve aver bevuto.']
   },
   pignolo: {
-    hello:['Pronto. Mi dica i dettagli, prima di tutto.', 'Sì? Spero abbia delle carte in regola.', 'Mi dica. Con precisione.'],
-    yes:['La provenienza mi convince. Va bene.', 'È un pezzo serio. Lo prendo.', 'Ha descritto bene il pezzo. D’accordo.'],
-    yesSour:['Non è il mio campo, ma va bene. Che sia documentato.'],
-    counter:['Per la condizione che descrive, {y} è il prezzo giusto.', 'Ho controllato le quotazioni: {y}.'],
-    no:['Manca la documentazione. No.', 'Non è coerente con la mia collezione.', 'Le avevo chiesto {c}. Sono stato preciso.'],
-    noHard:['Non mi faccia perdere tempo con approssimazioni.', 'Insistere non rende un pezzo più autentico.']
+    'risparmio+':['Apprezzo l’onestà sui tempi. Pochi la dicono.'],
+    hello:['Pronto. Prima di tutto: ha i documenti?', 'Mi dica. Con precisione, per favore.'],
+    'storia+':['Questo dettaglio è rilevante. Prosegua.', 'Finalmente un’informazione utile. Annoto.'],
+    'carte+':['Bene. La documentazione è metà del valore.', 'Mi mandi tutto. Se torna, ne parliamo seriamente.'],
+    'garanzia+':['Una clausola di recesso. Ragionevole.'],
+    'affetto-':['Lasciamo stare le chiacchiere, la prego.'], 'gusto-':['Le lusinghe non aggiungono valore al pezzo.'],
+    'pieta-':['Le sue difficoltà non incidono sul valore di mercato.'], 'fretta-':['Se c’è un altro acquirente, gli auguro buona fortuna.'],
+    bis:['Questo l’ha già detto. Lo ripete per fare scena?'],
+    p:{ vicino:['{y}. È il valore corretto, glielo assicuro.'], medio:['Ho controllato le quotazioni: {y}.', 'Per le condizioni che descrive, {y}.'],
+        lontano:['La quotazione è molto più bassa. {y}.'], offesa:['{x} è fuori da ogni listino.'], fermo:['Rimango a {y}. È quello che vale.'] },
+    respect:['Coerente. Lo apprezzo.'], annoy:['Ripetere la cifra non la rende più corretta.'],
+    weak:['Scende così? Allora la cifra di prima era sbagliata.'], tira:['Lei si contraddice. Annoto anche questo.'],
+    si:['La provenienza regge. Va bene.', 'È un pezzo serio. Lo aggiungo alla collezione.'],
+    siMa:['Non è il mio campo, ma va bene. Che sia documentato.'], siCorsa:['D’accordo, chiudiamo.'],
+    chiude:['Ci risentiamo quando avrà la documentazione completa.'], rompe:['Non mi faccia perdere tempo con le approssimazioni.'],
+    assurdo:['{p} non ha alcuna attinenza con {c}. Nessuna.']
   },
   affarista: {
-    hello:['Parla, il tempo è denaro.', 'Sì. Che hai?', 'Dimmi il prezzo, poi il resto.'],
-    yes:['Il prezzo è giusto. Chiuso.', 'Affare. Mi piace come lavori.', 'Ok, ci sto. Fammi la fattura… si fa per dire.'],
-    yesRush:['Va bene, chiudi, ho un’altra chiamata.'],
-    yesSour:['Mi stai spennando, ma ok. Ricordatelo la prossima volta.'],
-    counter:['{x} è fuori mercato. {y} e chiudiamo adesso.', 'Ti faccio {y}. Contanti.', '{y}. Ultima offerta.'],
-    no:['Non ci guadagno niente. No.', 'Non mi serve. Passo.', 'Il prezzo non sta in piedi.'],
-    noHard:['Non mi piace chi pressa. Ciao.']
+    'risparmio+':['Risparmio e tempi certi. Ok, così si ragiona.'],
+    hello:['Parla. Il tempo è denaro, il mio di più.', 'Dimmi prima il prezzo, poi il resto.'],
+    'affare+':['Ok, i conti li so fare anch’io. Ma vediamo.', 'Mi piace quando si parla di numeri.'],
+    'carte+':['Originale vuol dire rivendibile. Questo mi interessa.'], 'garanzia+':['Una garanzia la apprezzo. Riduce il rischio.'],
+    'fretta+':['Un altro interessato? Allora non perdiamo tempo.'],
+    'storia-':['Le favole raccontale ai clienti, non a me.'], 'affetto-':['Non siamo al bar. Numeri.'], 'pieta-':['I tuoi problemi non sono i miei margini.'], 'gusto-':['Lascia stare i complimenti.'],
+    bis:['Me l’hai già detto. Hai finito gli argomenti?'],
+    bluff:['L’altro interessato? Fammi indovinare: non esiste. Ci ho già lavorato con questo trucco.'],
+    p:{ vicino:['{y} e ci stringiamo la mano.'], medio:['{y}, contanti, adesso.', 'Ti faccio {y}. Pensaci in fretta.'],
+        lontano:['Siamo lontani. {y}.'], offesa:['{x}? Torna quando hai fatto i conti.'], fermo:['{y}. Non mi muovo.'] },
+    respect:['Rispetto. Uno che sa quanto vale la sua merce.'], annoy:['Ripeterlo non lo fa valere di più.'],
+    weak:['Ti ho fiutato: hai fretta di liberartene.'], tira:['Su e giù come un ascensore. Deciditi.'],
+    si:['Il prezzo è giusto. Chiuso.', 'Affare. Mi piace come lavori.'],
+    siMa:['Mi stai spennando, ma ok. Me la lego al dito.'], siCorsa:['Chiudi, ho un’altra linea che squilla.'],
+    chiude:['Quando hai un numero serio richiamami.'], rompe:['Con questi modi non fai affari con nessuno.'],
+    assurdo:['{p} al posto di {c}? Mi stai facendo perdere tempo.']
   },
   sbrigativo: {
-    hello:['Eh? Veloce che sono in giro.', 'Dimmi tutto in dieci secondi.', 'Sì, sì, dimmi.'],
-    yes:['Va bene, ok, portalo.', 'Sì, ci sta. Ciao.', 'Fatto. Ci vediamo.'],
-    yesRush:['Sì sì sì, va bene tutto, devo andare!', 'Ok, ok, sì, chiudi tu. Ciao!', 'Fai tu, mi fido. Ciao!'],
-    counter:['Ti do {y}, ok? Dai.', '{y} e chiudiamo, ho fretta.'],
-    no:['No, dai, non mi serve.', 'Nah.', 'No, cerca ancora.'],
-    noHard:['Bro, basta, ho da fare.', 'Non ho tempo per sta roba.'],
-    press:['Oh, calma!']
+    'risparmio+':['Risparmio e subito? Ci sto, zio, era questo che volevo sentire.', 'Ok, niente attese e spendo meno. Mi piace.'],
+    hello:['Zio, dimmi tutto in dieci secondi.', 'Sì sì, dimmi, sono in macchina.'],
+    'fretta+':['Un altro? Ok ok, allora sbrighiamoci.'], 'affare+':['Se è un affare dimmelo e basta.'],
+    'storia-':['Bro, la storia non mi interessa.', 'Saltiamo la poesia.'], 'affetto-':['Sto bene, sto bene. Allora?'], 'carte-':['Certificati? Zio, non sono il notaio.'],
+    bis:['Me l’hai già detto, zio.'],
+    p:{ vicino:['{y} e via!'], medio:['{y}, ok?', 'Dai, {y}.'], lontano:['Troppo, zio. {y}.'], offesa:['{x}? Ma sei fuori?'], fermo:['{y}. Prendere o lasciare.'] },
+    respect:['Ok, ho capito, sei duro.'], annoy:['Muoviti, dai.'], weak:['Grande, così sì.'], tira:['Eh? Prima avevi detto un’altra cifra, non fare il furbo.'],
+    si:['Va bene, portalo.', 'Ci sta. Ciao.'], siMa:['Ok, va bene, però mi hai fatto perdere tempo.'], siCorsa:['Sì sì sì, va bene tutto, devo scappare!'],
+    chiude:['Ok, mi devo staccare. Scrivimi.'], rompe:['Bro, basta. Ciao.'],
+    assurdo:['Zio, {p}? Ma che c’entra?']
   },
   entusiasta: {
-    hello:['Ehi! Dimmi che hai trovato qualcosa di figo!', 'Ciao! Sono tutto orecchie!', 'Oddio, finalmente! Racconta!'],
-    yes:['Ma che figata! Lo voglio!', 'Non ci avevo pensato, ma è perfetto!', 'Sì! Mi hai fatto venire voglia. Affare!'],
-    yesSour:['Va bene… non è {c}, ma ci sta.'],
-    counter:['Lo voglio, ma sono un po’ al verde: {y}?', 'Dai, {y} e sono tuo amico per sempre.'],
-    no:['Mm, carino, ma non mi accende.', 'No, dai, io sognavo {c}.', 'Non è il mio genere.'],
-    noHard:['Ok, adesso mi stai stressando.'],
-    coffee:['Sì! E poi andiamo a bere qualcosa insieme, eh?'],
-    coffeeYes:['Grande! Offro io!'], coffeeNo:['Peccato! Ok, lo prendo lo stesso.']
+    'risparmio+':['Risparmio? Allora con quello che avanza mi prendo anche altro!'],
+    hello:['Ehi! Dimmi che hai trovato qualcosa di pazzesco!', 'Finalmente! Racconta, racconta!'],
+    'storia+':['Noooo, davvero?! Racconta ancora!', 'Ma è pazzesco! Mi hai fatto venire i brividi.'],
+    'prestigio+':['Pochissimi?! Allora lo voglio io prima di tutti!', 'Raro raro? Non dirmi così che impazzisco.'],
+    'gusto+':['Lo sapevo che mi capivi!'], 'affetto+':['Tutto bene! E tu? Sempre in giro a caccia di roba?'],
+    'carte-':['Sì sì, originale, ci credo! Ma dimmi com’è!'],
+    bis:['Sì sì, me l’hai detto! Dimmi altro!'],
+    p:{ vicino:['Dai, {y} e sei mio amico per sempre.'], medio:['Lo voglio, ma sono un po’ al verde: {y}?', 'Ti do {y}, è tutto quello che ho messo da parte.'],
+        lontano:['Uff, {x} non ce li ho. {y}?'], offesa:['{x}?! Ma mi vuoi rovinare?'], fermo:['{y}, giuro che di più non ho.'] },
+    respect:['Dai, non fare il duro con me!'], annoy:['Così mi passa la voglia, eh.'], weak:['Grande! Sei un amico.'], tira:['Aspetta, prima era meno… che succede?'],
+    si:['Ma è assurdo! Lo voglio!', 'Sì! Mi hai fatto venire una voglia… Affare!'],
+    siMa:['Va bene… non è {c}, ma ci sta lo stesso.'], siCorsa:['Sì! Portalo subito!'],
+    chiude:['Devo andare, ma tienimi aggiornato!'], rompe:['Ok, adesso mi stai stressando.'],
+    assurdo:['Ehm… {p}? Non c’entra niente, dai.']
   },
   diffidente: {
-    hello:['…Chi ti ha dato questo numero?', 'Sì? Cosa vuoi?', 'Parla. Ma ti avverto, non mi fido facilmente.'],
-    yes:['…Va bene. Ma lo controllo.', 'Ok. Mi fido, per questa volta.', 'D’accordo. Non fregarmi.'],
-    yesSour:['Va bene, ma da adesso ti tengo d’occhio.'],
-    counter:['Troppo bello per {x}. Ti do {y}.', '{y}. Se è vero quello che dici, ci stai.'],
-    no:['Puzza. No.', 'Non mi fido. Passo.', 'Troppo comodo. No.'],
-    noHard:['Più insisti, meno mi fido. Ciao.', 'Ecco, lo sapevo. Lasciami stare.']
+    'risparmio-':['Perché vuoi farmi risparmiare? Nessuno lo fa senza un motivo.'],
+    hello:['…Chi ti ha dato questo numero?', 'Parla piano. Non si sa mai chi ascolta.'],
+    'carte+':['Originale, dici. Mandami le prove e le faccio vedere a uno che conosco.', 'Con le prove si comincia a ragionare.'],
+    'garanzia+':['Se posso ridartelo, allora il rischio è tuo. Mi piace.', 'Una garanzia vera? Scritta?'],
+    'storia-':['Belle parole. Le storie le sanno raccontare tutti.'], 'gusto-':['Troppo gentile. Cosa vuoi nascondere?'],
+    'affetto-':['Non fare l’amico. Non lo siamo.'], 'prestigio-':['Raro, dicono sempre tutti così.'], 'pieta-':['Chi è nei guai vende roba che scotta.'],
+    bis:['Me l’hai già detto. Più lo ripeti, meno ci credo.'],
+    bluff:['Un altro interessato. Certo. E io sono il Papa.', 'Questa del compratore che aspetta la conosco. Non attacca.'],
+    p:{ vicino:['{y}. Se è tutto vero, ci stai.'], medio:['Ti do {y}. Non un euro in più.'], lontano:['Troppo. {y}, e mi tengo il dubbio.'],
+        offesa:['{x}. Sì, certo.'], fermo:['{y}. E ringrazia.'] },
+    respect:['Almeno sei coerente.'], annoy:['Insistere non ti rende più credibile.'],
+    weak:['Ecco. Lo sapevo che c’era sotto qualcosa.'], tira:['Su e giù. Non mi fido di chi cambia idea.'],
+    si:['…Va bene. Ma lo faccio controllare.', 'Ok. Per questa volta mi fido.'],
+    siMa:['Va bene, ma da adesso ti tengo d’occhio.'], siCorsa:['D’accordo. Riattacco.'],
+    chiude:['Riattacco. Questo telefono non mi piace.'], rompe:['Più insisti, meno mi fido. Ciao.'],
+    assurdo:['{p}? Chi ti manda, la polizia?']
   }
 };
-/* reazioni del cliente alle tue mosse (generiche + per carattere) e frasi sul prezzo: si combinano tra loro */
-const TR_R = {
-  _: {
-    firmOk:['Mi piace chi tiene il punto.', 'Sei uno che non molla, eh.', 'Ok, hai le idee chiare.'],
-    firmBad:['Sempre la stessa cifra… ti sei incantato?', 'Ancora? Mi sembri un disco rotto.', 'Non ti muovi di un millimetro, vedo.'],
-    weakSmell:['Scendi così in fretta? Allora quanto vale davvero?', 'Ah, adesso cala. Interessante…', 'Se scendi così, posso aspettare che scendi ancora.'],
-    weakSweet:['Che gentile, così mi vieni incontro.', 'Apprezzo, davvero.', 'Ecco, così si ragiona.'],
-    tira:['Aspetta: prima avevi detto un’altra cifra.', 'Prima scendi e poi risali? Mi prendi in giro?', 'Deciditi, che non sono al mercato.'],
-    story:['Racconta, racconta…', 'Interessante, non lo sapevo.', 'Mi stai facendo venire voglia.'],
-    storyBored:['Sì, sì, ho capito.', 'Taglia corto.', 'Non mi serve la favola.'],
-    garboOk:['Sei sempre così educato?', 'Che modi, mi piace.', 'Gentile da parte tua.'],
-    garboBad:['Lascia stare i complimenti.', 'Meno chiacchiere.', 'Non mi incanti con le buone maniere.'],
-    pushOk:['Si sente che ci tieni.', 'Vedo che ti serve proprio.', 'Ci metti l’anima, eh.'],
-    pushBad:['Non mettermi fretta.', 'Abbassa i toni.', 'Così mi fai venire voglia di dire di no.'],
-    neutral:['Mm.', 'Vediamo…', 'Allora…', 'Ok.', 'Senti…']
-  },
-  dolce: { firmBad:['Su, caro, non essere così rigido.'], weakSweet:['Oh, che caro che sei!', 'Sei un tesoro, lo sapevo.'], tira:['Caro, mi confondi, prima era un’altra cifra.'], garboOk:['Che ragazzo educato! Non ne fanno più così.'], story:['Oh, che bella storia! Continua.'] },
-  nonnina: { firmBad:['Testone come mio marito, buonanima.'], weakSweet:['Bravo, figliolo, così si fa con le nonne.'], garboOk:['Che educazione! Tua madre ti ha cresciuto bene.', 'Mi ricordi mio nipote, sai?'], story:['Oh, ai miei tempi queste cose valevano oro.'], pushBad:['Piano, piano, che mi viene la pressione alta.'] },
-  altezzosa: { firmOk:['Finalmente qualcuno con un po’ di spina dorsale.'], weakSmell:['Che caduta di stile, abbassare così.'], garboOk:['Ecco, così si parla a una signora.'], tira:['Prima una cifra, poi un’altra. Che volgarità.'], pushBad:['Non tollero chi alza la voce.'] },
-  pignolo: { story:['Mi dica di più sulla provenienza.', 'Questo dettaglio è rilevante, prosegua.', 'Finalmente informazioni utili.'], tira:['Lei si contraddice. Annoto.', 'La cifra di prima era diversa. Non è serio.'], garboBad:['Le formalità non aggiungono valore.'] },
-  affarista: { firmOk:['Rispetto. Uno che sa quanto vale la sua merce.'], weakSmell:['Ti ho fiutato: hai fretta di liberartene.', 'Chi scende così ha qualcosa da nascondere.'], garboBad:['Niente salamelecchi, parliamo di numeri.'], pushOk:['Così mi piaci: deciso.'] },
-  sbrigativo: { storyBored:['Bro, non ho tempo per la storia.', 'Saltiamo la poesia.'], garboBad:['Sì sì, ciao, veloce.'], firmBad:['Muoviti, dai.'] },
-  entusiasta: { story:['Noooo, davvero?! Racconta ancora!', 'Ma è pazzesco!', 'Mi stai facendo impazzire.'], weakSweet:['Grande! Sei un amico.'] },
-  diffidente: { firmOk:['Almeno sei coerente.'], weakSmell:['Ecco. Lo sapevo che c’era sotto qualcosa.'], tira:['Su e giù. Non mi fido di chi cambia idea.', 'Prima un prezzo, poi un altro. Brutto segno.'], story:['…E dove sono i documenti?', 'Belle parole. Le carte?'] }
-};
-const TR_P = {
-  _: {
-    near:['Ci siamo quasi: {y}.', 'Facciamo {y} e chiudiamo.', 'Ti vengo incontro: {y}.', 'Arrivo a {y}, dai.', '{y}. Siamo vicini.'],
-    mid:['Ti offro {y}.', 'Io sono a {y}.', 'Posso arrivare a {y}.', 'Per me vale {y}.', '{y}, ragioniamo.'],
-    far:['Siamo lontani. Io dico {y}.', '{x}? No. Al massimo {y}.', 'Troppo. {y}.', 'Ti do {y} e sto già esagerando.'],
-    insult:['{x}?! Ma ti senti?', 'Con {x} ci compro il negozio intero.', '{x} per quello? Ma per piacere.'],
-    still:['Io resto a {y}.', 'Sono ferma a {y}.', '{y}, non mi sposto.']
-  },
-  altezzosa: { mid:['Le concedo {y}.', 'Posso considerare {y}.'], far:['Non scherziamo. {y}, al massimo.'] },
-  affarista: { mid:['{y}, contanti, adesso.', 'Ti faccio {y}. Pensaci in fretta.'], near:['{y} e ci stringiamo la mano.'] },
-  sbrigativo: { mid:['{y}, ok?', 'Dai, {y}.'], near:['{y} e via!'] },
-  nonnina: { mid:['Con la pensione che ho… {y}?', 'Ti posso dare {y}, figliolo.'], far:['Ai miei tempi con {x} ci compravi una casa! {y}.'] },
-  dolce: { mid:['Caro, io pensavo a {y}.', 'Che ne dici di {y}, tesoro?'] }
-};
-/* le tue frasi, a pezzi: come apri + cosa dici del prezzo + quanto spingi */
-const TR_ME = {
-  open: { garbo:['Mi scusi se la disturbo,', 'Con tutto il rispetto,', 'Le dico la verità,', 'Senza impegno,', 'Glielo chiedo con gentilezza:'],
-          racconta:['{p} viene da una collezione privata, e si vede.', 'Le racconto: {p} è passato per pochissime mani.', 'Guardi le condizioni di {p}: come nuovo.', '{p} così in giro non lo trova, glielo assicuro.', 'Dietro {p} c’è una bella storia.'],
-          duro:['Il prezzo è quello.', 'Non mi muovo.', 'Più di così non posso.', 'Sono già al limite.', 'Ci ho già rimesso abbastanza.'],
-          incontro:['Va bene, le vengo incontro.', 'Faccio un passo io.', 'Scendo, ma solo per lei.', 'Dai, ci vengo incontro.'] },
-  price: { first:['{p}, a {x}.', 'Le lascerei {p} a {x}.', 'Per lei, {p} a {x}.'], same:['{x}, come le ho detto.', 'Resto a {x}.', '{x}.'],
-           lower:['{x}.', 'Facciamo {x}.', 'Le dico {x}.'], higher:['Anzi, ci ho ripensato: {x}.', 'A pensarci bene, {x}.', 'Rialzo: {x}.'] },
-  push: [['…se le va.', '…senza fretta.', ''], ['', '', ''], ['Mi serve proprio chiudere.', 'Ci tengo davvero.', 'Mi faccia questo favore.'], ['Deve decidere adesso!', 'Non ripasserà un’occasione così!', 'O adesso o mai più!']]
-};
-const TR_MODES = [['garbo', 'Con garbo'], ['racconta', 'Racconto il pezzo'], ['duro', 'Tengo duro'], ['incontro', 'Ti vengo incontro']];
-const trPressWord = p => p <= 3 ? 'Delicato' : p <= 6 ? 'Normale' : p <= 8 ? 'Insisto' : 'Pressante';
-const trClima = M => M <= -2.5 ? ['Gelo', 'gelo'] : M <= -1 ? ['Freddo', 'freddo'] : M < 1 ? ['Tiepido', 'tiepido'] : M < 2.5 ? ['Caldo', 'caldo'] : ['Rovente', 'rovente'];
 
-const trChar = inc => { if (!inc.trc) { const l = TR_OF[inc.clientId] || Object.keys(TR_CHARS); inc.trc = l[Math.floor(rnd() * l.length)]; } return inc.trc; };
+/* reazioni generiche quando un carattere non ha una battuta propria (registro lei / tu) */
+const L_GEN = {
+  lei:{ '+':['Interessante.', 'Questo mi fa piacere.'], '-':['Non è questo che conta, per me.', 'Lasciamo stare.'], '0':['Mmh.', 'Capisco.'], bluff:['Un altro interessato? Me lo dicono sempre.'] },
+  tu: { '+':['Ok, questo mi piace.', 'Mi stai convincendo.'], '-':['Lascia stare.', 'Non mi interessa.'], '0':['Mmh.', 'Ok.'], bluff:['Un altro interessato? Certo, come no.'] }
+};
+
+/* MOMENTI SPECIALI (una volta a trattativa) */
+const EVENTI = {
+  nonnina: { titolo:'Ha capito male la cifra',
+    testo:['Eh? Hai detto {z}? Va bene, {z} te li do!'],
+    scelte:[ { k:'correggi', l:'«No, signora, era {x}»' }, { k:'approfitta', l:'Faccio finta di niente: {z}' } ] },
+  diffidente: { titolo:'Vuole una prova',
+    testo:['Prima di dire sì voglio una prova. Mandami qualcosa, o lasciamo perdere.'],
+    scelte:[ { k:'perizia', l:'Le mando la perizia (30 €)' }, { k:'vedere', l:'Le propongo di vederlo prima' }, { k:'fidati', l:'«Si deve fidare»' } ] },
+  affarista: { titolo:'Ti propone uno scambio',
+    testo:['Facciamo così: {y} più un pezzo che ho in magazzino e che vale almeno la differenza. Ci stai?'],
+    scelte:[ { k:'scambio', l:'Accetto lo scambio' }, { k:'contanti', l:'Solo contanti' } ] },
+  altezzosa: { titolo:'Vuole la consegna discreta',
+    testo:['A {y} ci sto. Ma me lo fa portare dal retro, di notte, da qualcuno di fiducia. A spese sue.'],
+    scelte:[ { k:'pago', l:'Accetto, la consegna la pago io' }, { k:'paghi', l:'«La consegna la paga lei»' }, { k:'no', l:'Rifiuto' } ] },
+  pignolo: { titolo:'Fa una domanda tecnica',
+    testo:['Una domanda sola: di che anno è, esattamente?'],
+    scelte:[ { k:'verita', l:'«Non lo so con certezza»' }, { k:'inventa', l:'Invento un anno, sicuro di me' }, { k:'foto', l:'Le mando le foto del dettaglio' } ] },
+  entusiasta: { titolo:'Chiede lo sconto da amico',
+    testo:['Senti, facciamo da amici? {y} e ti giuro che ti porto altri clienti.'],
+    scelte:[ { k:'amico', l:'Va bene, da amici' }, { k:'no', l:'«Gli affari sono affari»' } ] },
+  sbrigativo: { titolo:'Ultima offerta, subito',
+    testo:['Ultima: {y}. Hai dieci secondi, poi riattacco.'],
+    scelte:[ { k:'si', l:'Accetto {y}' }, { k:'rilancio', l:'Rilancio un’ultima volta' } ] },
+  dolce: { titolo:'Ti racconta del marito',
+    testo:['Sai, mio marito diceva sempre che le cose belle trovano da sole la loro casa… Te l’ho mai raccontato di quando ci siamo conosciuti?'],
+    scelte:[ { k:'ascolta', l:'«Me lo racconti, ho tempo»' }, { k:'taglia', l:'«Magari un’altra volta»' } ] }
+};
+const EVENTI_RISP = {
+  correggi:['Oh, che onesto che sei! Allora {x}… e va bene, te li do. I bravi ragazzi vanno premiati.', 'Ah, {x}? Va be’, ormai mi fido di te.'],
+  approfitta:['Ecco qua, {z}. Sei proprio un bravo ragazzo.'],
+  scoperta:['Mio nipote ha controllato la ricevuta. Mi hai imbrogliata, eh? Vergogna.'],
+  perizia:['Ok. Ho visto la perizia. Adesso ragioniamo.'], vedere:['Vederlo prima… va bene, mi sembra serio.'], fidati:['Fidarmi. Certo. Ciao.', 'Questa frase la dicono tutti quelli che fregano.'],
+  scambio:['Bene. Ecco il pezzo, è roba buona. Affare fatto.'], contanti:['Solo contanti? Allora ritorniamo ai numeri.'],
+  pago:['Perfetto. Vedo che lei sa come si lavora con certe persone.'], paghi:['Prego? La consegna la paga chi vende. Che caduta di stile.'], no:['Allora non abbiamo altro da dirci.'],
+  verita:['Ammettere di non sapere è raro. Lo apprezzo.'], inventa_ok:['Corrisponde ai miei appunti. Bene.'], inventa_ko:['Sbagliato. E se mi mente su questo, mente anche sul resto.'], foto:['Le foto confermano. Bene.'],
+  amico:['Grande! Sapevo che eri dei nostri.'], no_amico:['Va bene, va bene… allora ragioniamo da clienti.'],
+  si_sbr:['Fatto. Ciao!'], rilancio:['Uff. Ok, sentiamo.'],
+  ascolta:['… e da allora non ci siamo più lasciati. Grazie di avermi ascoltata, caro. Sei un tesoro.'], taglia:['Oh… certo, hai da fare. Scusami.']
+};
+
+/* frasi generiche sul prezzo, quando quelle del carattere sono già state dette */
+const P_GEN = {
+  lei:{ vicino:['Ci siamo quasi: {y}.', 'Facciamo {y} e chiudiamo.'], medio:['Posso arrivare a {y}.', 'Le offro {y}.', 'Per me vale {y}.'], lontano:['Siamo lontani. {y}.', 'Troppo. {y}.'], offesa:['{x}? Sta scherzando?'], fermo:['Resto a {y}.', 'Non mi sposto da {y}.', '{y}, non di più.'] },
+  tu: { vicino:['Ci siamo quasi: {y}.', 'Facciamo {y} e chiudiamo.'], medio:['Arrivo a {y}.', 'Ti offro {y}.', 'Per me vale {y}.'], lontano:['Siamo lontani. {y}.', 'Troppo. {y}.'], offesa:['{x}? Ma dai.'], fermo:['Resto a {y}.', 'Non mi sposto da {y}.', '{y}, non di più.'] }
+};
+/* le tue frasi negli eventi */
+const EV_SAY = {
+  correggi:{ lei:['No, signora, ho detto {x}. Non voglio approfittarmene.'], tu:['No, ho detto {x}.'] },
+  approfitta:{ lei:['Sì, signora, {z}. Perfetto.'], tu:['Sì, {z}.'] },
+  perizia:{ lei:['Le mando la perizia di un esperto, la paga io.'], tu:['Ti mando la perizia, la pago io.'] },
+  vedere:{ lei:['Venga a vederlo prima di decidere. Nessun impegno.'], tu:['Passa a vederlo prima, nessun impegno.'] },
+  fidati:{ lei:['Si deve fidare di me.'], tu:['Ti devi fidare.'] },
+  scambio:{ lei:['Va bene, accetto lo scambio.'], tu:['Ci sto: soldi più il pezzo.'] },
+  contanti:{ lei:['Solo contanti, grazie.'], tu:['Solo contanti.'] },
+  pago:{ lei:['Nessun problema, la consegna la organizzo io e la pago io.'], tu:['La consegna la pago io.'] },
+  paghi:{ lei:['La consegna però la paga lei.'], tu:['La consegna però la paghi tu.'] },
+  no:{ lei:['Così non mi interessa.'], tu:['No, così no.'] },
+  verita:{ lei:['Le dico la verità: con certezza non lo so.'], tu:['Sinceramente non lo so con certezza.'] },
+  inventa:{ lei:['È del 1887, ne sono sicuro.'], tu:['È del 1887, sicuro.'] },
+  foto:{ lei:['Le mando subito le foto del dettaglio, così controlla lei.'], tu:['Ti mando le foto del dettaglio.'] },
+  amico:{ lei:['Va bene, da amici.'], tu:['Va bene, da amici.'] },
+  si:{ lei:['Va bene, accetto.'], tu:['Ok, accetto.'] },
+  rilancio:{ lei:['Aspetti, un’ultima proposta.'], tu:['Aspetta, un’ultima proposta.'] },
+  ascolta:{ lei:['Me lo racconti, ho tempo.'], tu:['Raccontami, ho tempo.'] },
+  taglia:{ lei:['Magari un’altra volta, adesso ho un po’ di fretta.'], tu:['Magari un’altra volta.'] }
+};
+
+/* per gli animali alcune frasi cambiano (niente casseforti per i canarini) */
+const MOSSE_ANIMALI = {
+  storia:{ lei:['Vengono da un allevatore che ne fa nascere pochissimi all’anno, e li cresce a mano.', 'La madre era una campionessa: ha vinto due mostre di fila.'], tu:['Vengono da un allevatore che ne fa nascere pochissimi, cresciuti a mano.', 'La madre era una campionessa, due mostre vinte di fila.'] },
+  prestigio:{ lei:['Con questo pedigree non ne trova altri in giro.', 'Sono di una linea che in Italia hanno in tre.'], tu:['Con questo pedigree in giro non ne trovi.', 'Sono di una linea che in Italia hanno in tre.'] },
+  carte:{ lei:['Hanno il pedigree e il libretto sanitario in regola.', 'Microchip, vaccini, pedigree: tutto in ordine.'], tu:['Pedigree e libretto sanitario in regola.', 'Microchip, vaccini, pedigree: tutto a posto.'] },
+  garanzia:{ lei:['Se non si ambientano entro una settimana, li riprendo io.'], tu:['Se non si ambientano in una settimana, li riprendo io.'] }
+};
+
+/* FRASI PER TIPO DI PEZZO: storia, originale, rarità e garanzia cambiano a seconda di cosa vendi */
+const PER_TIPO = {
+  orologi: {
+    storia:{ lei:['Era di un pilota di linea: l’ha portato al polso per trent’anni e non l’ha mai fatto aprire da nessuno.', 'L’ha comprato nuovo un ingegnere a Ginevra, e da allora ha avuto solo un altro proprietario.'], tu:['Era di un pilota: trent’anni al polso, mai aperto da nessuno.', 'Comprato nuovo a Ginevra, un solo passaggio di mano da allora.'] },
+    carte:{ lei:['Ha scatola e garanzia originali, e il movimento è stato revisionato l’anno scorso.', 'Numeri di serie che corrispondono, scatola e libretto: è tutto originale.'], tu:['Scatola e garanzia originali, movimento revisionato l’anno scorso.', 'Seriali che corrispondono, scatola e libretto: tutto originale.'] },
+    prestigio:{ lei:['Con quel quadrante ne hanno fatti pochissimi, e chi ce l’ha non lo toglie dal polso.', 'Questa referenza in giro non si vede più: i collezionisti se la tengono stretta.'], tu:['Con quel quadrante ne hanno fatti pochissimi.', 'Questa referenza in giro non si vede più.'] },
+    garanzia:{ lei:['Se in una settimana perde anche solo un secondo al giorno, glielo riprendo io.'], tu:['Se in una settimana perde anche un secondo al giorno, lo riprendo io.'] } },
+  gioielli: {
+    storia:{ lei:['Era il regalo di nozze di una famiglia napoletana: l’hanno tenuto in cassaforte per sessant’anni.', 'Viene da una casa di Torino: la signora lo metteva solo a teatro.'], tu:['Era un regalo di nozze, sessant’anni in cassaforte.', 'Viene da una casa di Torino: la signora lo metteva solo a teatro.'] },
+    carte:{ lei:['Le pietre sono certificate, e il punzone è leggibile: niente sorprese.', 'Ha il punzone e il certificato delle pietre.'], tu:['Pietre certificate, punzone leggibile: niente sorprese.', 'Punzone e certificato delle pietre, tutto a posto.'] },
+    prestigio:{ lei:['Lavorazioni così a mano non le fa più nessuno.', 'Un pezzo così lo vede solo nelle aste serie.'], tu:['Lavorazioni così a mano non le fa più nessuno.', 'Un pezzo così lo vedi solo nelle aste serie.'] },
+    garanzia:{ lei:['Lo faccia vedere al suo gioielliere: se c’è qualcosa che non va, me lo riporta.'], tu:['Fallo vedere al tuo gioielliere: se c’è qualcosa che non va, me lo riporti.'] } },
+  moda: {
+    storia:{ lei:['Viene dal guardaroba di una signora di Montecarlo: usata due volte, sempre in custodia.', 'È uscita da una sfilata, mai arrivata nei negozi.'], tu:['Viene dal guardaroba di una signora di Montecarlo, usata due volte.', 'È uscita da una sfilata, mai arrivata nei negozi.'] },
+    carte:{ lei:['Ha l’etichetta interna, il numero di serie e lo scontrino originale.', 'Cuciture, etichetta, sacca: è originale, lo vede da sé.'], tu:['Etichetta interna, numero di serie e scontrino originale.', 'Cuciture, etichetta, sacca: è originale, lo vedi da te.'] },
+    prestigio:{ lei:['Di questa ne esistono tre, e le altre due non sono in vendita.', 'Questa la danno solo a chi è in lista da anni.'], tu:['Ne esistono tre, e le altre due non sono in vendita.', 'Questa la danno solo a chi è in lista da anni.'] },
+    garanzia:{ lei:['Se il colore non è quello che si aspettava, me la riporta.'], tu:['Se il colore non ti convince, me la riporti.'] } },
+  tech: {
+    storia:{ lei:['Era di un collezionista che l’ha tenuto nella pellicola: acceso una volta sola.', 'Viene da uno stock mai distribuito in Italia.'], tu:['Era di un collezionista: ancora con la pellicola, acceso una volta.', 'Viene da uno stock mai arrivato in Italia.'] },
+    carte:{ lei:['È sbloccato, con scatola e fattura: nessun problema di provenienza.', 'Batteria al cento per cento e seriale pulito, controllato.'], tu:['Sbloccato, con scatola e fattura: provenienza pulita.', 'Batteria al cento per cento e seriale pulito, controllato.'] },
+    prestigio:{ lei:['Questa versione non la trova più da nessuna parte.', 'Colore e memoria così sono introvabili.'], tu:['Questa versione non la trovi più da nessuna parte.', 'Colore e memoria così sono introvabili.'] },
+    garanzia:{ lei:['Se in una settimana dà un solo problema, glielo cambio.'], tu:['Se in una settimana dà un solo problema, te lo cambio.'] } },
+  tcg: {
+    storia:{ lei:['Viene da un torneo del 2004: il mazzo del vincitore, mai più giocato.', 'Era nella collezione di un ragazzo che ha smesso di giocare da un giorno all’altro.'], tu:['Viene da un torneo del 2004: il mazzo del vincitore, mai più giocato.', 'Era di uno che ha smesso di giocare da un giorno all’altro.'] },
+    carte:{ lei:['Sono tutte originali: bustine aperte da me, mai manomesse.', 'Ha la valutazione ufficiale: nove su dieci.'], tu:['Tutte originali, niente ristampe.', 'Ha il voto ufficiale: nove su dieci.'] },
+    prestigio:{ lei:['La prima stampa: quelle olografiche così ormai non escono più.', 'In queste condizioni ce ne sono pochissime.'], tu:['Prima stampa: quelle olografiche così non escono più.', 'In queste condizioni ce ne sono pochissime.'] },
+    garanzia:{ lei:['Se trova anche solo un angolo rovinato, me le riporta.'], tu:['Se trovi anche solo un angolo rovinato, me le riporti.'] } },
+  antico: {
+    storia:{ lei:['Viene da un ritrovamento di inizio Novecento, passato di famiglia in famiglia.', 'Stava in una collezione privata di un notaio di provincia, mai mostrata a nessuno.'], tu:['Viene da un ritrovamento di inizio Novecento, passato di famiglia in famiglia.', 'Stava nella collezione di un notaio di provincia, mai mostrata.'] },
+    carte:{ lei:['Ha una perizia firmata e la sua scheda di provenienza.', 'Patina originale, nessun restauro: c’è la perizia che lo dice.'], tu:['Ha una perizia firmata e la scheda di provenienza.', 'Patina originale, nessun restauro: c’è la perizia.'] },
+    prestigio:{ lei:['In queste condizioni ne sono rimasti pochissimi in mani private.', 'Un esemplare così di solito sta nei musei.'], tu:['In queste condizioni ne sono rimasti pochissimi.', 'Un pezzo così di solito sta nei musei.'] },
+    garanzia:{ lei:['Lo faccia vedere a chi vuole: se il suo esperto ha un dubbio, me lo riporta.'], tu:['Fallo vedere a chi vuoi: se il tuo esperto ha un dubbio, me lo riporti.'] } },
+  arte: {
+    storia:{ lei:['L’artista l’aveva regalato a un amico gallerista: è rimasto nel suo studio per quarant’anni.', 'Viene da una mostra degli anni Settanta, poi sparito in una collezione privata.'], tu:['L’artista l’aveva regalato a un amico gallerista, quarant’anni nel suo studio.', 'Viene da una mostra degli anni Settanta, poi sparito in una collezione privata.'] },
+    carte:{ lei:['È firmato e ha il certificato dell’archivio dell’artista.', 'Firma, numerazione e timbro dell’archivio: tutto in regola.'], tu:['Firmato, con il certificato dell’archivio.', 'Firma, numerazione e timbro dell’archivio: tutto in regola.'] },
+    prestigio:{ lei:['Di questa serie ne hanno tirate pochissime copie.', 'I musei cercano proprio questo periodo.'], tu:['Di questa serie ne hanno tirate pochissime.', 'I musei cercano proprio questo periodo.'] },
+    garanzia:{ lei:['Lo appenda per una settimana: se non le parla, me lo riporta.'], tu:['Appendilo una settimana: se non ti dice niente, me lo riporti.'] } },
+  memorabilia: {
+    storia:{ lei:['È uscito dal camerino quella sera stessa: c’è ancora il segno del sudore.', 'Il magazziniere dello stadio l’ha tenuto in un armadio per trent’anni.'], tu:['È uscito dal camerino quella sera stessa.', 'Il magazziniere dello stadio l’ha tenuto in un armadio per trent’anni.'] },
+    carte:{ lei:['C’è la foto che lo dimostra e il certificato di autenticità della firma.', 'La firma è certificata, con il bollino numerato.'], tu:['C’è la foto che lo dimostra e il certificato della firma.', 'Firma certificata, bollino numerato.'] },
+    prestigio:{ lei:['Di quella partita ne sono rimasti in giro due.', 'Un pezzo così vale più ogni anno che passa.'], tu:['Di quella partita ne sono rimasti in giro due.', 'Un pezzo così vale di più ogni anno.'] },
+    garanzia:{ lei:['Se la firma non le torna, me lo riporta e le ridò tutto.'], tu:['Se la firma non ti torna, me lo riporti e ti ridò tutto.'] } },
+  vini: {
+    storia:{ lei:['Viene da una cantina di un palazzo di Firenze: sempre a dodici gradi, al buio.', 'L’ha comprata un sommelier all’uscita, e non l’ha mai toccata.'], tu:['Viene dalla cantina di un palazzo: sempre al buio, a dodici gradi.', 'L’ha comprata un sommelier all’uscita, mai toccata.'] },
+    carte:{ lei:['Capsula e tappo integri, livello del vino perfetto.', 'Ha la fattura della cantina e l’etichetta intatta.'], tu:['Capsula e tappo integri, livello perfetto.', 'Fattura della cantina ed etichetta intatta.'] },
+    prestigio:{ lei:['Di quell’annata ne sono rimaste pochissime bottiglie.', 'Un’annata così non tornerà.'], tu:['Di quell’annata ne sono rimaste pochissime.', 'Un’annata così non torna.'] },
+    garanzia:{ lei:['Se il tappo non è perfetto, me la riporta chiusa.'], tu:['Se il tappo non è perfetto, me la riporti chiusa.'] } },
+  armi: {
+    storia:{ lei:['Era nella collezione di un conte: esposta in vetrina, mai usata.', 'Viene da un’armeria chiusa negli anni Ottanta.'], tu:['Era nella collezione di un conte, mai usata.', 'Viene da un’armeria chiusa negli anni Ottanta.'] },
+    carte:{ lei:['Matricola leggibile e documenti a posto.', 'È disattivata a norma, con il suo certificato.'], tu:['Matricola leggibile e documenti a posto.', 'Disattivata a norma, con certificato.'] },
+    prestigio:{ lei:['Di questo modello ne sono rimasti pochi in condizioni così.', 'Un pezzo da museo, glielo dico io.'], tu:['Di questo modello ne sono rimasti pochi così.', 'Pezzo da museo, te lo dico io.'] },
+    garanzia:{ lei:['Se il suo armaiolo trova un difetto, me la riporta.'], tu:['Se il tuo armaiolo trova un difetto, me la riporti.'] } },
+  strano: {
+    storia:{ lei:['Non mi chieda come ci sono arrivato. Le dico solo che chi l’aveva non dormiva più la notte.', 'Viene da un baule ritrovato in una soffitta di Praga.'], tu:['Non chiedermi come ci sono arrivato: chi l’aveva non dormiva più.', 'Viene da un baule ritrovato in una soffitta di Praga.'] },
+    carte:{ lei:['C’è chi ha scritto un libro su questo pezzo, e ho la copia.', 'È accompagnato da una lettera di chi l’ha trovato.'], tu:['C’è chi ci ha scritto un libro sopra, ho la copia.', 'Ha la lettera di chi l’ha trovato.'] },
+    prestigio:{ lei:['Uno così non esiste da nessun’altra parte.', 'Ne esiste solo un altro, e sta in un museo.'], tu:['Uno così non esiste da nessun’altra parte.', 'Ne esiste solo un altro, ed è in un museo.'] },
+    garanzia:{ lei:['Se dopo una settimana non le piace, me lo riporta.'], tu:['Se dopo una settimana non ti piace, me lo riporti.'] } }
+};
+
+function trNew(sc) {
+  const C = CHARS[sc.ch];
+  const S = { sc, ch:sc.ch, C, reg:C.tu ? 'tu' : 'lei', V:sc.value, paid:sc.paid, budget:sc.budget, req:sc.req, item:sc.item,
+    X:Math.min(sc.budget, r10(Math.max(sc.paid * 1.15, sc.value * 1.1))), H:null, trust:C.trust, pat:C.pat, used:{}, lastX:null, moves:[],
+    evDone:false, round:0, phase:'talk', log:[], seen:[], insulted:false, stance:'tengo', cost:0, swap:null, sim:sc.sim ?? .6 };
+  say(S, 'lei', line(S, 'hello'));
+  return S;
+}
+// valore massimo che è disposto a pagare (non lo vedi): sale con la fiducia, mai oltre il suo budget
+const reff = S => Math.min(S.budget, S.V * S.C.pay * (.74 + .05 * S.trust) * (.6 + .5 * S.sim));
+const clima = t => t <= 2 ? ['Gelo', 'gelo'] : t <= 4 ? ['Freddo', 'freddo'] : t < 6.5 ? ['Tiepido', 'tiepido'] : t < 8.5 ? ['Caldo', 'caldo'] : ['Rovente', 'rovente'];
+
+function priceLine(S, k) { const own = ((L[S.ch].p || {})[k] || []).filter(s => !S.seen.includes(s)); return fresh(S, own.length ? own : P_GEN[S.reg][k]); }
+function fresh(S, pool) { if (!pool || !pool.length) return ''; const f = pool.filter(s => !S.seen.includes(s)), l = f.length ? f : pool, s = pick(l); S.seen.push(s); return s; }
+function line(S, key) { const own = (L[S.ch] || {})[key]; return fresh(S, own); }
+function fill(S, s, extra = {}) {
+  return s.replace(/\{p\}/g, (m, o) => `<b>${o === 0 || /[.!?]\s*$/.test(s.slice(0, o)) ? S.item.charAt(0).toUpperCase() + S.item.slice(1) : S.item}</b>`).replace(/\{c\}/g, `<b>${S.req}</b>`).replace(/\{x\}/g, `<b>${eur(S.X)}</b>`)
+    .replace(/\{y\}/g, `<b>${eur(S.H || 0)}</b>`).replace(/\{z\}/g, `<b>${eur(extra.z || 0)}</b>`).replace(/\{s\}/g, `<b>${eur(Math.max(0, S.budget - S.X))}</b>`);
+}
+function say(S, who, s, extra) { if (s) S.log.push({ who, t:fill(S, s, extra) }); }
+
+// le 3 mosse proposte: prima quelle mai usate, a caso; così ogni giro è diverso
+function offerMoves(S) {
+  const all = Object.keys(MOSSE).filter(k => k !== 'risparmio' || nextPrice(S, 'tengo') <= S.budget * .85), unused = all.filter(k => !S.used[k]), once = all.filter(k => S.used[k] === 1);
+  const pool = [...unused.sort(() => rnd() - .5), ...once.sort(() => rnd() - .5)];
+  // se puoi fargli risparmiare, quella frase c'è sempre; poi altre 3 a caso, e le restanti sotto "Altro da dire"
+  if (pool.includes('risparmio')) pool.unshift(...pool.splice(pool.indexOf('risparmio'), 1));
+  S.offer = pool.slice(0, 4); S.more = pool.slice(4);
+  return S.offer;
+}
+
+function nextPrice(S, a) {
+  const base = S.lastX || S.X;
+  let X = a === 'tengo' ? base : a === 'poco' ? r10(base * .95) : a === 'tanto' ? r10(base * .88) : r10(base * 1.08);
+  return Math.min(S.budget, X);
+}
+
+function trTurn(S, lever, a) {
+  if (S.phase !== 'talk') return;
+  const C = S.C, first = S.lastX == null;
+  S.X = nextPrice(S, a);
+  // se scendi fino o sotto la sua offerta, chiudi alla sua cifra (mai sotto)
+  if (S.H && S.X <= S.H) { S.X = S.H; say(S, 'io', fresh(S, S.reg === 'tu' ? ['Ok, ci sto: {x}.', 'Va bene, {x}.'] : ['D’accordo, {x}.', 'Va bene, chiudiamo a {x}.'])); return accept(S, 'si'); }
+  S.round++;
+  // la tua battuta: mossa + prezzo
+  const mv = MOSSE[lever], pk = first ? 'primo' : a;
+  const tipo = S.sc.kind === 'animale' ? MOSSE_ANIMALI : PER_TIPO[S.sc.cat] || {}, mvt = (tipo[lever] || mv)[S.reg];
+  // se la frase della mossa dice già il prezzo, non lo ripeto: prima il prezzo, poi «a questo prezzo…»
+  let mt = fresh(S, mvt); const hasX = /\{x\}/.test(mt); if (hasX) mt = mt.replace(/\bA \{x\}/g, 'A questo prezzo').replace(/\ba \{x\}/g, 'a questo prezzo');
+  say(S, 'io', (first || hasX ? [fresh(S, PREZZO_ME[pk][S.reg]), mt] : [mt, fresh(S, PREZZO_ME[pk][S.reg])]).join(' '));
+  if (S.sim === 0) { say(S, 'lei', line(S, 'assurdo')); S.trust = 0; return end(S, 'rotta'); }
+  // effetto della mossa: dipende dal carattere, e ripeterla rende meno (alla terza volta irrita)
+  const n = S.used[lever] = (S.used[lever] || 0) + 1;
+  let w = C.w[lever] || 0, key;
+  if (lever === 'fretta' && rnd() < C.bluffCatch) { w = -3; key = 'bluff'; }
+  else if (n === 2) w *= .4; else if (n >= 3) { w = -1; key = 'bis'; }
+  S.trust = clamp(S.trust + w * .9, 0, 10);
+  if (!key) key = w > .3 ? lever + '+' : w < -.3 ? lever + '-' : null;
+  let react = key ? (line(S, key) || fresh(S, L_GEN[S.reg][key === 'bluff' ? 'bluff' : w > 0 ? '+' : '-'])) : '';
+  // come prende il tuo prezzo: tieni duro, molli tanto, tira e molla
+  if (!first) {
+    const mvp = (S.X - S.lastX) / S.lastX;
+    if (mvp > 0 && S.moves.some(x => x < 0)) { S.trust = clamp(S.trust + C.tira, 0, 10); react = line(S, 'tira') || react; }
+    else if (mvp === 0) { S.trust = clamp(S.trust + C.firm * .5, 0, 10); if (rnd() < .5 && C.firm) react = react || line(S, C.firm > 0 ? 'respect' : 'annoy'); }
+    else if (mvp <= -.1) { S.trust = clamp(S.trust + C.weak * .5, 0, 10); if (C.weak < 0 && S.H) S.H = r10(S.H * .96); if (C.weak) react = react || line(S, 'weak'); }
+    if (mvp) S.moves.push(mvp);
+  }
+  S.lastX = S.X; S.pat--;
+  if (S.trust <= .5) { say(S, 'lei', [react, line(S, 'rompe')].filter(Boolean).join(' ')); return end(S, 'rotta'); }
+  // la sua risposta sul prezzo
+  const R = reff(S), V = S.V;
+  if (S.H == null) S.H = r10(Math.min(R, S.X) * C.anchor * (.92 + rnd() * .16));
+  if (S.X <= S.H) { say(S, 'lei', react); return accept(S); }
+  let pkey;
+  if (S.X <= R) {
+    const gap = (S.X - S.H) / V, pAcc = .2 + .06 * (S.trust - 5) + (gap < .08 ? .3 : 0) + (S.ch === 'sbrigativo' ? .15 : 0);
+    if (rnd() < pAcc) { say(S, 'lei', react); return accept(S); }
+    const old = S.H; S.H = Math.min(S.X, r10(S.H + (S.X - S.H) * C.conc * (.8 + .06 * S.trust)));
+    if ((S.X - S.H) / V < .04) { say(S, 'lei', react); return accept(S); }
+    pkey = (S.X - S.H) / V < .1 ? 'vicino' : S.H === old ? 'fermo' : 'medio';
+  } else {
+    const old = S.H; S.H = Math.max(S.H, r10(S.H + (R - S.H) * C.conc * .6));
+    if (S.X > R * 1.35 && !S.insulted) { S.insulted = true; S.trust = clamp(S.trust - 1, 0, 10); pkey = 'offesa'; }
+    else pkey = S.H === old ? 'fermo' : 'lontano';
+  }
+  say(S, 'lei', [react, priceLine(S, pkey)].filter(Boolean).join(' '));
+  // un momento tipico del carattere, una volta sola
+  // i momenti 'generosi' (scambio, consegna discreta, sconto da amici, ultima offerta) arrivano solo se il clima non è gelido
+  if (!S.evDone && EVENTI[S.ch] && S.round >= 2 && rnd() < .65 && (S.trust >= 3 || ['nonnina', 'diffidente', 'pignolo', 'dolce'].includes(S.ch))) return startEvent(S);
+  if (S.pat <= 0) { say(S, 'lei', line(S, 'chiude')); return end(S, 'chiusa'); }
+}
+
+function trTakeH(S) { if (S.phase !== 'talk' || !S.H) return; S.X = S.H; say(S, 'io', fresh(S, S.reg === 'tu' ? ['Ok, hai vinto tu: {x}.', 'Va bene, {x}.'] : ['Ha vinto lei: {x}.', 'D’accordo, {x}.'])); deal(S, S.H, 'Hai accettato la sua offerta'); }
+
+function accept(S, k) {
+  const key = k || (S.ch === 'sbrigativo' && rnd() < .5 ? 'siCorsa' : S.trust < 4 ? 'siMa' : 'si');
+  say(S, 'lei', line(S, key)); S.mood = key; S.phase = 'offer';
+}
+function trConfirm(S, yes) {
+  if (S.phase !== 'offer') return;
+  if (!yes) { say(S, 'io', S.reg === 'tu' ? 'Ci ripenso, ti richiamo.' : 'Ci ripenso, la richiamo io.'); return end(S, 'chiusa'); }
+  deal(S, S.X);
+}
+// a cose fatte il clima si scalda: l'affare chiuso è un buon segno
+function deal(S, price, note) { S.phase = 'deal'; S.price = price; S.got = price - S.cost; S.note = note || ''; S.trust = Math.max(S.trust, S.trust < 4 ? 5 : 7); }
+function end(S, how) { S.phase = 'done'; S.how = how; }
+
+function startEvent(S) {
+  S.evDone = true; S.phase = 'event'; const E = EVENTI[S.ch];
+  if (S.ch === 'nonnina') { const up = r10(S.X * 1.2); S.z = rnd() < .6 || up > S.budget ? r10(S.X * .75) : up; }
+  if (S.ch === 'altezzosa') S.H = Math.max(S.H, r10(Math.min(S.X * .93, reff(S))));
+  if (S.ch === 'entusiasta') S.H = Math.max(S.H, r10(Math.min(S.X * .9, reff(S))));
+  if (S.ch === 'sbrigativo') S.H = Math.max(S.H, r10(Math.min((S.H + S.X) / 2, reff(S))));
+  say(S, 'lei', fresh(S, E.testo), { z:S.z });
+  S.ev = E;
+}
+function trEvent(S, k) {
+  if (S.phase !== 'event') return;
+  say(S, 'io', fresh(S, EV_SAY[k][S.reg]), { z:S.z });
+  const R = EVENTI_RISP, back = () => { S.phase = 'talk'; if (S.pat <= 0) { say(S, 'lei', line(S, 'chiude')); end(S, 'chiusa'); } };
+  switch (k) {
+    case 'correggi': S.trust = clamp(S.trust + 2, 0, 10); say(S, 'lei', fresh(S, R.correggi)); return deal(S, S.X, 'Sei stato onesto: si fida di te');
+    case 'approfitta':
+      if (S.z > S.X && rnd() < .4) { say(S, 'lei', fresh(S, R.scoperta)); return end(S, 'rotta'); }
+      say(S, 'lei', fresh(S, R.approfitta), { z:S.z }); return deal(S, S.z, S.z > S.X ? 'Ti è andata bene: non se n’è accorta' : 'Hai preso meno, ma è felice');
+    case 'perizia': S.cost += 30; S.trust = clamp(S.trust + 3, 0, 10); say(S, 'lei', fresh(S, R.perizia)); return back();
+    case 'vedere': S.trust = clamp(S.trust + 2, 0, 10); S.pat--; say(S, 'lei', fresh(S, R.vedere)); return back();
+    case 'fidati': S.trust = clamp(S.trust - 3, 0, 10); say(S, 'lei', fresh(S, R.fidati)); if (S.trust <= 1) return end(S, 'rotta'); return back();
+    // il pezzo in cambio vale meno della differenza se ti stima poco, al massimo poco più se si fida
+    case 'scambio': { const gap = S.X - S.H, val = r10(gap * Math.min(1.1, .5 + .05 * S.trust + rnd() * .25)); S.swap = val; say(S, 'lei', fresh(S, R.scambio)); return deal(S, S.H + val, `Hai preso ${eur(S.H)} e un pezzo che vale circa ${eur(val)}`); }
+    case 'contanti': say(S, 'lei', fresh(S, R.contanti)); return back();
+    case 'pago': { const c = r10(S.H * .05); S.cost += c; say(S, 'lei', fresh(S, R.pago)); return deal(S, S.H, `Consegna discreta pagata da te: ${eur(c)}`); }
+    case 'paghi': S.trust = clamp(S.trust - 2, 0, 10); say(S, 'lei', fresh(S, R.paghi)); return back();
+    case 'no': if (S.ch === 'entusiasta') { S.trust = clamp(S.trust - 1, 0, 10); say(S, 'lei', fresh(S, R.no_amico)); return back(); } say(S, 'lei', fresh(S, R.no)); return end(S, 'chiusa');
+    case 'verita': S.trust = clamp(S.trust + 1, 0, 10); say(S, 'lei', fresh(S, R.verita)); return back();
+    case 'inventa': if (rnd() < .5) { S.trust = clamp(S.trust + 2, 0, 10); say(S, 'lei', fresh(S, R.inventa_ok)); } else { S.trust = clamp(S.trust - 4, 0, 10); say(S, 'lei', fresh(S, R.inventa_ko)); if (S.trust <= .5) return end(S, 'rotta'); } return back();
+    case 'foto': S.trust = clamp(S.trust + 2, 0, 10); S.pat--; say(S, 'lei', fresh(S, R.foto)); return back();
+    case 'amico': say(S, 'lei', fresh(S, R.amico)); return deal(S, S.H, 'Prezzo da amici: ti porterà altri clienti');
+    case 'si': say(S, 'lei', fresh(S, R.si_sbr)); return deal(S, S.H);
+    case 'rilancio': S.pat = 1; say(S, 'lei', fresh(S, R.rilancio)); return back();
+    case 'ascolta': S.trust = clamp(S.trust + 2, 0, 10); S.pat--; say(S, 'lei', fresh(S, R.ascolta)); return back();
+    case 'taglia': S.trust = clamp(S.trust - 1, 0, 10); say(S, 'lei', fresh(S, R.taglia)); return back();
+  }
+}
+
+  return { CHARS, MOSSE, trNew, trTurn, trTakeH, trConfirm, trEvent, end, offerMoves, nextPrice, clima };
+})();
+
+/* ---- collegamento col gioco ---- */
+// carattere a caso per ogni richiesta, coerente col cliente (le "nonnine" solo per le signore)
+const TR_F = ['dolce', 'nonnina', 'altezzosa', 'entusiasta', 'diffidente'], TR_M = ['pignolo', 'affarista', 'sbrigativo', 'entusiasta', 'diffidente'];
+const TR_OF = { collezionista:['pignolo', 'entusiasta', 'diffidente'], contessa:['dolce', 'altezzosa', 'nonnina', 'diffidente'], notaio:['diffidente', 'pignolo', 'affarista'],
+  professore:['pignolo', 'entusiasta', 'diffidente'], lacroix:['affarista', 'pignolo', 'sbrigativo', 'diffidente'], baumann:['pignolo', 'diffidente', 'affarista'],
+  ashcombe:['altezzosa', 'dolce', 'diffidente'], varga:['affarista', 'sbrigativo', 'diffidente'], roux:['altezzosa', 'diffidente', 'entusiasta'],
+  ragazzo:['sbrigativo', 'entusiasta', 'affarista'], fumettaro:['entusiasta', 'pignolo', 'sbrigativo'], stilista:['entusiasta', 'sbrigativo', 'affarista'],
+  sommelier:['pignolo', 'affarista', 'entusiasta'], gallerista:['altezzosa', 'entusiasta', 'diffidente'], gattara:['nonnina', 'dolce', 'entusiasta'],
+  allevatore:['sbrigativo', 'affarista', 'diffidente'], armiere:['sbrigativo', 'diffidente', 'affarista'], occultista:['diffidente', 'entusiasta', 'pignolo'],
+  principe:['affarista', 'sbrigativo', 'diffidente'] };
+// categoria del gioco → gruppo di frasi
+const TR_TIPO = { monete:'antico', antichita:'antico', carte:'antico', penne:'antico', leggende:'strano', curiosita:'strano', stranezze:'strano', borse:'moda' };
+const TR_GROUPS = [['monete', 'antichita', 'carte', 'penne', 'leggende', 'arte'], ['orologi', 'gioielli', 'borse', 'moda', 'vini', 'penne'], ['tech', 'tcg', 'memorabilia', 'curiosita', 'stranezze'], ['animali'], ['armi']];
+
+const trChar = inc => { if (!inc.trc || !TRV.CHARS[inc.trc]) { const c = clientOf(inc.clientId), l = TR_OF[inc.clientId] || (/^(La|Lady|Madame)\b/.test(c.name) ? TR_F : TR_M); inc.trc = pick(l); } return inc.trc; };
 const trVal = e => r10(BY_ID[e.itemId].est * mkt(BY_ID[e.itemId].cat) * cert(e));
 // quanto il pezzo è vicino a quello che chiedeva: 1 giusto, .8 giusto ma sotto il minimo, .6 stessa categoria o stile, .3 azzardo sensato, 0 assurdo
 function trSim(itemId, inc) {
@@ -4573,159 +4957,119 @@ function trSim(itemId, inc) {
 }
 const trCands = inc => G.bunker.filter(e => e.appraised !== 'falso' && !BY_ID[e.itemId].set && !G.incs.some(i => i !== inc && !e.mine && e.incId === i.id));
 const trCan = inc => inc && !inc.boss && !(inc.trBan > G.day) && trCands(inc).length > 0;
-
-const trPick = (pool, T) => { if (!pool || !pool.length) return ''; let s = pool[Math.floor(rnd() * pool.length)]; if (pool.length > 1 && T && T.seen && T.seen.has(s)) s = pool[Math.floor(rnd() * pool.length)]; if (T) { T.seen = T.seen || new Set(); T.seen.add(s); } return s; };
-// prende una frase del carattere (70%) o generica
-const trPool = (D, key, ch) => { const own = (D[ch] || {})[key] || [], gen = (D._ || {})[key] || []; return own.length && (rnd() < .7 || !gen.length) ? own : gen.length ? gen : own; };
-function trFill(s) {
-  const T = G.ui.tr, inc = incOf(T.incId), e = T.u && G.bunker.find(x => x.uid === T.u);
-  return esc(s).replace(/\{p\}/g, e ? `<b>${esc(BY_ID[e.itemId].name)}</b>` : 'questo').replace(/\{c\}/g, `<b>${esc(tagName(inc.tag).toLowerCase())}</b>`)
-    .replace(/\{x\}/g, `<b>${eur(T.price)}</b>`).replace(/\{y\}/g, `<b>${eur(T.H || 0)}</b>`).replace(/\{n\}/g, esc(G.name || 'caro'));
-}
-// frase del cliente: [intercalare] + reazione alla tua mossa + frase sul prezzo [+ intercalare]
-function trHerSay(parts) {
-  const T = G.ui.tr, C = TR_CHARS[T.ch] || {}, tic = C.tics ? C.tics[Math.floor(rnd() * C.tics.length)] : '';
-  let s = parts.filter(Boolean).join(' ');
-  if (tic && rnd() < .35) s = tic.charAt(0).toUpperCase() + tic.slice(1) + ', ' + s.charAt(0).toLowerCase() + s.slice(1);
-  else if (tic && rnd() < .25) s = s.replace(/[.!?]$/, '') + ', ' + tic + '.';
-  T.log.push({ who:'lei', t:trFill(s) });
-}
-const trHer = key => { const T = G.ui.tr; trHerSay([trPick(trPool(TR_L, key, T.ch), T)]); };
+const trReq = inc => { const b = tagBase(inc.tag); return b.startsWith('id:') ? BY_ID[b.slice(3)].name : tagName(inc.tag).charAt(0).toLowerCase() + tagName(inc.tag).slice(1); };
 function trPatienceDown(inc) { const pd = patDays(inc), drop = Math.max(1, Math.round(pd * 0.25)); inc.startDay = Math.max(inc.startDay - drop, G.day - Math.floor(pd * 0.9)); }
-function trStop(T, inc, hard) { if (hard) { trPatienceDown(inc); inc.trBan = G.day + 2; T.hurt = true; } else inc.trBan = G.day + 1; T.phase = 'done'; }
+// pezzo vero del catalogo che il cliente ti dà in cambio (va nel bunker)
+function trSwapItem(val) {
+  const pool = CATALOG.filter(i => !i.set && !i.box && i.est && !['animali', 'leggende'].includes(i.cat) && i.est >= val * .6 && i.est <= val * 1.5)
+    .sort((a, b) => Math.abs(a.est - val) - Math.abs(b.est - val)).slice(0, 5);
+  return pool.length ? pick(pool) : null;
+}
+const trS = () => G.ui.tr && G.ui.tr.S;
+// dopo ogni mossa: se l'affare è fatto o la telefonata è finita, applica gli effetti nel gioco
+function trApply() {
+  const T = G.ui.tr, S = T && T.S, inc = S && incOf(T.incId), e = S && G.bunker.find(x => x.uid === T.u); if (!S || T.applied || !inc) return;
+  if (S.phase === 'done') {
+    T.applied = true;
+    if (S.how === 'rotta') { trPatienceDown(inc); inc.trBan = G.day + 2; T.hurt = true; } else inc.trBan = G.day + 1;
+    if (S.cost) G.personal -= S.cost;
+    save(); return;
+  }
+  if (S.phase !== 'deal' || !e) return;
+  T.applied = true;
+  const c = clientOf(inc.clientId);
+  if (e.fake) {   // il pezzo era falso: se ne accorge
+    e.appraised = 'falso'; const d = lvDrop(CFG.lv.dropFake); trPatienceDown(inc); inc.trBan = G.day + 2; T.hurt = true; T.fake = true; if (S.cost) G.personal -= S.cost;
+    S.log.push({ who:'lei', t: S.reg === 'tu' ? 'L’ho fatto vedere a uno che se ne intende: è un falso. Complimenti.' : 'L’ho fatto esaminare: è un falso. Vergogna.' });
+    note(`${c.name} ha scoperto che ${nm(e.itemId)} è un falso${d ? `: scendi di ${d} livello` : ''}`); save(); return;
+  }
+  let cash = S.price, swapIt = null;
+  if (S.swap) { swapIt = trSwapItem(S.swap); if (swapIt) cash = S.price - S.swap; }
+  cash = Math.min(inc.cash, Math.max(0, cash));
+  const back = inc.cash - cash;
+  G.bunker = G.bunker.filter(x => x !== e); G.personal += cash - S.cost; G.stats.delivered++;
+  if (swapIt) G.bunker.push({ uid:uid('b'), itemId:swapIt.id, cost:r10(S.swap), mine:true, incId:null, day:G.day, listed:false, fake:false, appraised:null });
+  const pts = G.debt > 0 ? 0 : Math.max(.5, lvPoints(inc.budget) / 2), gain = pts ? lvGain(pts, cash) : 0;
+  G.incs = G.incs.filter(i => i !== inc); G.act = G.incs[0] ? G.incs[0].id : null;
+  note(`Trattativa chiusa con ${c.name}: ${nm(e.itemId)} per ${eur(cash)}${swapIt ? ` più ${nm(swapIt.id)}` : ''}${back > 0 ? ` (gli restituisci ${eur(back)})` : ''}`);
+  Object.assign(T, { cash, back, gain, swapIt: swapIt && swapIt.id, paid: S.paid });
+  fillBoard(); save();
+}
 
 Object.assign(A, {
   trOpen(id) {
     if (id && incOf(id)) G.act = id; const inc = G.inc; if (!inc || G.state !== 'HUB') return;
-    if (inc.boss) { G.ui.tr = { incId:inc.id, ch:'_', log:[], press:5, round:0, phase:'done', price:0, M:0 }; trHer('boss'); return openSheet('tratta'); }
+    if (inc.boss) return toast('Con lui non si tratta: vuole quello che ha chiesto');
     if (inc.trBan > G.day) return toast('Per oggi non vuole sentirne parlare: riprova domani');
     if (!trCands(inc).length) return toast('Nel bunker non hai niente da proporre');
-    const ch = trChar(inc);
-    G.ui.tr = { incId:inc.id, ch, log:[], press:5, round:0, M:0, I:0, phase:'pick', u:null, price:0, H:null, left:TR_CHARS[ch].pat, moves:[], stories:0 };
-    trHer('hello'); openSheet('tratta');
+    G.ui.tr = { incId:inc.id, ch:trChar(inc), phase:'pick', u:null, S:null, cname:clientOf(inc.clientId).name, creq:tagName(inc.tag) };
+    openSheet('tratta');
   },
   trPick(u) {
     const T = G.ui.tr; if (!T) return; const e = G.bunker.find(x => x.uid === u), inc = incOf(T.incId); if (!e || !inc) return;
-    const C = TR_CHARS[T.ch], v = trVal(e), base = e.cost ? r10(e.cost * 1.1) : v, sim = trSim(e.itemId, inc);
-    T.u = u; T.sim = sim; T.price = Math.max(10, Math.min(inc.cash, Math.max(base, v)));
-    // quello che è disposto a pagare (non lo vedi): dipende da quanto il pezzo è vicino, dal carattere e dal suo budget
-    T.I = sim * C.open; T.R = Math.min(inc.cash, v * C.pay * (.7 + .6 * T.I)); T.H = null; T.lastX = null; T.phase = 'talk'; openSheet('tratta');
+    const it = BY_ID[e.itemId], paid = e.mine || e.incId !== inc.id ? e.cost || 0 : 0;
+    const sc = { ch:T.ch, value:Math.max(10, trVal(e)), paid, budget:inc.cash, req:esc(trReq(inc)), item:esc(/^.[A-Z]/.test(it.name) ? it.name : it.name.charAt(0).toLowerCase() + it.name.slice(1)),
+      cat:TR_TIPO[it.cat] || it.cat, kind:it.cat === 'animali' ? 'animale' : '', sim:trSim(e.itemId, inc) };
+    T.u = u; T.iname = it.name; T.S = TRV.trNew(sc); T.st = 'tengo'; T.phase = 'talk'; openSheet('tratta');
   },
-  trBack() { const T = G.ui.tr; if (T && T.phase === 'talk' && !T.round) { T.u = null; T.phase = 'pick'; openSheet('tratta'); } },
-  trAdj(d) { const T = G.ui.tr, inc = T && incOf(T.incId), e = T && G.bunker.find(x => x.uid === T.u); if (!e || !inc || T.phase !== 'talk') return;
-    const st = Math.max(10, r10(trVal(e) * 0.05)); T.price = Math.max(10, Math.min(inc.cash, T.price + d * st)); openSheet('tratta'); },
-  trPress(d) { const T = G.ui.tr; if (!T) return; T.press = Math.max(0, Math.min(10, T.press + d)); openSheet('tratta'); },
-  trSend(mode) {
-    const T = G.ui.tr, inc = T && incOf(T.incId), e = T && G.bunker.find(x => x.uid === T.u); if (!e || !inc || T.phase !== 'talk') return;
-    const C = TR_CHARS[T.ch], p = T.press, v = Math.max(10, trVal(e));
-    if (mode === 'duro' && T.lastX) T.price = T.lastX;
-    if (mode === 'incontro') T.price = Math.max(10, r10((T.lastX || T.price) * .9));
-    const X = T.price, prev = T.lastX, mv = prev ? (X - prev) / prev : 0;
-    // le tue parole
-    const pk = !prev ? 'first' : mv === 0 ? 'same' : mv < 0 ? 'lower' : 'higher', b = p <= 3 ? 0 : p <= 6 ? 1 : p <= 8 ? 2 : 3;
-    const mine = [mode === 'racconta' && pk === 'first' ? '' : trPick(TR_ME.open[mode], T), trPick(TR_ME.price[pk], T), trPick(TR_ME.push[b], T)].filter(Boolean).join(' ');
-    T.log.push({ who:'io', t:trFill(mode === 'racconta' && pk === 'first' ? trPick(TR_ME.open.racconta, T) + ' ' + trPick(['Glielo lascio a {x}.', 'Per lei, {x}.', 'Lo do a {x}.'], T) : mine) });
-    T.round++; T.left--;
-    if (!T.sim) { trHerSay([trPick(trPool(TR_L, 'absurd', T.ch), T)]); trStop(T, inc, true); return openSheet('tratta'); }
-    // come prende le tue mosse: tenere duro, mollare tanto, tira e molla, racconto, garbo, quanto spingi
-    let dM = 0, react = null;
-    const firm = prev && mv === 0, weak = mv <= -.12, tira = mv > 0 && T.moves.some(x => x < 0);
-    if (mv) T.moves.push(mv);
-    if (tira) { dM += C.tira; react = 'tira'; }
-    else if (firm) { dM += C.firm * .7; react = C.firm > 0 ? 'firmOk' : C.firm < 0 ? 'firmBad' : null; }
-    else if (weak) { dM += C.weak * .7; react = C.weak < 0 ? 'weakSmell' : C.weak > 0 ? 'weakSweet' : null; if (C.weak < 0 && T.H) T.H = r10(T.H * .95); }
-    if (mode === 'racconta') { if (C.story > 0 && T.stories < 2) { T.I += .06 * C.story; T.R = Math.min(inc.cash, T.R * (1 + .05 * C.story)); dM += .3 * C.story; react = react || 'story'; } else { dM -= .6; react = react || 'storyBored'; } T.stories++; }
-    if (mode === 'garbo') { dM += C.garbo * .6; react = react || (C.garbo > 0 ? 'garboOk' : C.garbo < 0 ? 'garboBad' : null); }
-    if (p > C.pTol) { dM -= (p - C.pTol) * .7; react = 'pushBad'; } else if (Math.abs(p - C.pOpt) <= 1 && p >= 6) { dM += .4; react = react || 'pushOk'; }
-    if (p >= 10) dM -= 1.5;
-    T.M = Math.max(-4, Math.min(4, T.M + dM)); if (T.M <= -2) T.left--;
-    const pressF = 1 + .025 * (Math.min(p, C.pTol) - 5), Reff = T.R * (1 + .05 * T.M) * pressF;
-    if (T.H == null) T.H = r10(Math.min(Reff, T.R) * C.anchor * U([.9, 1.1]));
-    const reactTxt = react && rnd() < .8 ? trPick(trPool(TR_R, react, T.ch), T) : rnd() < .3 ? trPick(TR_R._.neutral, T) : '';
-    T.lastX = X;
-    // si arrabbia
-    if (T.M <= -3.5 || (p >= 10 && rnd() < .6)) {
-      if (X <= Reff && rnd() < .25) { trHerSay([reactTxt, trPick(trPool(TR_L, 'yesSour', T.ch), T)]); T.phase = 'offer'; return openSheet('tratta'); }
-      trHerSay([reactTxt, trPick(trPool(TR_L, 'noHard', T.ch), T)]); trStop(T, inc, true); return openSheet('tratta');
-    }
-    // accetta
-    const accept = key => { if (C.coffee && rnd() < C.coffee) { trHerSay([reactTxt, trPick(trPool(TR_L, 'coffee', T.ch), T)]); T.phase = 'coffee'; } else { trHerSay([key === 'yes' ? '' : reactTxt, trPick(trPool(TR_L, key, T.ch), T)]); T.phase = 'offer'; } return openSheet('tratta'); };
-    if (X <= T.H) return accept(T.M < 0 ? 'yesSour' : 'yes');
-    if (X <= Reff) {
-      const pAcc = .2 + .1 * T.M + ((X - T.H) / v < .08 ? .35 : 0) + (C.rush && rnd() < C.rush ? .3 : 0);
-      if (rnd() < pAcc) return accept(C.rush > .3 && rnd() < .5 ? 'yesRush' : T.M < 0 ? 'yesSour' : 'yes');
-      T.H = Math.min(X, r10(T.H + (X - T.H) * C.conc * (1 + .12 * T.M)));
-      if ((X - T.H) / v < .04) return accept('yes');
-      trHerSay([reactTxt, trPick(trPool(TR_P, (X - T.H) / v < .12 ? 'near' : 'mid', T.ch), T)]);
-    } else {
-      const gap = (X - Reff) / v;
-      const nh = r10(T.H + (Math.min(Reff, X) - T.H) * C.conc * .6); const moved = nh > T.H; T.H = Math.max(T.H, nh);
-      if (gap > .35) { T.M = Math.max(-4, T.M - 1); trHerSay([reactTxt, trPick(trPool(TR_P, 'insult', T.ch), T), trPick(trPool(TR_P, 'far', T.ch).filter(s => !s.includes('{x}')), T) || trPick(TR_P._.mid, T)]); }
-      else trHerSay([reactTxt, trPick(trPool(TR_P, moved ? 'far' : 'still', T.ch), T)]);
-    }
-    if (T.left <= 0) { trHer('close'); trStop(T, inc, false); }
-    openSheet('tratta');
-  },
-  trTakeH() {   // accetti la sua offerta: è un sì, l'affare è fatto
-    const T = G.ui.tr; if (!T || T.phase !== 'talk' || !T.H) return;
-    T.price = T.H; T.log.push({ who:'io', t:trFill(trPick(['Va bene, {x}.', 'Affare, {x}.', 'Ok, ci sto: {x}.', 'Ha vinto lei: {x}.'], T)) });
-    T.phase = 'offer'; A.trDeal(true);
-  },
-  trCoffee(ok) {
-    const T = G.ui.tr; if (!T || T.phase !== 'coffee') return;
-    T.log.push({ who:'io', t: ok ? trPick(['Volentieri! Arrivo.', 'Ma certo, con piacere.', 'Un caffè non si rifiuta mai.'], T) : trPick(['Grazie, ma oggi proprio non posso.', 'Magari un’altra volta, scusi.'], T) });
-    trHer(ok ? 'coffeeYes' : 'coffeeNo');
-    if (ok) T.tip = r10(T.price * .05);
-    else if (rnd() < .3) { trHer('close'); trStop(T, incOf(T.incId), false); return openSheet('tratta'); }
-    T.phase = 'offer'; openSheet('tratta');
-  },
-  trDeal(yes) {
-    const T = G.ui.tr, inc = T && incOf(T.incId), e = T && G.bunker.find(x => x.uid === T.u); if (!inc || !e || T.phase !== 'offer') return;
-    if (!yes) { T.log.push({ who:'io', t:'Ci ripenso, la richiamo io.' }); trStop(T, inc, false); return openSheet('tratta'); }
-    if (e.fake) { e.appraised = 'falso'; trHer('fake'); const d = lvDrop(CFG.lv.dropFake); trStop(T, inc, true);
-      note(`${clientOf(inc.clientId).name} ha scoperto che ${nm(e.itemId)} è un falso${d ? `: scendi di ${d} livello` : ''}`); return openSheet('tratta'); }
-    // affare fatto: ti tieni il prezzo dal suo budget, il resto torna a lui; il pezzo esce dal bunker; meno livello di una consegna vera
-    const got = Math.min(inc.cash, T.price + (T.tip || 0)), back = inc.cash - got, c = clientOf(inc.clientId);
-    G.bunker = G.bunker.filter(x => x !== e); G.personal += got; G.stats.delivered++;
-    const pts = G.debt > 0 ? 0 : Math.max(.5, lvPoints(inc.budget) / 2), gain = pts ? lvGain(pts, got) : 0;
-    G.incs = G.incs.filter(i => i !== inc); G.act = G.incs[0] ? G.incs[0].id : null;
-    note(`Trattativa chiusa con ${c.name}: ${nm(e.itemId)} per ${eur(got)}${back > 0 ? ` (gli restituisci ${eur(back)})` : ''}`);
-    T.phase = 'deal'; T.got = got; T.back = back; T.gain = gain; T.cost = e.mine || e.incId !== inc.id ? e.cost || 0 : 0;
-    fillBoard(); openSheet('tratta'); save();
-  },
+  trBack() { const T = G.ui.tr; if (T && T.S && !T.S.round) { T.u = null; T.S = null; T.phase = 'pick'; openSheet('tratta'); } },
+  trSt(v) { const T = G.ui.tr; if (!T || !T.S) return; T.st = v; openSheet('tratta'); },
+  trMore() { const S = trS(); if (!S) return; S.showMore = true; openSheet('tratta'); },
+  trMv(k) { const T = G.ui.tr, S = trS(); if (!S || S.phase !== 'talk') return; TRV.trTurn(S, k, T.st || 'tengo'); T.st = 'tengo'; S.showMore = false; trApply(); openSheet('tratta'); },
+  trEv(k) { const S = trS(); if (!S || S.phase !== 'event') return; TRV.trEvent(S, k); trApply(); openSheet('tratta'); },
+  trTakeH() { const S = trS(); if (!S) return; TRV.trTakeH(S); trApply(); openSheet('tratta'); },
+  trDeal(yes) { const S = trS(); if (!S) return; TRV.trConfirm(S, yes); trApply(); openSheet('tratta'); },
+  trQuit() { const S = trS(); if (S && S.phase === 'talk') { S.log.push({ who:'io', t: S.reg === 'tu' ? 'Ci penso e ti richiamo.' : 'Ci penso e la richiamo.' }); TRV.end(S, 'chiusa'); trApply(); openSheet('tratta'); } else A.trEnd(); },
   trEnd() { G.ui.tr = null; closeSheet(); render(); }
 });
 
 function trSheet() {
   const T = G.ui.tr; if (!T) return '';
-  const inc = incOf(T.incId) || { tag:'', cash:0, clientId:'' }, c = clientOf(inc.clientId) || { name:'' }, e = T.u && G.bunker.find(x => x.uid === T.u);
-  const chat = `<div class="trchat" id="trchat">${T.log.map(l => `<p class="${l.who === 'io' ? 'me' : 'her'}">${l.t}</p>`).join('')}</div>`;
-  const [cl, ck] = trClima(T.M || 0), pat = T.u && T.phase === 'talk' ? `<span class="trpat" title="Quanto ti ascolta ancora">${'●'.repeat(Math.max(0, T.left))}${'○'.repeat(Math.max(0, TR_CHARS[T.ch].pat - Math.max(0, T.left)))}</span>` : '';
-  const head = `<div class="trhead"><div><div class="eyebrow">In trattativa</div><h2 style="margin:0">${esc(c.name)}</h2></div>${T.u ? `<div class="trmood"><span class="clima ${ck}">Clima: ${cl}</span>${pat}</div>` : ''}</div>`;
-  if (T.phase === 'pick') {
+  const inc = incOf(T.incId) || { tag:'', cash:0, clientId:'' }, c = { name:T.cname || '' }, S = T.S;
+  const chat = S ? `<div class="trchat" id="trchat">${S.log.map(l => `<p class="${l.who === 'io' ? 'me' : 'her'}">${l.t}</p>`).join('')}</div>` : '';
+  const live = S && (S.phase === 'talk' || S.phase === 'event');
+  const [cl, ck] = S ? TRV.clima(S.trust) : ['', ''], pat = live ? `<span class="trpat" title="Quanto ti ascolta ancora">${'●'.repeat(Math.max(0, S.pat))}${'○'.repeat(Math.max(0, S.C.pat - Math.max(0, S.pat)))}</span>` : '';
+  const head = `<div class="trhead"><div><div class="eyebrow">In trattativa</div><h2 style="margin:0">${esc(c.name)}</h2></div>${S ? `<div class="trmood"><span class="clima ${ck}">Clima: ${cl}</span>${pat}</div>` : ''}</div>`;
+  if (T.phase === 'pick' || !S) {
     const list = trCands(inc);
-    return `${head}${chat}<p class="note" style="margin:6px 0">Ti ha chiesto <b>${esc(tagName(inc.tag))}</b>. Cosa gli proponi?</p>
-      <ul class="items trpick">${list.map(x => { const it = BY_ID[x.itemId]; return `<li><button class="trp" data-act="trPick" data-u="${x.uid}"><span class="ic-w">${ic(it.icon)}</span><span>${esc(it.name)}<br><small class="muted">vale ${eur(trVal(x))}${x.cost ? ` · pagato ${eur(x.cost)}` : ''}</small></span></button></li>`; }).join('')}</ul>
+    return `${head}<p class="note" style="margin:6px 0">Ti ha chiesto <b>${esc(tagName(inc.tag))}</b>. Non ce l’hai: cosa gli proponi al suo posto?</p>
+      <ul class="items trpick">${list.map(x => { const it = BY_ID[x.itemId]; return `<li><button class="trp" data-act="trPick" data-u="${x.uid}"><span class="ic-w">${ic(it.icon)}</span><span>${esc(it.name)}<br><small class="muted">vale <span class="c-go">${eur(trVal(x))}</span>${x.cost ? ` · pagato <span class="c-mine">${eur(x.cost)}</span>` : ''}</small></span></button></li>`; }).join('')}</ul>
       <button class="btn btn-ghost" data-act="trEnd">Lascia stare</button>`;
   }
-  if (T.phase === 'deal') return `${head}${chat}<div class="card trok"><b class="c-go">Affare fatto: +${eur(T.got)}</b>${T.back > 0 ? `<span class="note">Il resto del suo budget (${eur(T.back)}) torna a lui.</span>` : ''}${T.cost ? `<span class="note">L’avevi pagato ${eur(T.cost)}: ${signed(T.got - T.cost)}</span>` : ''}${T.gain ? `<span class="note">Sali di ${T.gain} ${T.gain === 1 ? 'livello' : 'livelli'}.</span>` : ''}</div>
-      <button class="btn btn-gold" data-act="trEnd">Chiudi</button>`;
-  const it = e && BY_ID[e.itemId], v = e ? trVal(e) : 0, cost = e && (e.mine || e.incId !== inc.id) ? e.cost || 0 : 0, gain = T.price - cost, live = T.phase === 'talk';
-  const info = e ? `<div class="trinfo">
-      <div><span>Chiedeva</span><b>${esc(tagName(inc.tag))}</b></div>
-      <div><span>Suo budget</span><b class="c-gold num">${eur(inc.cash)}</b></div>
-      <div><span>${esc(it.name)}</span><b class="c-go num">vale ${eur(v)}</b></div>
-      <div><span>La sua offerta</span>${T.H ? `<b class="num">${eur(T.H)}</b>${live ? `<button class="btn btn-go btn-sm trtake" data-act="trTakeH">Accetto</button>` : ''}` : '<b class="muted">—</b>'}</div>
-      <div class="trprice"><span>Tu chiedi</span><div class="row"><button class="btn btn-ghost btn-sm" data-act="trAdj" data-d="-1" ${live ? '' : 'disabled'}>−</button><b class="num">${eur(T.price)}</b><button class="btn btn-ghost btn-sm" data-act="trAdj" data-d="1" ${live ? '' : 'disabled'}>+</button></div>
-        <small class="${gain >= 0 ? 'c-go' : 'c-risk'}">${cost ? `pagato ${eur(cost)} · ` : ''}ci guadagni ${signed(gain)}</small></div></div>` : '';
+  const it = { name:T.iname || '' }, x = S.phase === 'talk' ? Math.max(S.H || 0, TRV.nextPrice(S, T.st || 'tengo')) : S.X, gain = x - S.paid;
+  const info = `<div class="trinfo">
+      <div><span>Chiedeva</span><b>${esc(T.creq || '')}</b></div>
+      <div><span>Suo budget</span><b class="c-gold num">${eur(S.budget)}</b></div>
+      <div><span>${esc(it.name)}</span><b class="c-go num">vale ${eur(S.V)}</b>${S.paid ? `<small>pagato <b class="c-mine">${eur(S.paid)}</b></small>` : ''}</div>
+      <div><span>La sua offerta</span>${S.H ? `<b class="num">${eur(S.H)}</b>${S.phase === 'talk' ? `<button class="btn btn-go btn-sm trtake" data-act="trTakeH">Accetto</button>` : ''}` : '<b class="muted">—</b>'}</div>
+      ${live || S.phase === 'offer' ? `<div class="trprice"><span>Tu chiedi</span><b class="num">${eur(x)}</b><small class="${gain >= 0 ? 'c-go' : 'c-risk'}">ci guadagni ${signed(gain)}</small></div>` : ''}</div>`;
   let ctl = '';
-  if (live) ctl = `<div class="trpress"><span>Quanto spingi</span><button class="btn btn-ghost btn-sm" data-act="trPress" data-d="-1">−</button>
-      <div class="pbar"><i style="width:${T.press * 10}%;background:${T.press <= 6 ? 'var(--go,#3ccf7a)' : T.press <= 8 ? 'var(--gold,#f2c14e)' : 'var(--risk,#ff5a4f)'}"></i></div><b class="num">${T.press}</b><button class="btn btn-ghost btn-sm" data-act="trPress" data-d="1">+</button><small>${trPressWord(T.press)}</small></div>
-      <div class="trmodes">${TR_MODES.map(([k, l]) => `<button class="btn btn-gold btn-sm" data-act="trSend" data-v="${k}" ${k === 'duro' && !T.lastX ? 'disabled' : ''}>${l}${k === 'incontro' ? ' <small>−10%</small>' : ''}</button>`).join('')}</div>
-      <div class="row">${T.round ? '' : '<button class="link" data-act="trBack">Cambia pezzo</button>'}<button class="link" data-act="trEnd">Lascia stare</button></div>`;
-  else if (T.phase === 'coffee') ctl = `<div class="row"><button class="btn btn-go" data-act="trCoffee" data-v="1">Sì, volentieri</button><button class="btn btn-ghost" data-act="trCoffee" data-v="0">No, grazie</button></div>`;
-  else if (T.phase === 'offer') ctl = `<p class="note" style="margin:0">Ha detto sì. Se dici sì anche tu, l’affare è fatto e il pezzo va a ${esc(c.name)}.</p><div class="row"><button class="btn btn-go" data-act="trDeal" data-v="1">Sì, affare fatto · +${eur(Math.min(inc.cash, T.price + (T.tip || 0)))}</button><button class="btn btn-ghost" data-act="trDeal" data-v="0">No</button></div>`;
-  else ctl = `${T.hurt ? '<p class="note warn" style="margin:0">Ci è rimasto male: la sua pazienza è scesa.</p>' : ''}<button class="btn btn-ghost" data-act="trEnd">Chiudi</button>`;
+  if (S.phase === 'talk') {
+    const mv = S.offer && S.offerRound === S.round ? S.offer : (S.offerRound = S.round, TRV.offerMoves(S)), st = T.st || 'tengo';
+    const chips = [['tengo', S.lastX ? 'Tengo il prezzo' : 'Prezzo pieno'], ['poco', 'Scendo un po’'], ['tanto', 'Scendo tanto'], ['su', 'Rialzo']];
+    const lab = k => TRV.MOSSE[k].label[S.reg];
+    ctl = `<div class="trlab">Il prezzo che dici</div><div class="trchips">${chips.map(([k, l]) => `<button class="trchip ${st === k ? 'on' : ''}" data-act="trSt" data-v="${k}">${l}</button>`).join('')}</div>
+      <div class="trlab">Cosa dici</div><div class="trmoves">${mv.map(k => `<button class="trmv" data-act="trMv" data-v="${k}">${lab(k)}</button>`).join('')}
+      ${S.more && S.more.length ? (S.showMore ? S.more.map(k => `<button class="trmv alt" data-act="trMv" data-v="${k}">${lab(k)}</button>`).join('') : '<button class="link" data-act="trMore">Altro da dire…</button>') : ''}</div>
+      <div class="row">${S.round ? '' : '<button class="link" data-act="trBack">Cambia pezzo</button>'}<button class="link" data-act="trQuit">Lascia stare</button></div>`;
+  } else if (S.phase === 'event') {
+    ctl = `<div class="trlab trev">${S.ev.titolo}</div><div class="trmoves">${S.ev.scelte.map(o => `<button class="trmv" data-act="trEv" data-v="${o.k}">${esc(o.l).replace(/\{x\}/g, eur(S.X)).replace(/\{z\}/g, eur(S.z || 0)).replace(/\{y\}/g, eur(S.H || 0))}</button>`).join('')}</div>`;
+  } else if (S.phase === 'offer') {
+    ctl = `<p class="note" style="margin:0">Ha detto sì. Se dici sì anche tu, l’affare è fatto e il pezzo va a ${esc(c.name)}.</p><div class="row"><button class="btn btn-go" data-act="trDeal" data-v="1">Sì, affare fatto · +${eur(Math.min(S.budget, S.X))}</button><button class="btn btn-ghost" data-act="trDeal" data-v="0">No</button></div>`;
+  } else if (S.phase === 'deal' && !T.fake) {
+    const net = T.cash + (T.swapIt ? S.swap : 0) - S.cost - S.paid;
+    ctl = `<div class="card trok"><b class="c-go">Affare fatto: incassi ${eur(T.cash)}</b>
+      ${T.swapIt ? `<span class="note">E in cambio ricevi <b>${esc(nm(T.swapIt))}</b> (vale circa ${eur(S.swap)}): è nel bunker.</span>` : ''}
+      ${S.cost ? `<span class="note">Spese: ${eur(S.cost)}</span>` : ''}
+      ${T.back > 0 ? `<span class="note">Il resto del suo budget (${eur(T.back)}) torna al cliente.</span>` : ''}
+      ${S.paid ? `<span class="note">L’avevi pagato ${eur(S.paid)}: <b class="${net >= 0 ? 'c-go' : 'c-risk'}">${signed(net)}</b></span>` : ''}
+      ${S.note && !S.swap ? `<span class="note">${esc(S.note)}</span>` : ''}
+      ${T.gain ? `<span class="note">Sali di ${T.gain} ${T.gain === 1 ? 'livello' : 'livelli'}.</span>` : ''}</div>
+      <button class="btn btn-gold" data-act="trEnd">Chiudi</button>`;
+  } else {
+    ctl = `<div class="card trok">${T.fake ? '<b class="c-risk">Ha scoperto il falso</b><span class="note">Scendi di livello e la sua pazienza cala.</span>' : S.how === 'rotta' ? '<b class="c-risk">Si è arrabbiato</b><span class="note">La sua pazienza è scesa. Per due giorni non vuole sentirti.</span>' : '<b>Niente affare</b><span class="note">Ne riparlate domani.</span>'}${S.cost && !T.fake ? `<span class="note">Spese: ${eur(S.cost)}</span>` : ''}</div>
+      <button class="btn btn-ghost" data-act="trEnd">Chiudi</button>`;
+  }
   return `${head}${info}${chat}${ctl}`;
 }
 
@@ -4928,7 +5272,7 @@ const HELP = [
     ['Padrino', 'Paga il triplo, ma se lo deludi (un falso, una rinuncia, troppa attesa) si prende il pezzo più bello del tuo bunker e torni in strada con 100 €. Per chi vuole svoltare, o è alla frutta.'],
     ['Pezzo grosso', 'Paga il doppio, ma se lo deludi perdi un terzo dei tuoi soldi, un po’ di fama e 5 livelli. Con lui niente Persuadilo.'],
     ['Non deluderli', 'Cosa vogliono Padrino e Pezzo grosso lo scopri solo dopo aver accettato: prima decidi se rischiare. Con loro fai periziare il pezzo prima di consegnarlo, compra il listino della sala e paga gli informatori: costano poco rispetto a quello che rischi.'],
-    ['Proponi un pezzo', 'Non trovi quello che chiede? Chiamalo e proponigli un pezzo del bunker. Scegli il prezzo (quanto ti tieni del suo budget, il resto torna a lui), quanto spingere e come parlargli. Ogni cliente ha il suo carattere: c’è chi si lascia convincere e chi no. Una proposta assurda (un revolver a chi vuole un gattino) lo fa arrabbiare: la sua pazienza scende. Un affare così vale meno livello di una consegna vera.'],
+    ['Proponi un pezzo', 'Non trovi quello che chiede? Chiamalo e proponigli un pezzo del bunker. È una trattativa vera: ogni turno scegli il prezzo (tieni, scendi un po’, scendi tanto, rialzi) e cosa dirgli. Il cliente ha un carattere che non vedi e che cambia ogni volta: c’è chi si scioglie con la storia del pezzo, chi vuole le carte, chi pensa solo all’affare. Capiscilo dalle risposte. Il clima mostra quanto si fida, i pallini quanta pazienza gli resta. Ripetere la stessa frase rende meno, e il tira e molla col prezzo non piace a nessuno. A volte succede qualcosa (uno scambio, una prova, una cifra capita male): scegli bene. Se il prezzo è sotto il suo budget puoi dirgli che gli fai risparmiare. Una proposta assurda (un revolver a chi vuole un gattino) o un litigio fanno scendere la sua pazienza. Un affare così vale meno livello di una consegna vera.'],
     ['Soprannomi', 'Se vendi tanto di una cosa, in giro ti danno un soprannome: Tic Tac per gli orologi, Canne Mozze per le armi… Se vendi caro diventi il Condor; se svendi tutto ti chiamano Aspirapolvere.'],
     ['Stelle di fama', 'Bronzo, argento e oro, ognuno da 1 a 3 stelle, poi il Platino. Più sali, più pagano i tuoi pezzi in quello stile e più amatori arrivano. Se per un po’ non vendi in quello stile la fama cala piano, ma non perdi mai più di due gradini; dal Platino non scendi sotto l’oro a 3 stelle.'],
     ['La tua firma', 'In un’asta firmata, se vendi quasi tutto la tua fama sale di più; se resta invenduta più di metà roba, la firma perde credibilità. Prezzi alti sì, ma nel momento giusto.'],
@@ -5631,7 +5975,7 @@ function openSheet(kind, arg) {
   else if (kind === 'soffiata') { const s = G.intel.soffiata.cities;
     html = `<div class="eyebrow">La soffiata</div><h2>${s.length ? 'Ecco dove cercare' : 'Oggi non c’è da nessuna parte'}</h2>
       <p class="desc">${s.length ? `Un pezzo per il tuo incarico è in catalogo a: <b class="c-go">${s.map(id => cityOf(id).name).join(', ')}</b>. Sulla mappa le trovi segnate in verde.` : 'Nessuna sala aperta lo ha oggi. Lascia passare qualche giorno o prova a fidarti delle probabilità.'}</p>
-      <div class="row">${s.length ? '' : `<button class="btn btn-gold" data-act="soffWait">Passa la notte · giorno ${G.day + 1}</button>`}<button class="btn btn-ghost" data-act="close">Chiudi</button></div>`; }
+      <div class="row"><button class="btn ${s.length ? 'btn-ghost' : 'btn-gold'}" data-act="soffWait">Passa la notte · giorno ${G.day + 1}</button><button class="btn btn-ghost" data-act="close">Chiudi</button></div>`; }
   else if (kind === 'catalog') { const s = G.sessions[arg];
     html = `<div class="eyebrow">Il commesso · ${cityOf(arg).name}</div><h2>${s.lots.length - s.idx} lotti in catalogo</h2><ul class="items">${s.lots.slice(s.idx).map(l => `<li><div class="ic-w ${G.incs.some(i => matches(l.itemId, i)) ? 'gold' : ''}">${ic(iconOf(l.itemId))}</div><span>${esc(BY_ID[l.itemId].name)}</span><span class="vl">${eur(BY_ID[l.itemId].est)}</span></li>`).join('')}</ul>
       <p class="note">Il catalogo resta visibile sulla scheda della città fino alla tua visita.</p><button class="btn btn-ghost" data-act="close">Chiudi</button>`; }
@@ -5749,7 +6093,7 @@ document.addEventListener('click', e => {
   const act = el.dataset.act;
   if (act === 'bgclose') { if (e.target === el && !(G && G.ui.tz && G.ui.tz.phase === 'play') && !(G && G.ui.pitch && G.ui.pitch.phase !== 'ready')) closeSheet(); return; } // durante il puzzle non si chiude per sbaglio
   if (el.disabled) return;
-  if (!['step', 'myAdj', 'myMin', 'boxAdj', 'boxToggle', 'boxCut', 'setTheme', 'close', 'trAdj', 'trPress'].includes(act) && performance.now() - lastRenderAt < 320) return; // doppio tap
+  if (!['step', 'myAdj', 'myMin', 'boxAdj', 'boxToggle', 'boxCut', 'setTheme', 'close', 'trSt', 'trMore'].includes(act) && performance.now() - lastRenderAt < 320) return; // doppio tap
   const d = el.dataset;
   switch (act) {
     case 'tab': return A.tab(d.v);
@@ -5778,12 +6122,13 @@ document.addEventListener('click', e => {
     case 'trOpen': return A.trOpen(d.id);
     case 'trPick': return A.trPick(d.u);
     case 'trBack': return A.trBack();
-    case 'trAdj': return A.trAdj(+d.d);
-    case 'trPress': return A.trPress(+d.d);
-    case 'trSend': return A.trSend(d.v);
     case 'trTakeH': return A.trTakeH();
+    case 'trSt': return A.trSt(d.v);
+    case 'trMv': return A.trMv(d.v);
+    case 'trMore': return A.trMore();
+    case 'trEv': return A.trEv(d.v);
+    case 'trQuit': return A.trQuit();
     case 'soffWait': closeSheet(); return A.wait();
-    case 'trCoffee': return A.trCoffee(d.v === '1');
     case 'trDeal': return A.trDeal(d.v === '1');
     case 'trEnd': return A.trEnd();
     case 'pitchGo': return A.pitchGo();
