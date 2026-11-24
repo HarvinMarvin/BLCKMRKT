@@ -1746,6 +1746,11 @@ html[data-theme="hud"] .track .mk{width:3px;z-index:2;box-shadow:0 0 0 1px #0209
 .incacts.solo .btn{grid-column:1/-1}
 .incacts .link{grid-column:1/-1;justify-self:end;padding:4px 0}
 
+.trpx{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;align-items:center;width:100%;margin:4px 0}
+.trpx .btn{padding:6px 2px;min-width:0;font-size:12px;letter-spacing:.02em;min-height:44px;white-space:normal;line-height:1.15}
+.trin{grid-column:1/-1;width:100%;min-width:0;text-align:center;font-size:22px;font-weight:800;color:var(--mine,#5cc8ff);background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:6px 4px}
+.trinfo .trprice small{display:block;text-align:center}
+
 /* ====== PROVE DI PALETTE E STILI (dalle tavole PNG) ====== */
 /* struttura comune delle prove di palette */
 html.pal .btn-gold{background:var(--acc);color:var(--on-acc)}
@@ -4795,7 +4800,17 @@ function trNew(sc) {
   return S;
 }
 // valore massimo che è disposto a pagare (non lo vedi): sale con la fiducia, mai oltre il suo budget
-const reff = S => Math.min(S.budget, S.V * S.C.pay * (.74 + .05 * S.trust) * (.6 + .5 * S.sim));
+// il cliente non sa quanto vale davvero: si fa un'idea sul TUO primo prezzo, più o meno corretta da quanto se ne intende
+const KNOW = { dolce:.3, nonnina:.2, entusiasta:.35, sbrigativo:.4, altezzosa:.5, affarista:.7, pignolo:.75, diffidente:.65 };
+const reff = S => Math.min(S.budget, (S.P || S.V) * S.C.pay * (.74 + .05 * S.trust) * (.6 + .5 * S.sim));
+function anchorP(S) {
+  // quanto se ne intende: dal carattere, più un po' di caso (magari si è informato)
+  const k = clamp((KNOW[S.ch] ?? .5) + (rnd() - .5) * .3, .1, .9), ask = Math.min(S.X, S.V * 2);
+  S.k = k; S.P = k * S.V + (1 - k) * ask;
+  // se spari troppo alto, chi se ne intende se ne accorge e si irrita
+  const over = S.X / S.V;
+  if (over > 1.7 && rnd() < k) { S.trust = clamp(S.trust - (over - 1.4) * 2.2 * k, 0, 10); S.P = Math.min(S.P, S.V * (1.05 + .1 * (1 - k))); S.caught = true; }
+}
 const clima = t => t <= 2 ? ['Gelo', 'gelo'] : t <= 4 ? ['Freddo', 'freddo'] : t < 6.5 ? ['Tiepido', 'tiepido'] : t < 8.5 ? ['Caldo', 'caldo'] : ['Rovente', 'rovente'];
 
 function priceLine(S, k) { const own = ((L[S.ch].p || {})[k] || []).filter(s => !S.seen.includes(s)); return fresh(S, own.length ? own : P_GEN[S.reg][k]); }
@@ -4809,7 +4824,7 @@ function say(S, who, s, extra) { if (s) S.log.push({ who, t:fill(S, s, extra) })
 
 // le 3 mosse proposte: prima quelle mai usate, a caso; così ogni giro è diverso
 function offerMoves(S) {
-  const all = Object.keys(MOSSE).filter(k => k !== 'risparmio' || nextPrice(S, 'tengo') <= S.budget * .85), unused = all.filter(k => !S.used[k]), once = all.filter(k => S.used[k] === 1);
+  const all = Object.keys(MOSSE).filter(k => k !== 'risparmio' || (S.tgt || nextPrice(S, 'tengo')) <= S.budget * .85), unused = all.filter(k => !S.used[k]), once = all.filter(k => S.used[k] === 1);
   const pool = [...unused.sort(() => rnd() - .5), ...once.sort(() => rnd() - .5)];
   // se puoi fargli risparmiare, quella frase c'è sempre; poi altre 3 a caso, e le restanti sotto "Altro da dire"
   if (pool.includes('risparmio')) pool.unshift(...pool.splice(pool.indexOf('risparmio'), 1));
@@ -4826,7 +4841,9 @@ function nextPrice(S, a) {
 function trTurn(S, lever, a) {
   if (S.phase !== 'talk') return;
   const C = S.C, first = S.lastX == null;
-  S.X = nextPrice(S, a);
+  // prezzo libero (scritto o con − e +): la mossa sul prezzo si capisce da quanto sei salito o sceso
+  if (typeof a === 'number') { S.X = Math.min(S.budget, Math.max(10, r10(a))); a = first || S.X === S.lastX ? 'tengo' : S.X > S.lastX ? 'su' : (S.lastX - S.X) / S.lastX >= .1 ? 'tanto' : 'poco'; }
+  else S.X = nextPrice(S, a);
   // se scendi fino o sotto la sua offerta, chiudi alla sua cifra (mai sotto)
   if (S.H && S.X <= S.H) { S.X = S.H; say(S, 'io', fresh(S, S.reg === 'tu' ? ['Ok, ci sto: {x}.', 'Va bene, {x}.'] : ['D’accordo, {x}.', 'Va bene, chiudiamo a {x}.'])); return accept(S, 'si'); }
   S.round++;
@@ -4856,14 +4873,16 @@ function trTurn(S, lever, a) {
   S.lastX = S.X; S.pat--;
   if (S.trust <= .5) { say(S, 'lei', [react, line(S, 'rompe')].filter(Boolean).join(' ')); return end(S, 'rotta'); }
   // la sua risposta sul prezzo
+  if (S.P == null) anchorP(S);
   const R = reff(S), V = S.V;
-  if (S.H == null) S.H = r10(Math.min(R, S.X) * C.anchor * (.92 + rnd() * .16));
+  // la prima controfferta parte dal tuo prezzo (non dal valore vero), e cambia ogni volta
+  if (S.H == null) S.H = r10(Math.min(R * (.9 + rnd() * .15), S.X * C.anchor * (.88 + rnd() * .3)));
   if (S.X <= S.H) { say(S, 'lei', react); return accept(S); }
   let pkey;
   if (S.X <= R) {
     const gap = (S.X - S.H) / V, pAcc = .2 + .06 * (S.trust - 5) + (gap < .08 ? .3 : 0) + (S.ch === 'sbrigativo' ? .15 : 0);
     if (rnd() < pAcc) { say(S, 'lei', react); return accept(S); }
-    const old = S.H; S.H = Math.min(S.X, r10(S.H + (S.X - S.H) * C.conc * (.8 + .06 * S.trust)));
+    const old = S.H; S.H = Math.min(S.X, r10(S.H + (S.X - S.H) * Math.min(.45, C.conc * (.6 + .05 * S.trust))));   // passi credibili, mai salti
     if ((S.X - S.H) / V < .04) { say(S, 'lei', react); return accept(S); }
     pkey = (S.X - S.H) / V < .1 ? 'vicino' : S.H === old ? 'fermo' : 'medio';
   } else {
@@ -4896,9 +4915,11 @@ function end(S, how) { S.phase = 'done'; S.how = how; }
 function startEvent(S) {
   S.evDone = true; S.phase = 'event'; const E = EVENTI[S.ch];
   if (S.ch === 'nonnina') { const up = r10(S.X * 1.2); S.z = rnd() < .6 || up > S.budget ? r10(S.X * .75) : up; }
-  if (S.ch === 'altezzosa') S.H = Math.max(S.H, r10(Math.min(S.X * .93, reff(S))));
-  if (S.ch === 'entusiasta') S.H = Math.max(S.H, r10(Math.min(S.X * .9, reff(S))));
-  if (S.ch === 'sbrigativo') S.H = Math.max(S.H, r10(Math.min((S.H + S.X) / 2, reff(S))));
+  // le offerte dei momenti speciali salgono di un passo credibile rispetto alla sua ultima offerta, mai un salto
+  const step = f => { const g = Math.max(0, S.X - S.H); S.H = Math.max(S.H, r10(Math.min(S.H + g * f, reff(S)))); };
+  if (S.ch === 'altezzosa') step(.3 + rnd() * .15);
+  if (S.ch === 'entusiasta') step(.2 + rnd() * .15);
+  if (S.ch === 'sbrigativo') step(.25 + rnd() * .15);
   say(S, 'lei', fresh(S, E.testo), { z:S.z });
   S.ev = E;
 }
@@ -5016,18 +5037,32 @@ Object.assign(A, {
     const it = BY_ID[e.itemId], paid = e.mine || e.incId !== inc.id ? e.cost || 0 : 0;
     const sc = { ch:T.ch, value:Math.max(10, trVal(e)), paid, budget:inc.cash, req:esc(trReq(inc)), item:esc(/^.[A-Z]/.test(it.name) ? it.name : it.name.charAt(0).toLowerCase() + it.name.slice(1)),
       cat:TR_TIPO[it.cat] || it.cat, kind:it.cat === 'animali' ? 'animale' : '', sim:trSim(e.itemId, inc) };
-    T.u = u; T.iname = it.name; T.S = TRV.trNew(sc); T.st = 'tengo'; T.phase = 'talk'; openSheet('tratta');
+    T.u = u; T.iname = it.name; T.S = TRV.trNew(sc); T.S.tgt = T.S.X; T.phase = 'talk'; openSheet('tratta');
   },
   trBack() { const T = G.ui.tr; if (T && T.S && !T.S.round) { T.u = null; T.S = null; T.phase = 'pick'; openSheet('tratta'); } },
-  trSt(v) { const T = G.ui.tr; if (!T || !T.S) return; T.st = v; openSheet('tratta'); },
+  // il prezzo che dici: lo alzi e lo abbassi come vuoi, da sopra la sua offerta fino al suo budget
+  trPx(d) { const S = trS(); if (!S || S.phase !== 'talk') return; const [sm, bg] = trSteps(S); trSetPx(S, (S.tgt || S.X) + (Math.abs(d) > 1 ? bg : sm) * Math.sign(d)); openSheet('tratta'); },
+  trPxSet(v) { const S = trS(); if (!S || S.phase !== 'talk') return; const n = parseInt(String(v).replace(/[^\d]/g, ''), 10); if (n) trSetPx(S, n); openSheet('tratta'); },
   trMore() { const S = trS(); if (!S) return; S.showMore = true; openSheet('tratta'); },
-  trMv(k) { const T = G.ui.tr, S = trS(); if (!S || S.phase !== 'talk') return; TRV.trTurn(S, k, T.st || 'tengo'); T.st = 'tengo'; S.showMore = false; trApply(); openSheet('tratta'); },
+  trMv(k) { const T = G.ui.tr, S = trS(); if (!S || S.phase !== 'talk') return; TRV.trTurn(S, k, S.tgt || S.X); S.tgt = S.X; S.showMore = false; trApply(); openSheet('tratta'); },
   trEv(k) { const S = trS(); if (!S || S.phase !== 'event') return; TRV.trEvent(S, k); trApply(); openSheet('tratta'); },
   trTakeH() { const S = trS(); if (!S) return; TRV.trTakeH(S); trApply(); openSheet('tratta'); },
   trDeal(yes) { const S = trS(); if (!S) return; TRV.trConfirm(S, yes); trApply(); openSheet('tratta'); },
   trQuit() { const S = trS(); if (S && S.phase === 'talk') { S.log.push({ who:'io', t: S.reg === 'tu' ? 'Ci penso e ti richiamo.' : 'Ci penso e la richiamo.' }); TRV.end(S, 'chiusa'); trApply(); openSheet('tratta'); } else A.trEnd(); },
   trEnd() { G.ui.tr = null; closeSheet(); render(); }
 });
+
+const trSteps = S => { const sm = Math.max(10, r10(S.V * .03)); return [sm, Math.max(sm * 3, r10(S.V * .15))]; };
+const trMin = S => Math.max(10, S.H || 0);
+function trSetPx(S, v) { S.tgt = Math.max(trMin(S), Math.min(S.budget, r10(v))); }
+function trPriceBox(S, x, gain) {
+  const top = x >= S.budget, bot = x <= trMin(S), say = !S.lastX ? '' : x === S.lastX ? 'tieni il prezzo' : x > S.lastX ? 'rialzi' : (S.lastX - x) / S.lastX >= .1 ? 'scendi tanto' : 'scendi un po’';
+  return `<div class="trprice"><span>Il prezzo che dici${say ? ` · ${say}` : ''}</span>
+    <div class="trpx"><input class="trin num" type="text" inputmode="numeric" value="${fmtN(x)}" aria-label="Il prezzo che dici" onfocus="this.select()" onchange="BM.A.trPxSet(this.value)" onkeydown="if(event.key==='Enter')this.blur()"><button class="btn btn-ghost btn-sm" data-act="trPx" data-d="-2" ${bot ? 'disabled' : ''}>Scendo tanto</button><button class="btn btn-ghost btn-sm" data-act="trPx" data-d="-1" ${bot ? 'disabled' : ''}>Scendo poco</button>
+      <button class="btn btn-ghost btn-sm" data-act="trPx" data-d="1" ${top ? 'disabled' : ''}>Salgo poco</button><button class="btn btn-ghost btn-sm" data-act="trPx" data-d="2" ${top ? 'disabled' : ''}>Salgo tanto</button></div>
+    <small class="${gain >= 0 ? 'c-go' : 'c-risk'}">ci guadagni ${signed(gain)}</small>
+    <small class="muted">${top ? 'Sei al massimo: più del suo budget non può pagare' : `Puoi scriverlo tu. Massimo: il suo budget, ${eur(S.budget)}`}</small></div>`;
+}
 
 function trSheet() {
   const T = G.ui.tr; if (!T) return '';
@@ -5042,20 +5077,18 @@ function trSheet() {
       <ul class="items trpick">${list.map(x => { const it = BY_ID[x.itemId]; return `<li><button class="trp" data-act="trPick" data-u="${x.uid}"><span class="ic-w">${ic(it.icon)}</span><span>${esc(it.name)}<br><small class="muted">vale <span class="c-go">${eur(trVal(x))}</span>${x.cost ? ` · pagato <span class="c-mine">${eur(x.cost)}</span>` : ''}</small></span></button></li>`; }).join('')}</ul>
       <button class="btn btn-ghost" data-act="trEnd">Lascia stare</button>`;
   }
-  const it = { name:T.iname || '' }, x = S.phase === 'talk' ? Math.max(S.H || 0, TRV.nextPrice(S, T.st || 'tengo')) : S.X, gain = x - S.paid;
+  const it = { name:T.iname || '' }, x = S.phase === 'talk' ? (S.tgt || S.X) : S.X, gain = x - S.paid;
   const info = `<div class="trinfo">
       <div><span>Chiedeva</span><b>${esc(T.creq || '')}</b></div>
       <div><span>Suo budget</span><b class="c-gold num">${eur(S.budget)}</b></div>
       <div><span>${esc(it.name)}</span><b class="c-go num">vale ${eur(S.V)}</b>${S.paid ? `<small>pagato <b class="c-mine">${eur(S.paid)}</b></small>` : ''}</div>
       <div><span>La sua offerta</span>${S.H ? `<b class="num">${eur(S.H)}</b>${S.phase === 'talk' ? `<button class="btn btn-go btn-sm trtake" data-act="trTakeH">Accetto</button>` : ''}` : '<b class="muted">—</b>'}</div>
-      ${live || S.phase === 'offer' ? `<div class="trprice"><span>Tu chiedi</span><b class="num">${eur(x)}</b><small class="${gain >= 0 ? 'c-go' : 'c-risk'}">ci guadagni ${signed(gain)}</small></div>` : ''}</div>`;
+      ${S.phase === 'talk' ? trPriceBox(S, x, gain) : S.phase === 'offer' ? `<div class="trprice"><span>Tu chiedi</span><b class="num">${eur(x)}</b><small class="${gain >= 0 ? 'c-go' : 'c-risk'}">ci guadagni ${signed(gain)}</small></div>` : ''}</div>`;
   let ctl = '';
   if (S.phase === 'talk') {
-    const mv = S.offer && S.offerRound === S.round ? S.offer : (S.offerRound = S.round, TRV.offerMoves(S)), st = T.st || 'tengo';
-    const chips = [['tengo', S.lastX ? 'Tengo il prezzo' : 'Prezzo pieno'], ['poco', 'Scendo un po’'], ['tanto', 'Scendo tanto'], ['su', 'Rialzo']];
+    const mv = S.offer && S.offerRound === S.round ? S.offer : (S.offerRound = S.round, TRV.offerMoves(S));
     const lab = k => TRV.MOSSE[k].label[S.reg];
-    ctl = `<div class="trlab">Il prezzo che dici</div><div class="trchips">${chips.map(([k, l]) => `<button class="trchip ${st === k ? 'on' : ''}" data-act="trSt" data-v="${k}">${l}</button>`).join('')}</div>
-      <div class="trlab">Cosa dici</div><div class="trmoves">${mv.map(k => `<button class="trmv" data-act="trMv" data-v="${k}">${lab(k)}</button>`).join('')}
+    ctl = `<div class="trlab">Cosa dici</div><div class="trmoves">${mv.map(k => `<button class="trmv" data-act="trMv" data-v="${k}">${lab(k)}</button>`).join('')}
       ${S.more && S.more.length ? (S.showMore ? S.more.map(k => `<button class="trmv alt" data-act="trMv" data-v="${k}">${lab(k)}</button>`).join('') : '<button class="link" data-act="trMore">Altro da dire…</button>') : ''}</div>
       <div class="row">${S.round ? '' : '<button class="link" data-act="trBack">Cambia pezzo</button>'}<button class="link" data-act="trQuit">Lascia stare</button></div>`;
   } else if (S.phase === 'event') {
@@ -5278,7 +5311,7 @@ const HELP = [
     ['Padrino', 'Paga il triplo, ma se lo deludi (un falso, una rinuncia, troppa attesa) si prende il pezzo più bello del tuo bunker e torni in strada con 100 €. Per chi vuole svoltare, o è alla frutta.'],
     ['Pezzo grosso', 'Paga il doppio, ma se lo deludi perdi un terzo dei tuoi soldi, un po’ di fama e 5 livelli. Con lui niente Persuadilo.'],
     ['Non deluderli', 'Cosa vogliono Padrino e Pezzo grosso lo scopri solo dopo aver accettato: prima decidi se rischiare. Con loro fai periziare il pezzo prima di consegnarlo, compra il listino della sala e paga gli informatori: costano poco rispetto a quello che rischi.'],
-    ['Proponi un pezzo', 'Non trovi quello che chiede? Chiamalo e proponigli un pezzo del bunker. È una trattativa vera: ogni turno scegli il prezzo (tieni, scendi un po’, scendi tanto, rialzi) e cosa dirgli. Il cliente ha un carattere che non vedi e che cambia ogni volta: c’è chi si scioglie con la storia del pezzo, chi vuole le carte, chi pensa solo all’affare. Capiscilo dalle risposte. Il clima mostra quanto si fida, i pallini quanta pazienza gli resta. Ripetere la stessa frase rende meno, e il tira e molla col prezzo non piace a nessuno. A volte succede qualcosa (uno scambio, una prova, una cifra capita male): scegli bene. Se il prezzo è sotto il suo budget puoi dirgli che gli fai risparmiare. Una proposta assurda (un revolver a chi vuole un gattino) o un litigio fanno scendere la sua pazienza. Un affare così vale meno livello di una consegna vera.'],
+    ['Proponi un pezzo', 'Non trovi quello che chiede? Chiamalo e proponigli un pezzo del bunker. È una trattativa vera: ogni turno decidi il prezzo e cosa dirgli. Il prezzo parte poco sopra quanto l’hai pagato. Il cliente non sa quanto vale davvero: si fa un’idea sul tuo primo prezzo, quindi partire alto conta. Ma chi se ne intende se ne accorge, e se esageri si irrita. lo alzi e lo abbassi come vuoi (Scendo tanto, Scendo poco, Salgo poco, Salgo tanto) o lo scrivi, fino al suo budget, che è il massimo che può pagare. Il cliente ha un carattere che non vedi e che cambia ogni volta: c’è chi si scioglie con la storia del pezzo, chi vuole le carte, chi pensa solo all’affare. Capiscilo dalle risposte. Il clima mostra quanto si fida, i pallini quanta pazienza gli resta. Ripetere la stessa frase rende meno, e il tira e molla col prezzo non piace a nessuno. A volte succede qualcosa (uno scambio, una prova, una cifra capita male): scegli bene. Se il prezzo è sotto il suo budget puoi dirgli che gli fai risparmiare. Una proposta assurda (un revolver a chi vuole un gattino) o un litigio fanno scendere la sua pazienza. Un affare così vale meno livello di una consegna vera.'],
     ['Soprannomi', 'Se vendi tanto di una cosa, in giro ti danno un soprannome: Tic Tac per gli orologi, Canne Mozze per le armi… Se vendi caro diventi il Condor; se svendi tutto ti chiamano Aspirapolvere.'],
     ['Stelle di fama', 'Bronzo, argento e oro, ognuno da 1 a 3 stelle, poi il Platino. Più sali, più pagano i tuoi pezzi in quello stile e più amatori arrivano. Se per un po’ non vendi in quello stile la fama cala piano, ma non perdi mai più di due gradini; dal Platino non scendi sotto l’oro a 3 stelle.'],
     ['La tua firma', 'In un’asta firmata, se vendi quasi tutto la tua fama sale di più; se resta invenduta più di metà roba, la firma perde credibilità. Prezzi alti sì, ma nel momento giusto.'],
@@ -6099,7 +6132,7 @@ document.addEventListener('click', e => {
   const act = el.dataset.act;
   if (act === 'bgclose') { if (e.target === el && !(G && G.ui.tz && G.ui.tz.phase === 'play') && !(G && G.ui.pitch && G.ui.pitch.phase !== 'ready')) closeSheet(); return; } // durante il puzzle non si chiude per sbaglio
   if (el.disabled) return;
-  if (!['step', 'myAdj', 'myMin', 'boxAdj', 'boxToggle', 'boxCut', 'setTheme', 'close', 'trSt', 'trMore'].includes(act) && performance.now() - lastRenderAt < 320) return; // doppio tap
+  if (!['step', 'myAdj', 'myMin', 'boxAdj', 'boxToggle', 'boxCut', 'setTheme', 'close', 'trPx', 'trMore'].includes(act) && performance.now() - lastRenderAt < 320) return; // doppio tap
   const d = el.dataset;
   switch (act) {
     case 'tab': return A.tab(d.v);
@@ -6129,7 +6162,7 @@ document.addEventListener('click', e => {
     case 'trPick': return A.trPick(d.u);
     case 'trBack': return A.trBack();
     case 'trTakeH': return A.trTakeH();
-    case 'trSt': return A.trSt(d.v);
+    case 'trPx': return A.trPx(+d.d);
     case 'trMv': return A.trMv(d.v);
     case 'trMore': return A.trMore();
     case 'trEv': return A.trEv(d.v);
