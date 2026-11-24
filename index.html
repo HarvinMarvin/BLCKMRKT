@@ -1740,6 +1740,12 @@ html[data-theme="hud"] .track .mk{width:3px;z-index:2;box-shadow:0 0 0 1px #0209
 .trok{display:flex;flex-direction:column;gap:4px}
 .trmood .clima{white-space:nowrap}
 
+/* tasti dell'incarico: su telefono verticale vanno a capo invece di uscire (24/11) */
+.incacts{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:stretch;margin-top:10px}
+.incacts .btn{white-space:normal;line-height:1.15;min-width:0;padding:10px 8px;letter-spacing:.04em}
+.incacts.solo .btn{grid-column:1/-1}
+.incacts .link{grid-column:1/-1;justify-self:end;padding:4px 0}
+
 /* ====== PROVE DI PALETTE E STILI (dalle tavole PNG) ====== */
 /* struttura comune delle prove di palette */
 html.pal .btn-gold{background:var(--acc);color:var(--on-acc)}
@@ -5394,7 +5400,7 @@ function vClienti() {
       <div class="ic-box">${ic(tagIcon(G.inc.tag), 'gold')}</div>
       <div>${bossTag(G.inc)}<div class="who">Incarico in corso · ${esc(c.name)}${G.inc.boss ? '' : `, ${esc(c.city)}`}</div><div class="req">${esc(tagLabel(G.inc.tag))}</div>${G.inc.naive ? '<div class="naive">Non se ne intende · budget largo</div>' : ''}</div>
       <div class="foot"><div class="budget num">${eur(G.inc.cash)}<small>Budget rimasto su ${eur(G.inc.budget)}</small></div>
-        <div class="row" style="align-items:center">${G.bunker.some(e => matches(e.itemId, G.inc) && e.appraised !== 'falso') ? `<button class="btn btn-go btn-sm" data-act="askDeliver" data-id="${G.inc.id}">Consegna dal bunker</button>` : `<button class="btn btn-gold btn-sm" data-act="tab" data-v="aste">Vai alle aste</button>`}${trCan(G.inc) ? `<button class="btn btn-ghost btn-sm" data-act="trOpen" data-id="${G.inc.id}">Proponi un pezzo</button>` : ''}<button class="link" data-act="askAbandon" data-id="${G.inc.id}">Rinuncia</button></div></div>
+        <div class="incacts ${trCan(G.inc) ? '' : 'solo'}">${G.bunker.some(e => matches(e.itemId, G.inc) && e.appraised !== 'falso') ? `<button class="btn btn-go btn-sm" data-act="askDeliver" data-id="${G.inc.id}">Consegna dal bunker</button>` : `<button class="btn btn-gold btn-sm" data-act="tab" data-v="aste">Vai alle aste</button>`}${trCan(G.inc) ? `<button class="btn btn-ghost btn-sm" data-act="trOpen" data-id="${G.inc.id}">Proponi un pezzo</button>` : ''}<button class="link" data-act="askAbandon" data-id="${G.inc.id}">Rinuncia</button></div></div>
       <p style="grid-column:1/-1;display:flex;align-items:center;gap:8px"><i class="sdot" style="margin:0;background:${patColor(patience())};box-shadow:0 0 8px ${patColor(patience())}"></i><span>Pazienza del cliente: <b>${patWord(patience())}</b>. ${G.inc.boss ? 'Ha meno pazienza degli altri e non perdona: niente falsi, niente rinunce, niente ritardi. Fai periziare il pezzo prima di consegnarlo.' : 'Se consegni presto guadagni più reputazione; se aspetti troppo si riprende l’incarico.'}</span></p>
       <p class="note" style="grid-column:1/-1">${G.bunker.some(e => matches(e.itemId, G.inc) && e.appraised !== 'falso') ? `Hai già il pezzo: se lo consegni ora ti tieni ${eur(G.inc.cash)}.` : 'Compra un pezzo adatto e consegnalo: quello che resta del budget è tuo.'}${spent ? ` Se rinunci, i ${eur(spent)} già spesi diventano debito.` : ''}</p>
     </article>`; })(); }).join('');
