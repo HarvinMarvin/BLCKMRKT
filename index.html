@@ -5077,7 +5077,7 @@ function trApply() {
   if (S.swap) { swapIt = trSwapItem(S.swap); if (swapIt) cash = S.price - S.swap; }
   cash = Math.min(inc.cash, Math.max(0, cash));
   const back = inc.cash - cash;
-  G.bunker = G.bunker.filter(x => x !== e); G.personal += cash - S.cost; G.stats.delivered++;
+  removeEntry(e.uid); G.personal += cash - S.cost; G.stats.delivered++;
   if (swapIt) G.bunker.push({ uid:uid('b'), itemId:swapIt.id, cost:r10(S.swap), mine:true, incId:null, day:G.day, listed:false, fake:false, appraised:null });
   const pts = G.debt > 0 ? 0 : Math.max(.5, lvPoints(inc.budget) / 2), gain = pts ? lvGain(pts, cash) : 0;
   G.incs = G.incs.filter(i => i !== inc); G.act = G.incs[0] ? G.incs[0].id : null;
@@ -5639,6 +5639,7 @@ window.addEventListener('resize', () => { fitEstMark(); if (G && G.state === 'HU
 /* ---------- bunker ---------- */
 function vBunker() {
   const tot = G.bunker.reduce((s, e) => s + marketVal(e), 0);
+  G.offers = G.offers.filter(o => G.bunker.some(x => x.uid === o.uid));   // niente offerte per pezzi che non hai più (es. dati via in trattativa)
   const nOff = G.offers.length, nW = wantsMatched();
   const tabs = [['magazzino', 'Magazzino'], ['richieste', 'Richieste'], ['offerte', 'Offerte'], ['informatori', 'Informatori'], ['conti', 'Conti']]
     .map(([k, l]) => `<button data-act="btab" data-v="${k}" ${G.btab === k ? 'aria-current="true"' : ''}>${l}${k === 'offerte' && nOff ? `<span class="badge">${nOff}</span>` : ''}${k === 'richieste' && nW ? `<span class="badge">${nW}</span>` : ''}${k === 'informatori' && G.box ? '<span class="badge">1</span>' : ''}</button>`).join('');
