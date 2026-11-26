@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>BLCK MRKT</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#161616">
+<style>
+/* VOICE: strada, notte, mercato nero · IDEA: un bivio tra due porte · PICTURE: due carte grandi
+   COLOUR: nero asfalto, giallo Strada, avorio · TYPE: condensato pesante + sans · LAYOUT: logo, due scelte a tutta larghezza */
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;background:#161616;color:#f1efe8;font:16px/1.5 -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
+body{min-height:100dvh;display:flex;flex-direction:column;justify-content:center;padding:calc(env(safe-area-inset-top) + 28px) max(5vw,18px) calc(env(safe-area-inset-bottom) + 28px)}
+.wrap{max-width:560px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.logo{font-family:"Anton","Impact","Arial Narrow",sans-serif;font-weight:900;font-size:clamp(52px,16vw,88px);line-height:.95;letter-spacing:.01em;margin:0}
+.logo b{color:#f2b632;font-weight:inherit}
+.sub{color:#9a978e;margin:0 0 6px;font-size:15px}
+a.door{display:flex;flex-direction:column;gap:6px;padding:22px 20px;border-radius:14px;text-decoration:none;color:inherit;border:2px solid #3d3d3d;background:repeating-linear-gradient(135deg,#1c1c1c 0 16px,#232323 16px 32px);min-height:44px}
+a.door.gold{border-color:#f2b632}
+a.door small{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#9a978e}
+a.door.gold small{color:#f2b632}
+a.door strong{font-family:"Anton","Impact","Arial Narrow",sans-serif;font-size:clamp(30px,9vw,42px);line-height:1.05;text-transform:uppercase}
+a.door span{color:#c9c6bd;font-size:15px}
+a.door:focus-visible{outline:3px solid #f2b632;outline-offset:3px}
+a.door:active{transform:scale(.985)}
+.note{color:#9a978e;font-size:13px;text-align:center;margin:4px 0 0}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1 class="logo">BLCK <b>MRKT</b></h1>
+  <p class="sub">Da che parte entri stanotte?</p>
+  <a class="door" href="classico.html">
+    <small>Il gioco</small>
+    <strong>Black Market</strong>
+    <span>Clienti, sale, bunker, mappa: la partita lunga, dai bagagliai in su.</span>
+  </a>
+  <a class="door gold" href="nuovo.html">
+    <small>Nuovo</small>
+    <strong>BLCK MRKT</strong>
+    <span>Un solo budget, il tuo. Compra sotto la stima, scopri i falsi, rifilali ai clienti.</span>
+  </a>
+  <p class="note">Due partite separate: i salvataggi non si mischiano.</p>
+</main>
+<script>if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js"));</script>
+</body>
+</html>
