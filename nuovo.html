@@ -6285,7 +6285,8 @@ function cSpawn(quiet, force) {
   const bunk = b.bunker.filter(p => !taken.has(BY_ID[p.itemId].cat));
   if (bunk.length && rnd() < .55) { const f = bunk.filter(p => p.fake); cat = BY_ID[pick(f.length && rnd() < .6 ? f : bunk).itemId].cat; }
   if (!cat) { const reach = SALE.filter(s => s.fee <= Math.max(b.money, SALE[0].fee)), hi = reach[reach.length - 1].hi;
-    const pool = CATALOG.filter(it => !it.set && !it.box && it.est >= SALE[0].lo && it.est <= hi && !taken.has(it.cat)); if (!pool.length) return; cat = pick(pool).cat; }
+    const all = CATALOG.filter(it => !it.set && !it.box && it.est >= SALE[0].lo && it.est <= hi && !taken.has(it.cat)), pool = all.filter(it => it.est <= Math.max(SALE[0].lo * 2, b.money * 1.5));
+    if (!all.length) return; cat = pick(pool.length ? pool : all).cat; }
   const kind = force || pick(Object.keys(CKIND)), K = CKIND[kind];
   const c = { id:uid('c'), name:pick(CNAMES.filter(n => !names.has(n))), cat, kind, mul:K.mul, left:K.n ? K.n[0] + Math.floor(rnd() * (K.n[1] - K.n[0] + 1)) : null };
   b.clients.push(c);
@@ -6296,6 +6297,27 @@ function cTick(kind) {
   const gone = b.clients.filter(c => c.left != null && c.left <= 0); if (!gone.length) return;
   b.clients = b.clients.filter(c => !gone.includes(c));
   setTimeout(() => toast('', `${gone.map(c => esc(c.name)).join(' e ')} non ${gone.length > 1 ? 'hanno' : 'ha'} più aspettato: ${gone.length > 1 ? 'se ne sono andati' : 'se n’è andato'}`, 2800), 200);
+}
+// il pezzo che un cliente vuole passa davvero in sala (entro il suo tempo, se è a lotti) a un prezzo che puoi pagare, ma spesso c'è un rivale
+function cPlace(c, from) {
+  const S = G.bs; if (!S) return; const sala = SALE[S.tier], m = B().money;
+  const lim = Math.min(S.lots.length, c.kind === 'lotti' ? from + c.left : S.lots.length); if (lim <= from) return;
+  let i = S.lots.findIndex((l, k) => k >= from && k < lim && BY_ID[l.itemId].cat === c.cat);
+  if (i < 0) {
+    const used = new Set(S.lots.map(l => BY_ID[l.itemId].fam || l.itemId));
+    const all = CATALOG.filter(it => !it.set && !it.box && it.cat === c.cat && it.est >= sala.lo && it.est <= sala.hi && !used.has(it.fam || it.id)); if (!all.length) return;
+    const aff = all.filter(it => it.est <= Math.max(sala.lo * 2, m * 1.5)), L = aff.length ? aff : all.slice().sort((a, b) => a.est - b.est).slice(0, 2), it = L[Math.floor(rnd() * L.length)];
+    i = from + Math.floor(rnd() * (lim - from));
+    const l = makeLot(it, { id:'sala' + S.tier, rank:S.tier + 1, aggr:{}, fakeP:0 }, i, uid('b'));
+    l.n = S.lots[i].n; l.fake = it.est >= 80 && rnd() < BCFG.fakeP; l.vague = l.fake ? rnd() < .6 : rnd() < .15; S.lots[i] = l;
+  }
+  S.lots[i].cli = c.id;
+}
+// lotta vera: il rivale compra quando il prezzo è già alla tua portata, ma prima del minimo. A volte non c'è nessuno.
+function cFight(l, m) {
+  if (l.floor > m) return; const tAff = l.start <= m ? 0 : l.dur * (l.start - m) / (l.start - l.floor);
+  if (rnd() < .65) l.rivalT = +Math.min(l.dur * .97, Math.max(l.dur * .14, tAff + (l.dur - tAff) * U([.2, .75]))).toFixed(3);
+  else if (l.rivalT != null && l.rivalT < tAff + .8) l.rivalT = null;
 }
 function cDone(p, c, txt) { const S = G.bs; if (G.state === 'BLOT' && S && S.res && S.res.uid === p.uid) S.res.after = txt; }
 function cPaid(p, c, v, fake) {
@@ -6319,14 +6341,15 @@ function bGenNight(tier) {
   // almeno un pezzo che fa avanzare un set aperto, se ce n'è uno in fascia
   const open = SETS.filter(s => setHave(s).length < 3), pickIt = list => { const L = list.filter(it => !used.has(it.fam || it.id)); if (!L.length) return null; const it = L[Math.floor(rnd() * L.length)]; used.add(it.fam || it.id); return it; };
   if (open.length && rnd() < .8) { const s = open[Math.floor(rnd() * open.length)], it = pickIt(pool.filter(x => x.cat === s.cat)); if (it) lots.push(it); }
-  while (lots.length < n) { const it = pickIt(pool); if (!it) break; lots.push(it); }
+  const cap = Math.max(sala.lo * 2, B().money * 1.6), poolA = pool.filter(it => it.est <= cap);
+  while (lots.length < n) { const it = (poolA.length && rnd() < .75 && pickIt(poolA)) || pickIt(pool); if (!it) break; lots.push(it); }
   const L = shuffle(lots).map((it, i) => { const l = makeLot(it, c, i, seq); l.n = i + 1; l.fake = it.est >= 80 && rnd() < BCFG.fakeP; l.vague = l.fake ? rnd() < .6 : rnd() < .15; return l; });
   return { tier, lots:L, idx:0, phase:'pre', res:null, spent:0, got:[], fakes:0, value:0, money0:B().money };
 }
 const bLot = () => { const S = G.bs; return S && S.idx < S.lots.length ? S.lots[S.idx] : null; };
 const bDot = lot => { const N = G.bs.lots.length, f = N > 1 ? (lot.n - 1) / (N - 1) : 1; return `hsl(${Math.round(125 * (1 - f))} 72% 52%)`; };
 
-function bNext() { const S = G.bs; S.res = null; S.idx++; cTick('lotti'); if (!bLot()) return bEnd(); if (rnd() < .2) cSpawn(); S.phase = 'pre'; render(); window.scrollTo({ top:0 }); }
+function bNext() { const S = G.bs; S.res = null; S.idx++; cTick('lotti'); if (!bLot()) return bEnd(); if (rnd() < .2) { const k = B().clients.length; cSpawn(); if (B().clients.length > k) cPlace(B().clients[k], S.idx + 1); } S.phase = 'pre'; render(); window.scrollTo({ top:0 }); }
 function bRival() { const S = G.bs, lot = bLot(); stopLoop(); S.res = { kind:'lost', lot, price:priceAt(lot, lot.rivalT) }; S.phase = 'res'; render(); }
 function bEnd() {
   const S = G.bs, b = B(); stopLoop(); b.nights++; cTick('serate'); if (rnd() < .75) cSpawn();
@@ -6356,8 +6379,8 @@ function bFakeResult(lot, price, win) {
 }
 
 Object.assign(A, {
-  bSale(t) { const b = B(), s = SALE[+t]; if (!s || b.money < s.fee) return toast('Non hai abbastanza per entrare'); b.money -= s.fee; G.bs = bGenNight(+t); G.state = 'BLOT'; render(); window.scrollTo({ top:0 }); },
-  bStart() { const S = G.bs; if (!S || S.phase !== 'pre') return; S.phase = 'run'; render(); showPrice(); startRun(); },
+  bSale(t) { const b = B(), s = SALE[+t]; if (!s || b.money < s.fee) return toast('Non hai abbastanza per entrare'); b.money -= s.fee; G.bs = bGenNight(+t); b.clients.forEach(c => cPlace(c, 0)); G.state = 'BLOT'; render(); window.scrollTo({ top:0 }); },
+  bStart() { const S = G.bs; if (!S || S.phase !== 'pre') return; const l = bLot(); if (l.cli) cFight(l, B().money); S.phase = 'run'; render(); showPrice(); startRun(); },
   bBuy() { const S = G.bs; if (!S || S.phase !== 'run') return; const lot = bLot(), t = elapsed(); if (lot.rivalT != null && t >= lot.rivalT) return bRival();
     const p = priceAt(lot, t); if (p > B().money) return toast('Non ti bastano: aspetta che scenda'); stopLoop(); bBought(lot, p); },
   bSkip() { const S = G.bs; if (!S || !['pre', 'run', 'res'].includes(S.phase)) return; stopLoop(); bNext(); },
@@ -6396,13 +6419,14 @@ function bHeader() {
 
 /* ---------- schermate ---------- */
 function vBHome() {
-  const b = B(), broke = b.money < SALE[0].fee && !b.bunker.length;
+  const b = B(), broke = b.money < SALE[0].fee && !b.bunker.length, low = b.money < SALE[0].fee && b.bunker.length;
   const ready = SETS.filter(s => setHave(s).length >= 3);
   return `<section class="bhome stack">
     <div class="eyebrow"><b>BLCK MRKT</b></div>
     <h1>Compra sotto la stima. Rivendi. Non farti fregare.</h1>
     <p class="desc">Un solo budget, il tuo. Ogni tanto in sala passa un falso: se te ne accorgi lo restituisci o te lo tieni a un quarto. Completa i set nel bunker: tre pezzi dello stesso tipo valgono di più insieme.</p>
     ${broke ? `<div class="card" style="border-color:var(--risk)"><b class="c-risk">Sei al verde.</b> <span class="muted">Non hai soldi per entrare e il bunker è vuoto.</span><div class="row" style="margin-top:10px"><button class="btn btn-gold" data-act="bReset">Ricomincia</button></div></div>`
+      : low ? `<div class="card" style="border-color:var(--gold)"><b class="c-gold">Non hai i soldi per entrare.</b> <span class="muted">Vendi qualcosa dal bunker o a un cliente.</span><div class="row" style="margin-top:10px"><button class="btn btn-gold" data-act="bBunk">Vai al bunker</button></div></div>`
       : `<button class="btn btn-gold bbig" data-act="bGoSale">Scegli la sala</button>`}
     ${ready.length ? ready.map(s => `<div class="card bsetready"><b>${esc(s.name)} completo</b><span>Tre pezzi insieme: lo vendi a ${eur(setVal(s))}</span><button class="btn btn-go btn-sm" data-act="bSellSet" data-id="${s.id}">Vendi il set</button></div>`).join('') : ''}
     <div class="bhrow"><button class="ntile" data-act="bBunk"><small>Bunker</small><strong class="num">${b.bunker.length}</strong><span>pezzi tuoi</span></button>
@@ -6449,7 +6473,7 @@ function vBLot() {
   const shown = S.res ? S.res.price : lot.start;
   return `<section class="lot">${plate(it.id, lot.uid, lot.n, (lot.rare ? '<span class="tag rare">Pezzo raro</span>' : '') + tag, bDot(lot), null, S.phase === 'res' && S.res.kind === 'won')}
     <div class="info">
-      <div class="eyebrow"><b>${esc(sala.name)}</b> · ${esc(CATN[it.cat] || '')}${cw.length && s && sn < 3 ? ` · ${esc(s.name)} ${sn}/3` : ''}${lot.vague ? ' · <i class="c-risk">provenienza non documentata</i>' : ''}</div>
+      <div class="eyebrow"><b>${esc(sala.name)}</b> · ${esc(CATN[it.cat] || '')}${S.phase === 'pre' && lot.floor > B().money ? ' · <span class="c-risk">Non ci arrivi</span>' : ''}${cw.length && s && sn < 3 ? ` · ${esc(s.name)} ${sn}/3` : ''}${lot.vague ? ' · <i class="c-risk">provenienza non documentata</i>' : ''}</div>
       <h1 class="lot-name">${esc(it.name)}</h1>
       <div class="ladder num"><div><span>Minimo</span><b>${eur(lot.floor)}</b></div><i>›</i><div><span>Stima</span><b>${eur(lE)}</b></div><i>›</i><div class="start"><span>Parte da</span><b>${eur(lot.start)}</b></div></div>
       <div class="pricebox pc">
@@ -6623,6 +6647,7 @@ function skillPersuadi(c, p, v, done) {
     setTimeout(() => { go.disabled = false; go.textContent = 'Avanti'; go.onclick = () => { alive = false; ro.disconnect(); skillClose(); done(hit); }; }, 1100); };
   stage.addEventListener('pointerdown', stop); go.onclick = null; go.addEventListener('pointerdown', e => { if (phase === 'run') stop(e); });
 }
+window.BMB = { cSpawn, cPlace, cFight };
 
 /* ---------- input ---------- */
 /* swipe sul lotto: verso sinistra si passa al lotto dopo (anteprima = salta, esito = prossimo).
