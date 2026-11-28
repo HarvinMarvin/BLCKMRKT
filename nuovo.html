@@ -2370,6 +2370,11 @@ div.ntile{cursor:default}.ntile small{font-size:11px;letter-spacing:.12em;text-t
 .bcard{position:relative;min-width:0;display:flex;flex-direction:column;gap:5px;font-size:13px;line-height:1.25}.bcard .cardf{max-width:none}.bcard b{font-weight:600}
 .bcard .btn{white-space:normal;font-size:12px;letter-spacing:.02em;padding:6px 4px;min-height:36px}
 .bnums{display:flex;align-items:center;gap:6px;font-weight:700}
+.bnums small{font-weight:500;color:var(--muted,#9a978e);font-size:12px}
+.brows{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1px 8px;font-size:12px;padding:6px 0;border-top:1px solid rgba(241,239,232,.12);border-bottom:1px solid rgba(241,239,232,.12)}
+.brows span{color:var(--muted,#9a978e)}.brows b{text-align:right;white-space:nowrap;font-weight:700}
+.bgos{display:flex;flex-wrap:wrap;gap:4px}.bgo{font-size:11px;line-height:1.2;padding:3px 6px;border-radius:6px;border:1px solid currentColor}
+.bgo.cli{color:var(--c-mine,#5cc8ff)}.bgo.set{color:var(--gold-hi)}.bgo.none{color:var(--muted,#9a978e);border-color:transparent;padding-left:0}
 .tri{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent}.tri.up{border-bottom:11px solid var(--go)}.tri.dn{border-top:11px solid var(--risk)}
 .bfake{position:absolute;top:8px;right:8px;background:var(--risk);color:#fff;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:4px}
 .bcard.fake .cardf{filter:grayscale(.6)}
@@ -2381,10 +2386,12 @@ div.ntile{cursor:default}.ntile small{font-size:11px;letter-spacing:.12em;text-t
 .skstage canvas{position:absolute;inset:0;width:100%;height:100%}
 .skres{margin:0;min-height:1.4em;font-weight:700;text-align:center}
 .skgo{min-height:56px}
-.pz3{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;width:min(92%,420px);aspect-ratio:1/1;background:#111;border-radius:10px;padding:3px}
+.pzw{display:flex;align-items:flex-start;gap:10px;width:min(96%,480px)}
+.pzprev{flex:none;width:72px;display:flex;flex-direction:column;align-items:center;gap:4px}.pzprev img{width:72px;height:72px;object-fit:contain;background:#2a272d;border-radius:8px;border:1px solid var(--gold)}.pzprev small{font-size:11px;color:var(--muted,#9a978e)}
+.pz3{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:3px;aspect-ratio:1/1;background:#111;border-radius:10px;padding:3px}
 .pzt{border:0;border-radius:6px;background-color:#2a272d;background-size:300% 300%;cursor:pointer;outline:2px solid transparent;outline-offset:-2px}
 .pzt.sel{outline-color:var(--gold);transform:scale(.94)}
-.ochip.cli{border-color:var(--c-mine);color:var(--ivory)}.ochip.cli b{color:var(--c-mine);font-family:inherit}
+.ochip.cli{border-color:var(--c-mine,#5cc8ff);color:var(--ivory)}.ochip.cli b{color:var(--c-mine,#5cc8ff);font-family:inherit}
 .brow.cli em{font-style:normal;color:var(--go)}
 .skbox.short{height:auto}.skbox.short .skstage{flex:none;background:none;padding:10px 0;overflow:visible}
 .psg{position:relative;width:100%;border:2px solid var(--gold);border-radius:14px;background:repeating-linear-gradient(135deg,#1c1c1c 0 16px,#232323 16px 32px);overflow:hidden;touch-action:manipulation;cursor:pointer}
@@ -6227,7 +6234,7 @@ function toast(t, html, ms) { if (G && G.ui && G.ui.sheet === 'notice') return; 
 /* ================= BLCK MRKT · nuovo gioco (26/11/2026) =================
    Un solo budget, il tuo. Compri sotto la stima e rivendi. Falsi da scoprire con un gioco di abilità
    (Torre o Puzzle), bunker con guadagno o perdita a colpo d'occhio, obiettivi sempre visibili. */
-const BCFG = { start:300, lots:[6, 8], fakeP:.14, fakeVal:.15, quick:.8, setMul:1.15, keepFake:.25, puzzleSecs:25 };
+const BCFG = { rivalP:.6, start:300, lots:[6, 8], fakeP:.14, fakeVal:.15, quick:.8, setMul:1.15, keepFake:.25, puzzleSecs:25 };
 const BST = ['BHOME', 'BSALE', 'BLOT', 'BEND', 'BBUNK'];
 const SALE = [
   { id:0, name:'Bagagliai', fee:20, lo:40, hi:1500, aggr:.6, note:'Telefoni, carte, roba strana' },
@@ -6309,14 +6316,14 @@ function cPlace(c, from) {
     const aff = all.filter(it => it.est <= Math.max(sala.lo * 2, m * 1.5)), L = aff.length ? aff : all.slice().sort((a, b) => a.est - b.est).slice(0, 2), it = L[Math.floor(rnd() * L.length)];
     i = from + Math.floor(rnd() * (lim - from));
     const l = makeLot(it, { id:'sala' + S.tier, rank:S.tier + 1, aggr:{}, fakeP:0 }, i, uid('b'));
-    l.n = S.lots[i].n; l.fake = it.est >= 80 && rnd() < BCFG.fakeP; l.vague = l.fake ? rnd() < .6 : rnd() < .15; S.lots[i] = l;
+    l.n = S.lots[i].n; l.fake = it.est >= 80 && rnd() < BCFG.fakeP; l.vague = l.fake ? rnd() < .6 : rnd() < .15; bRivalLine(l); S.lots[i] = l;
   }
   S.lots[i].cli = c.id;
 }
 // lotta vera: il rivale compra quando il prezzo è già alla tua portata, ma prima del minimo. A volte non c'è nessuno.
 function cFight(l, m) {
   if (l.floor > m) return; const tAff = l.start <= m ? 0 : l.dur * (l.start - m) / (l.start - l.floor);
-  if (rnd() < .65) l.rivalT = +Math.min(l.dur * .97, Math.max(l.dur * .14, tAff + (l.dur - tAff) * U([.2, .75]))).toFixed(3);
+  if (rnd() < .65) l.rivalT = +Math.min(l.dur * .97, Math.max(l.dur * .05, tAff + (l.dur - tAff) * U([.05, .95]))).toFixed(3);
   else if (l.rivalT != null && l.rivalT < tAff + .8) l.rivalT = null;
 }
 function cDone(p, c, txt) { const S = G.bs; if (G.state === 'BLOT' && S && S.res && S.res.uid === p.uid) S.res.after = txt; }
@@ -6343,8 +6350,14 @@ function bGenNight(tier) {
   if (open.length && rnd() < .8) { const s = open[Math.floor(rnd() * open.length)], it = pickIt(pool.filter(x => x.cat === s.cat)); if (it) lots.push(it); }
   const cap = Math.max(sala.lo * 2, B().money * 1.6), poolA = pool.filter(it => it.est <= cap);
   while (lots.length < n) { const it = (poolA.length && rnd() < .75 && pickIt(poolA)) || pickIt(pool); if (!it) break; lots.push(it); }
-  const L = shuffle(lots).map((it, i) => { const l = makeLot(it, c, i, seq); l.n = i + 1; l.fake = it.est >= 80 && rnd() < BCFG.fakeP; l.vague = l.fake ? rnd() < .6 : rnd() < .15; return l; });
+  const L = shuffle(lots).map((it, i) => { const l = makeLot(it, c, i, seq); l.n = i + 1; l.fake = it.est >= 80 && rnd() < BCFG.fakeP; l.vague = l.fake ? rnd() < .6 : rnd() < .15; bRivalLine(l); return l; });
   return { tier, lots:L, idx:0, phase:'pre', res:null, spent:0, got:[], fakes:0, value:0, money0:B().money };
+}
+// il rivale compra in un punto qualsiasi della linea: dal minimo fino a poco sopra la stima. A volte non c'è.
+function bRivalLine(l) {
+  if (rnd() >= BCFG.rivalP) { l.rivalT = null; return; }
+  const gap = l.start - l.floor, lo = l.floor + gap * .03, hi = Math.max(lo, Math.min(l.start - gap * .06, (l.est || BY_ID[l.itemId].est) * 1.2));
+  l.rivalT = +Math.min(l.dur * .97, Math.max(l.dur * .05, l.dur * (l.start - (lo + rnd() * (hi - lo))) / gap)).toFixed(3);
 }
 const bLot = () => { const S = G.bs; return S && S.idx < S.lots.length ? S.lots[S.idx] : null; };
 const bDot = lot => { const N = G.bs.lots.length, f = N > 1 ? (lot.n - 1) / (N - 1) : 1; return `hsl(${Math.round(125 * (1 - f))} 72% 52%)`; };
@@ -6506,17 +6519,23 @@ function vBEnd() {
 }
 function vBBunk() {
   const b = B();
-  const card = p => { const it = BY_ID[p.itemId], v = sellVal(p), d = v - p.cost, up = d >= 0;
+  const card = p => { const it = BY_ID[p.itemId], v = sellVal(p), d = v - p.cost, up = d >= 0, st = setOf(it.id), cw = cFor(p.itemId);
+    const goals = [...cw.map(c => `<span class="bgo cli">Lo vuole ${esc(c.name)} · ${cLeft(c)}</span>`),
+      ...(st && !p.fake ? [`<span class="bgo set">${esc(st.name)} ${Math.min(3, setHave(st).length)}/3</span>`] : [])];
     return `<div class="bcard${p.fake ? ' fake' : ''}">${cardArt(it.id, p.uid)}<b>${esc(it.name)}</b>
-      <div class="bnums"><span class="c-mine num">${eur(p.cost)}</span><span class="tri ${up ? 'up' : 'dn'}" aria-hidden="true"></span><span class="num ${up ? 'c-go' : 'c-risk'}">${up ? '+' : '−'}${eur(Math.abs(d))}</span></div>
       ${p.fake ? '<span class="bfake">Falso</span>' : ''}
+      <div class="bgos">${goals.length ? goals.join('') : '<span class="bgo none">Non serve a obiettivi</span>'}</div>
+      <div class="brows"><span>Pagato</span><b class="num c-mine">${eur(p.cost)}</b>
+        <span>Stima</span><b class="num">${eur(it.est)}</b>
+        <span>Lo vendi a</span><b class="num">${eur(v)}</b></div>
+      <div class="bnums"><span class="tri ${up ? 'up' : 'dn'}" aria-hidden="true"></span><span class="num ${up ? 'c-go' : 'c-risk'}">${up ? '+' : '−'}${eur(Math.abs(d))}</span><small>${up ? 'ci guadagni' : 'ci perdi'}</small></div>
       ${cFor(p.itemId).map(c => `<button class="btn btn-go btn-xs" data-act="bClient" data-u="${p.uid}" data-c="${c.id}">${p.fake ? 'Rifilalo' : 'Vendilo'} ${esc(aN(c.name))} · ${eur(cOffer(c, p))}</button>`).join('')}
       <button class="btn btn-ghost btn-xs" data-act="bSell" data-u="${p.uid}">Vendi · ${eur(v)}</button></div>`; };
   const ready = SETS.filter(s => setHave(s).length >= 3);
   return `<section class="bhome stack"><div class="eyebrow">Il tuo bunker · ${b.bunker.length} ${b.bunker.length === 1 ? 'pezzo' : 'pezzi'}</div>
     <h1>${b.bunker.length ? 'Vendi o tieni per i set.' : 'Il bunker è vuoto.'}</h1>
     ${b.clients.length ? `<p class="note">Clienti: ${b.clients.map(c => `<b>${esc(c.name)}</b> vuole ${esc(CSING[c.cat] || 'un pezzo')} (${cLeft(c)})`).join(' · ')}. Un falso puoi provare a rifilarglielo: se ti becca si riprende i soldi.</p>` : ''}
-    <p class="note">In azzurro quanto l’hai pagato. Il triangolo verde in su vuol dire che vendendolo adesso ci guadagni, quello rosso in giù che ci perdi, con la cifra accanto.</p>
+    <p class="note"><b class="c-mine">Pagato</b>: quanto l’hai speso. <b>Stima</b>: quanto vale. <b>Lo vendi a</b>: quanto ti danno subito, l’${Math.round(BCFG.quick * 100)}% della stima (un falso molto meno). Sotto, se vendendolo adesso ci guadagni o ci perdi. A un cliente o in un set lo vendi meglio.</p>
     ${ready.map(s => `<div class="card bsetready"><b>${esc(s.name)} completo</b><span>Tre pezzi insieme: lo vendi a ${eur(setVal(s))}</span><button class="btn btn-go btn-sm" data-act="bSellSet" data-id="${s.id}">Vendi il set</button></div>`).join('')}
     <div class="bgrid">${b.bunker.map(card).join('')}</div>
     <div class="row"><button class="btn btn-gold" data-act="bGoSale">Scegli la sala</button></div></section>`;
@@ -6581,9 +6600,12 @@ function skillPuzzle(lot, done) {
   const el = skillLayer('Puzzle · accorgiti del falso', `Rimetti a posto ${it.name.toLowerCase()} in ${BCFG.puzzleSecs} secondi: tocca due tessere per scambiarle.`);
   const st = el.querySelector('#skstage'), go = el.querySelector('#skgo'), res = el.querySelector('#skres');
   go.textContent = `${BCFG.puzzleSecs} s`; go.disabled = true;
+  let sq = src; // l'illustrazione messa in un quadrato senza deformarla
+  { const im = new Image(); im.onload = () => { try { const N = 600, cv = document.createElement('canvas'); cv.width = cv.height = N; const x = cv.getContext('2d'), k = Math.min(N * .88 / im.naturalWidth, N * .88 / im.naturalHeight), w = im.naturalWidth * k, h = im.naturalHeight * k;
+      x.drawImage(im, (N - w) / 2, (N - h) / 2, w, h); sq = cv.toDataURL('image/png'); } catch (e) { sq = src + '#'; } t0 = performance.now(); if (!over) draw(); }; im.onerror = () => { sq = src + '#'; t0 = performance.now(); draw(); }; im.src = src; }
   let order = [0, 1, 2, 3, 4, 5, 6, 7, 8]; do { order = shuffle(order.slice()); } while (order.every((v, i) => v === i));
   let sel = null, t0 = performance.now(), over = false, tick = 0;
-  const draw = () => { st.innerHTML = `<div class="pz3">${order.map((v, i) => `<button class="pzt${sel === i ? ' sel' : ''}${v === i ? ' ok' : ''}" data-i="${i}" style="background-image:url('${src}');background-position:${(v % 3) * 50}% ${Math.floor(v / 3) * 50}%"></button>`).join('')}</div>`; };
+  const draw = () => { if (sq === src) return; st.innerHTML = `<div class="pzw"><div class="pzprev"><img src="${sq}" alt=""><small>Così</small></div><div class="pz3">${order.map((v, i) => `<button class="pzt${sel === i ? ' sel' : ''}${v === i ? ' ok' : ''}" data-i="${i}" style="background-image:url('${sq}');background-position:${(v % 3) * 50}% ${Math.floor(v / 3) * 50}%"></button>`).join('')}</div></div>`; };
   const finish = win => { over = true; clearInterval(tick); const secs = (performance.now() - t0) / 1000;
     res.textContent = win ? `Fatto in ${secs.toFixed(1)} secondi: te ne sei accorto` : 'Tempo scaduto: non te ne sei accorto'; res.className = 'skres ' + (win ? 'c-go' : 'c-risk');
     if (win && secs < 10) bGoal('g-puzzle');
@@ -6647,7 +6669,7 @@ function skillPersuadi(c, p, v, done) {
     setTimeout(() => { go.disabled = false; go.textContent = 'Avanti'; go.onclick = () => { alive = false; ro.disconnect(); skillClose(); done(hit); }; }, 1100); };
   stage.addEventListener('pointerdown', stop); go.onclick = null; go.addEventListener('pointerdown', e => { if (phase === 'run') stop(e); });
 }
-window.BMB = { cSpawn, cPlace, cFight };
+window.BMB = { cSpawn, cPlace, cFight, skillPuzzle };
 
 /* ---------- input ---------- */
 /* swipe sul lotto: verso sinistra si passa al lotto dopo (anteprima = salta, esito = prossimo).

@@ -1,6 +1,6 @@
 // BLCK MRKT: salva i giochi nel telefono per giocare anche senza internet.
 // Ad ogni aggiornamento cambia VERSIONE: il telefono scarica i file nuovi la prima volta che è online.
-const VERSIONE = 'bm-2026-11-27-tarati';
+const VERSIONE = 'bm-2026-11-28-bunker';
 const FILE = ['./', './index.html', './classico.html', './nuovo.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSIONE).then(c => c.addAll(FILE)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(k => Promise.all(k.filter(n => n !== VERSIONE).map(n => caches.delete(n)))).then(() => self.clients.claim())); });
